@@ -1,0 +1,107 @@
+---
+title: "Basic Statistics with R"
+author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
+date: "Statistics and Bioinformatics Unit.  \n Vall d'Hebron Institut de Recerca"
+output:
+  beamer_presentation:
+    theme: "Copenhagen"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
+  slide_level: 2
+footer: "Statistics with R"
+
+---
+
+```{r setLicense, child = 'license.Rmd'}
+```
+
+# Introduction
+
+## Outline
+
+- Introduction
+    + Who are we ("we"=teachers & students)
+    + Why are we here (Why learn R?) 
+- How will we proceed: Methodology
+- HW Data Science approach to using R
+- References & Resources
+
+
+## Who are we (1): The Statistics and Bioinformatics Unit
+
+\begin{figure}
+\includegraphics[width=0.85\linewidth]{images/ueb-Unit.jpg}
+\end{figure}
+
+## Who are we (2): Teachers
+
+\begin{figure}
+\includegraphics[width=0.85\linewidth]{images/ueb-People.jpg}
+\end{figure}
+
+<!-- ## Who are we (3): The GRBio Research group -->
+
+<!-- \begin{figure} -->
+<!-- \includegraphics[width=0.85\linewidth]{images/GRBio.jpg} -->
+<!-- \end{figure} -->
+
+## Why learn R
+
+- Most people in most jobs have to _manage_ information in their every day work.
+- "Managing" may mean different things such as: 
+    + _retrieving_
+    + _manipulating_
+    + _visualizing_
+    + _analyzing_
+    + _reporting_
+    
+- R is a powerful tool that can be used to facilitate, improve or automate tasks such as those described above.
+
+## Why doing statistics with R
+
+- R has become a "de facto" standard for statistical analysis
+- Practically all existing statistical methods available
+- Powerful graphics that can be used interactively to explore data
+- Possibility of scripting and automating analysis for its reproducibility
+
+## Hadley Wickam's approach to learning and applying Data Sciendce
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{images/data-science.png}
+\end{figure}
+
+
+## Your turn
+
+- Provide examples of informations you may wish to manage
+- Describe briefly 
+    + what this information is about
+    + how it is stored
+    + what you may wish to do with it
+        - Transformations
+        - Computations
+        - Reports
+
+## How we will work
+
+- Mastering R requires as many other disciplines
+    (i) Time 
+    (ii) Study, and 
+    (iii) Practice.
+    
+- Our lectures will have the following structure (all but the first)
+
+    + 1st part: Discuss the work you have done during the week
+    + 2nd part: We introduce a few new ideas
+    + 3rd part: Practice exercises and start working on the case study suggested/your data.
+    
+## Resources and references
+
+- There is a huge variety of resources to learn R, books, tutorials, free online courses, etc.
+- This course is based on the book [Data Science for R](http://r4ds.had.co.nz/).
+- Other interesting books
+    + [Using R and RStudio for Data Management, Statistical Analysis, and Graphics, 2nd edition](https://www.amazon.com/Management-Statistical-Analysis-Graphics-2015-04-27/dp/B017POAKSK/ref=sr_1_5?ie=UTF8&qid=1539194380&sr=8-5&keywords=using+r+and+rstudio+for+data+management)
+- Online courses
+    + [Coursera's Data Science Specialization](https://github.com/DataScienceSpecialization/courses)
+- [A list of R tutorials and courses](https://hackr.io/tutorials/learn-r)
+
