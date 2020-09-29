@@ -45,6 +45,33 @@ footer: "Statistics with R"
 <!-- \includegraphics[width=0.85\linewidth]{images/GRBio.jpg} -->
 <!-- \end{figure} -->
 
+## Why this course (1)
+
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{images/drowningindata.jpg}
+\end{figure}
+
+"We are drowning in information but starving for knowledge"
+
+## Why this course (2)
+
+- (Biomedical) research, as well as many other human activities (social networks, sports, COVID ...) generate huge quantities of -often complex-  data.
+    + Although sometimes we will also have small datasets
+- We believe that data leads to information that leads to knowledge, but we need to be able to extract one from the other.
+- This can be attempted in many ways, artificial intelligence, machine learning, data science or something which is common to all of them: __plain statistics__!!!
+    
+## What are our goals (1)
+
+- The main goal of this course is to introduce a variety of statistical methods and tools, which is good enough to:
+    + Help you analyze your own data when it makes sense
+    + Suggests you when the analysis is complex enough to contact an expert statistician (such us those in the UEB)
+    + Help you to distiguish one from the other
+    
+<p></p>
+
+- A secondary, but not least important objective: Show how to do it using R
+
+
 ## Why learn R
 
 - Most people in most jobs have to _manage_ information in their every day work.
@@ -62,7 +89,11 @@ footer: "Statistics with R"
 - R has become a "de facto" standard for statistical analysis
 - Practically all existing statistical methods available
 - Powerful graphics that can be used interactively to explore data
-- Possibility of scripting and automating analysis for its reproducibility
+- Possibility of scripting analysis $\longrightarrow$  __Reproducibility__
+
+```{r R4statistics, echo=FALSE, fig.cap="R for statistical Analysis and Graphics", out.width = '50%'}
+knitr::include_graphics("images/R4statistics1.png")
+```
 
 ## Hadley Wickam's approach to learning and applying Data Sciendce
 
