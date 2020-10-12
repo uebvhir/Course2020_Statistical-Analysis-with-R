@@ -75,7 +75,34 @@ _wish to make some comparisons_
 
 - In order to decide which estimator we use we can rely on the _properties_ of the estimators such as __the bias__ or the __precision (the variance)__ of the estimator.
 
-# Exercise
+# Example. Computing estimations (1)
+
+- Read the Osteoporosis dataset and turn factors into variables automatically with Rbase function `read.delim`
+- Take a sample of size 100 from the original file. Call it 'osteo100' and work with this file from now on.
+- Compute the mean value of the variable containing bone density values `BUA`
+- Split the computation between all subgroups from variable `classific` and variable `menop`
+- Compute the percentage of menopausic women from variable `menop`
+
+# Example. Computing estimations with R
+
+```{r}
+library(dplyr)
+# Read data
+osteoporosis <- read.delim2("~/Dropbox (Nuevo Equipo VHIR10)/SotaCV/Course2020_Statistical-Analysis-with-R/datasets/osteoporosis.csv", stringsAsFactors=TRUE)
+# Take subsample
+osteo100 <- sample_n(osteoporosis, 100)
+# mean bone density
+buaMean <- mean(osteo100$bua)
+print(buaMean)
+# Mean bone density ny groups
+osteo100 %>% 
+  group_by(menop) %>% 
+  summarize(m = mean(bua))
+# Proportion of menop women (Proportion  is a mean of 0-1 values)
+mean(ifelse(osteo100$menop=="SI",1,0))
+```
+
+# Exercise 2
 
 - Read the diabetes dataset. Convert characters into factors before continuing.
 - Provide an estimate of 
@@ -118,6 +145,31 @@ $$
 $$
 SEP = \sqrt{\frac{\hat p (1-\hat p)}{n}}
 $$
+# Computing the standard error with R
+
+- R does not usually include a function for standard errors, although it can be easily programmed.
+```{r}
+SEM <- function (x){sd(x)/sqrt(length(x))}
+```
+
+```{r}
+SEP <- function (x){
+  ssize <- length(x)
+  p <- sum(x)/ssize
+  return(sqrt(p*(1-p)/ssize))
+}
+```
+
+With the BUA variable
+```{r}
+SEM (osteo100$"bua")
+```
+
+With the `menop` variable
+```{r}
+intMenop <- ifelse(osteo100$"menop"=="SI", 1, 0)
+SEP (intMenop)
+```
 
 # Confidence intervals
 
@@ -126,7 +178,7 @@ $$
 - Confidence interval for the mean
 
 $$
-\overline{X} - t_{\epsilon/2} \frac{\hat s}{\sqrt{n}} \leq \mu \leq
+\overline{X} - \underbrace{t_{\epsilon/2} \frac{\hat s}{\sqrt{n}}}_{Precision} \leq \mu \leq
 \overline{X} + t_{\epsilon/2} \frac{\hat s}{\sqrt{n}} = 
 \mathbf{\overline{X} \pm t_{\epsilon/2} \cdot \mbox{SEM}}
 $$
@@ -134,7 +186,67 @@ $$
 - Confidence interval for the proportion
 
 $$
-\hat {p} - z_{\epsilon/2} \sqrt{\frac{\hat p (1-\hat p)}{n}} \leq \mu \leq
+\hat {p} - \underbrace{z_{\epsilon/2} \sqrt{\frac{\hat p (1-\hat p)}{n}}}_{Precision} \leq \mu \leq
 \hat {p} + z_{\epsilon/2} \sqrt{\frac{\hat p (1-\hat p)}{n}} = 
 \mathbf{\hat {p} \pm z_{\epsilon/2} \cdot \mbox{SEM}}
 $$
+
+# Example. Computing Confidence Intervals with R
+
+- In general R does not compute (has no functions) for the direct calculation of confidence intervals
+
+- This can be done by calling the corresponding tests functions such as `t.test` or `prop.test`
+
+- Some R commander plugins such as EZR allow this computations directly
+
+---
+
+## Example. Computing Confidence Intervals with R (2)
+
+```{r}
+t.test(osteo100[["bua"]])
+```
+
+---
+
+## Example. Computing Confidence Intervals with R (3)
+
+```{r}
+cntMenop <- table(osteo100[["menop"]])["SI"]
+ssize <- length(osteo100[["menop"]])
+prop.test (x=cntMenop, n=ssize)
+```
+
+# Sample Size for estimation (1)
+
+- The standard error informs of how precise an estimation is 
+__if one knows the variability and the sample size__
+
+$$
+SE =\frac{ \hat \sigma}{\sqrt{n}}
+$$
+
+
+- We can proceed in the opposite sense: assuming we know:
+
+     (1) the variability (e.g. from a pilot study) and 
+     (2) the highest precision we wish to attain ("arm length" of a confidence interval:
+     
+     $$
+     \Delta = z_{\epsilon_2} \cdot SE = z_{\epsilon_2} \cdot \frac{ \hat \sigma}{\sqrt{n}}
+     $$
+
+
+# Sample Size for estimation (2)
+
+- The sample size needed to attain this precision can be isolated from the previous equation:
+
+$$
+n= \frac{z_{\epsilon_2} ^2 \hat  \sigma ^2}{\Delta^2}
+$$
+# Sample size example formulae
+
+
+# Sample size calculations with R
+
+
