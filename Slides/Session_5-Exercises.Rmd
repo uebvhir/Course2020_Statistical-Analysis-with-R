@@ -1,8 +1,6 @@
 ---
 title: "Session 5. Introduction to statistical inference"
-output:
-  html_document:
-    df_print: paged
+output: html_notebook
 ---
 
 # Example 1
