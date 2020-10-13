@@ -1,0 +1,158 @@
+---
+title: "Session 5. Introduction to statistical inference"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Example 1
+
+- Read the Osteoporosis dataset and turn factors into variables automatically with Rbase function `read.delim`
+- Take a sample of size 100 from the original file. Call it 'osteo100' and work with this file from now on.
+- Compute the mean value of the variable containing bone density values `BUA`
+- Split the computation between all subgroups from variable `classific` and variable `menop`
+- Compute the percentage of menopausic women from variable `menop`
+
+```{r}
+library(dplyr)
+# Read data
+osteoporosis <- read.delim2("datasets/osteoporosis.csv", stringsAsFactors=TRUE)
+# Take subsample
+osteo100 <- sample_n(osteoporosis, 100)
+# mean bone density
+buaMean <- mean(osteo100$bua)
+print(buaMean)
+# Mean bone density ny groups
+osteo100 %>% 
+  group_by(menop) %>% 
+  summarize(m = mean(bua))
+# Proportion of menop women (Proportion  is a mean of 0-1 values)
+mean(ifelse(osteo100$menop=="SI",1,0))
+```
+
+
+# Exercise 1
+
+- Read the diabetes dataset. Convert characters into factors before continuing.
+- Provide an estimate of 
+    - The distribution of a numerical variable.
+    - a proportion of at least one categorical variable and 
+    - the mean value of at least one numerical variable.
+- Could you have used different estimators?
+- How would you decide?
+
+First we read data and recode character values into factors.
+
+```{r}
+library(readxl)
+library(dplyr)
+library(magrittr)
+diabetes <- read_excel("datasets/diabetes.xls")
+sapply(diabetes, class)
+diabetes_factor <- diabetes %>%
+  mutate_if(sapply(diabetes, is.character), as.factor) %>%
+  select (-numpacie)
+sapply(diabetes_factor, class)
+```
+Next provide a quick summary of each variable
+```{r}
+summary(diabetes_factor)
+```
+Plotting all variables with an instruction is a bit tricky. May be easier to plot separately numerical and categorical variables.
+
+```{r}
+library(ggplot2)
+library(tidyr)
+library(purrr)
+
+diabetes %>%
+  keep(is.numeric) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_histogram()
+```
+
+Proceed similarly with categorical variables
+
+```{r}
+diabetes %>%
+  keep(is.character) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar()
+```
+
+You may notice -or not- that the dataset has some outlier values.
+
+Before removing them consider estimating the mean nvalue of SBP and DBP with distinct estimators
+
+```{r}
+with(diabetes_factor, {
+    print("DBP")
+    show(summary(dbp))
+    print("SBP")
+    show(summary(sbp))
+  }
+  )
+```
+What is prefereable to estimate the mean SBP or DBP?
+
+
+
+## Example 2. Computing Confidence Intervals with R (2)
+
+```{r}
+t.test(osteo100[["bua"]])
+```
+---
+
+## Example 2 . Computing Confidence Intervals with R (3)
+
+```{r}
+cntMenop <- table(osteo100[["menop"]])["SI"]
+ssize <- length(osteo100[["menop"]])
+prop.test (x=cntMenop, n=ssize)
+```
+
+# Exercise 2.1 Computing Confidence intervals
+
+- Read the file "osteoporosis.csv" into a dataset and call it "osteoporosis"
+
+- Compute confidence intervals for the BUA mean and for the percentage of menopausic women with __all the individuals in the dataset__.
+
+- Compare these confidence intervals with those that you obtained in example 2. How do they differ?
+
+
+
+# Exercise 2.2 Computing Confidence intervals
+
+- Read the diabetes dataset. Convert characters into factors before continuing.
+
+- Provide a confidence interval for:
+    - a proportion of at least one categorical variable and 
+    - the mean value of at least one numerical variable.
+
+- How would you find alternative approaches to compute these confidence intervals?
+
+- Why would you want to do such a thing?
+
+
+# Example 3. Sample size calculation
+
+- Using the osteoporosis dataset, assume that the standard deviation is a good aproximation to $\sigma$.
+
+- Find the sample size needed to achieve a margin of error equal to 5 with a $95\%$ confidence interval.
+
+# Exercise 3. Sample size calculation
+
+- Write a function to compute the sample size for proportions in the worst case (p=q=0.5) or assuming $p$ is known.
+
+- Using a $50\%$ planned proportion estimate, find the sample size needed to achieve $5%$ margin of error for a survey at $95%$ confidence level.
+
+- How would this result change if we are told that a pilot study suggests that $p=10\%$?
+
+
+
+
