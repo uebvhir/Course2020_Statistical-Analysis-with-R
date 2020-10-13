@@ -175,6 +175,12 @@ SEP (intMenop)
 
 - Confidence intervals are based on standard errors
 
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/confidenceintervals1.png")
+```
+
+# Formulae for confidence intervals
+
 - Confidence interval for the mean
 
 $$
@@ -244,7 +250,25 @@ $$
 $$
 n= \frac{z_{\epsilon_2} ^2 \hat  \sigma ^2}{\Delta^2}
 $$
-# Sample size example formulae
+
+# Sample size formulae for estimating a mean or a proportion
+
+The previous formula becomes, for specific questions:
+
+$$
+n= \frac{t_{n-1, \epsilon_2} ^2 \, \hat  s ^2}{\Delta^2} \quad (1), \qquad 
+n= \frac{z_{\epsilon_2} ^2 \, \hat  p (1-\hat p)}{\Delta^2} \quad(2), \qquad 
+n= \frac{z_{\epsilon_2} ^2 }{4\,\Delta^2} \quad(3) 
+$$
+
+1. Mean of a normal population with a given precision $\Delta$.
+
+2. Proportion $p$, with a given precision $\Delta$ and with an estimate, $\hat p$ available, from a pilot study.
+
+3. Proportion $p$, with a given precision $\Delta$ and assuming the _worst case_ $p=q=0.5$.
+
+
+
 
 
 # Sample size calculations with R
