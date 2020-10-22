@@ -1,13 +1,11 @@
 ---
 title: "Proteomic Data Analysis and Visualization"
 author: "Alex Sanchez"
-date: "October 30, 2018"
+date: "October 22, 2022"
 output:
-  html_document:
-    theme: united
-    toc: yes
+  html_notebook:
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r global_options, include=FALSE}
