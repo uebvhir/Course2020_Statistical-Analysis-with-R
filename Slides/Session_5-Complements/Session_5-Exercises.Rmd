@@ -1,6 +1,8 @@
 ---
 title: "Session 5. Introduction to statistical inference"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 # Example 1
@@ -20,9 +22,6 @@ osteo100 <- sample_n(osteoporosis, 100)
 # mean bone density
 buaMean <- mean(osteo100$bua)
 print(buaMean)
-# mean population bone density
-buaMean_Pop <- mean(osteoporosis$bua)
-print(buaMean_Pop)
 # Mean bone density ny groups
 osteo100 %>% 
   group_by(menop) %>% 
