@@ -40,9 +40,10 @@ _This is a toy example based on a dataset and some questions posed by one course
 
 ## The problem
 
-A phosphoproteomics experiment has been performed as described in figure 1.
+A phosphoproteomics experiment has been performed as described in figure 1 (if not available look for image "phosphoproteomics.png" in the page or the repository).
 
-![A phosphoproteomics experiment](phosphoproteomics.png)
+
+<!-- ![A phosphoproteomics experiment](phosphoproteomics.png) -->
 
 - The experiment has analyzed (3 + 3) PDX models of two different subtypes using Phosphopeptide enriched samples. 
 - LC-MS analysis of 2 technical duplicates has been performed on each sample.
