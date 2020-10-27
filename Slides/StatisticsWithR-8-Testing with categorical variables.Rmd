@@ -1,7 +1,6 @@
 ---
-title: "5- HYpothesis testing with qualitative variables"
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
-        Santiago Perez-Hoyos"
+title: "8- Hypothesis testing with qualitative variables"
+author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
@@ -9,7 +8,7 @@ output:
     colortheme: "dolphin"
     fonttheme: "structurebold"
   slide_level: 2
-footer: "R for Data Science"
+footer: "Statistical Analysis with R"
 editor_options: 
   chunk_output_type: console
 ---
@@ -45,15 +44,33 @@ sex <- factor(c("Female", "Male"))
 stage <- factor(1:4, ordered=TRUE)
 ```
 
+# Example
+
+- Select one of the datasets that you have worked with during the course
+    - diabetes.xls
+    - osteopòrosis.csv
+    - demora.xls
+ - Read the dataset and check that the categorical variables you are interested in are converted into factors.
+ - Confirm the conversion by summarizing the variables
+
 # The analysis of categorical variables
 
-- One variable (tests with proportions)
-    - Does the proportion (% affected) match a given value?
-    - Is the proportion (% affected) the same in two populations?
+- The analysis of categorical data proceeds as usual:
+
+    - Start exploring the data with the   tables and graphics
+    - Proceed to estimation and testing if _appropriate_
+
+- Estimation
+    - Proportions: Point estimates, confidence intervals, Sample Size
     
-- With two variables (chi-square and related)
-    - Is there an association between two categorical variables?
-    - Is there a relationship between the values ​​of a categorical variable before and after treatment?
+- Testing
+
+    - One variable (tests with proportions)
+        - Does the proportion (% affected) match a given value?
+        - Is the proportion (% affected) the same in two populations?
+    - With two variables (chi-square and related)
+        - Is there an association between two categorical variables?
+        - Is there a relationship between the values ​​of a categorical variable before and after treatment?
 
 # Example
 
@@ -91,12 +108,15 @@ prop.table(mytable, 1) # row percentages
 
 ```
 
-# Exercices
+
+# Exercice
 
 - With the osteoporosis dataset repeat the crosstabulation done above using 
 
     - Two categorical variables
     - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
+
+
 
 # One variable: Proportion tests
 
@@ -113,6 +133,29 @@ proportion of obese cases than that population had in 50'-80'?
 prop.test(x=142, n=723, p=0.15)
 ```
 
+# Estimation comes with proportion test
+
+- `prop.test` does __three__ distinct calculations
+
+    - A test for the hypothesis $H_0: p=p_0$ is performed
+    - A confidence interval for $p$ is built based on the sample
+    - A point estimate for $p$ is also provided.
+
+```{r, echo=FALSE, out.width="100%", fig.cap=""}
+knitr::include_graphics("images/propTestsAndCI.png")
+```
+
+# Exercise
+
+- In the osteoporosis dataset
+  
+    - Test the hypothesis that the proportion of women with `osteoporosis` is higher than 7%
+        - In the global population of the study
+        - Only in women with osteoporosis
+    - Select a sample of size 100 and repeat the test. How do the results change?
+    - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%?
+    
+    
 # Contingency tables
 
 - A contingency table (a.k.a cross tabulation or cross tab) is a matrix-like table that displays the (multivariate) frequency distribution of the variables.
@@ -130,7 +173,7 @@ knitr::include_graphics("images/contingencytables1.png")
 
 **Chi squared independence test**
 
-When the sample comes from a single population with 2 qualitative variables, the aim is to determine if there is relationship between vars:
+- When the sample comes from a single population with 2 qualitative variables, the aim is to determine if there is relationship between vars:
 
 
 **Chi squared homogeneity test** 
@@ -170,6 +213,12 @@ Alternatively use Fisher test
 ```{r}
 fisher.test(mytable)
 ```
+
+# Exercise
+
+- Use the osteoporosis dataset to study if it can be detected an association between the variables `menop` and `classific` in the osteoporosis dataset.
+
+- Do not start with a test but with an appropriate summarization and visualization!
 
 
 
