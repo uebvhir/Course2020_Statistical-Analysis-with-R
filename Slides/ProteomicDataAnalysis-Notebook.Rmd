@@ -282,7 +282,7 @@ This one function interprets its input to determine how to get the data from GEO
 
 To illustrate this we will use data from a study on Effect of the thermogenic gene program during adipocyte differentiation. The data for this study had been uploaded into the Gene Expression Omnibus (GEO). The dataset selected is identified with the accession number: GSE100924.
 
-More information about the study can be found in GEO and in lab2 "Exercies in linear models and experimental design"
+More information about the study can be found in GEO and in Gonzalo R. and Sanchez A."
 
 
 ```{r }
