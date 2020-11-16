@@ -1,0 +1,257 @@
+---
+title: "R crash course: A quick introduction to R"
+author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
+        Santiago Perez-Hoyos"
+date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
+output:
+  beamer_presentation:
+    theme: "Copenhagen"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
+  slide_level: 2
+footer: "R for Data Science"
+
+---
+
+```{r setLicense, child = 'license.Rmd'}
+```
+
+# A Crash Course in R
+
+## Outline
+
+- Why R
+    + R basics
+    + How does one work with R and Rstudio
+- Getting Started
+    + A primer of data import
+    + Variables and data types
+    + Functions, Packages and more stuff
+- Working with data
+    + Selecting, Filtering and ordering datasets
+    + A primer of statistics and plots
+    + R Notebooks and RMarkdown
+
+## Motivation
+
+- We (you) all work with data, most of the time and often we need to do "things" with those data.
+
+    - I have three lists of genes and I would like to see which genes they have in common (or which  ones appear only in one list).
+    - We have received the data from that lab but I only want to work with a subset of the samples.
+    - Is it possible to repeat that plot changing the line colors, the font size etc?
+    - I have some scripts tu re-run an analysis but I don't know how to start
+
+- These, and many other things can be done with a basic knowledge of R.
+
+## [What is R?](https://www.r-project.org/about.html)
+
+- R is a _language and environment_ for statistical computing and graphics.
+
+- R provides a wide variety of statistical and graphical techniques, and is highly extensible.
+
+- It can be used fro simple tasks to highly complex reproducible projects.
+
+- It compiles and runs on a wide variety of UNIX platforms and similar systems Windows and MacOS.
+
+<!-- ## R PRO's (why you are here!) -->
+
+<!-- - The system is  -->
+<!--     + free (as in _free beer_) -->
+<!--     + It's platform independent -->
+<!--     + It is constantly improving (2 new versions/year) -->
+
+<!-- - It is a statistical tool -->
+<!--     + Implements almost every statistical method that exists -->
+<!--     + Great graphics (Examples) -->
+<!--     + Simple reporting tools -->
+<!--     + Also state-of-the-art in Bioinformatics through the [Bioconductor Project](http://bioconductor.org). -->
+
+<!-- - Programming language -->
+<!--     + Easy to automate repetitive tasks (Example_1.1) -->
+<!--     + Possibility to create user friendly web interfaces  with a moderate effort. (Examples) -->
+
+<!-- ## R CON's -->
+
+<!-- - R is mainly used issuing commands from a console -->
+<!--     + less user friendly than almost any other statistical tool you may know. -->
+
+<!-- - Constantly having new versions may affect our projects -->
+
+<!-- - Not necessarily the best language nor suitable for every existing task -->
+
+## How is R used
+
+- Different ways to use R, but the best trade-off simplicity-efficiency is provided by Rstudio
+
+\begin{figure}
+\includegraphics[width=0.85\linewidth]{images/RStudio.png}
+\end{figure}
+
+## Exercise
+
+- Get to know R. Visit the R-project page and see what can be found there.
+
+- If you haven't done it before, download and install R and Rstudio in your computer
+
+- Open R studio. Look at the panels and figgure out what can we do at each window.
+
+
+# Using R
+
+## Commands, Objects and Functions
+
+- Shortly, using R consists of 
+    + Working with *objects* using *commands* and *functions*
+
+\begin{figure}
+\includegraphics[width=0.85\linewidth]{images/basicConcepts.png}
+\end{figure}
+
+## Variables and data types
+
+- Data managed in R ...
+    + is stored as *variables*
+- Variables can be of distinct types
+    + Numerical
+        - numeric (13.7)
+        - int (3)
+    + Character
+        - "R is cute"
+    + Factors
+        - A,B,C,D
+        - WT, Mut
+
+## R packages
+
+- R can be used for many different types of data processing and analysis from distinct fields, besides statistics such as Ecology, Omics Sciences, Psychology etc.
+- All these capabilities are not present from the begining because most of them will never be used by most users.
+- Instead, thay can be added when needed by 
+    (i) installing and 
+    (ii) loading the appropriate packages.
+
+## Installing and loading packages
+ 
+We want to analyze some data using cox proportional hazards model.
+```{r eval=FALSE}
+res.cox <- coxph(Surv(time, status) ~ sex, data = lung)
+```
+`Error in coxph(Surv(time, status) ~ sex, data = lung) : could not find function "coxph"`
+
+We need to install and load the package before we can use it.
+```{r eval=FALSE}
+install.packages("survival")
+library(survival)
+res.cox <- coxph(Surv(time, status) ~ sex, data = lung)
+```
+
+## Bioconductor
+
+<!-- \begin{figure} -->
+<!-- \includegraphics[width=0.85\linewidth]{images/basicConcepts.png} -->
+<!-- \end{figure} -->
+
+- Packages analyse all kinds of Genomic data (>800)
+- Compulsory documentation (*vignettes*) for each package
+- 6-month release cycle
+- [Course Materials](http://bioconductor.org/help/course-materials/)
+- [Example data](http://bioconductor.org/packages/release/BiocViews.html#___ExperimentData) and [workflows](http://bioconductor.org/help/workflows/)
+- Common, re-usable framework and functionality
+- [Available Support](https://support.bioconductor.org/)
+    + Often you will be able to interact with the package maintainers / developers and other power-users of the project software
+
+## The `tidyverse`
+
+- The tidyverse is an opinionated collection of R packages designed for data science. 
+- All packages share an underlying design philosophy, grammar, and data structures. 
+- The complete tidyverse collection can be installed with:
+```{r eval=FALSE}
+install.packages("tidyverse")
+```
+- [https://www.tidyverse.org/](https://www.tidyverse.org/)
+
+
+# Getting data into R
+
+## Importing data with Rstudio
+
+- The easiest way to get data into R is to click on the `Ìmport Datasets` button.
+- Alternatively R code can be written using functions from `Base R` or the `tidyverse`
+    + `Base R` functions start with `read.`: `read.table`, `read.csv`
+    + `tidyverse` functions start with `read_`: `read_delim`, `read_csv` or `read_excel`
+
+## Reading Excel or csv files
+
+- Files can be read from any location, let it be a physical support or a web site.
+- To read files from disk be sure to indicate their location.
+- Alternatively the default working directory can be set to the folder where the file is located.
+
+## Reading Excel or csv files (continued)
+
+- Assume files `TIO2+PTYR-human-MSS+MSIvsPD.XLSX` has been downloaded to your working directory
+
+- Start setting the default directory to the folder where you have saved the file.
+    + `Session --> Set Working directory --> To source file location...`
+
+- Import the `TIO2+PTYR-human-MSS+MSIvsPD.XLSX` with the default options
+
+## Reading Excel or csv files (continued)
+
+- Code generated for reading the files can be reused any time changing the file name if needed.
+
+```{r, eval=FALSE}
+# Read Excel file
+library(readxl)
+otherData <- read_excel("otherFiles")
+```
+
+
+## Interlude: Summarizing data
+
+- Once a dataset is available it is easy to "have a look at it"
+
+```{r eval=FALSE}
+head(phosphoprotData)
+str(phosphoprotData)
+summary (phosphoprotData)
+```
+
+# Dynamic output with Rmarkdown
+
+## Reproducible research with R notebooks
+
+- R and Rstudio are strongly involved in promoting [reproducibility](https://en.wikipedia.org/wiki/Reproducibility) and [reproducible research](https://en.wikipedia.org/wiki/Reproducibility#Reproducible_research).
+- This is implemented in **R notebooks**
+- A notebook combines
+    + Natural language text, e.g. describing what we are doing in our own words.
+    + R code with the instructions needed to do the data management or the analysis.
+    + The output of the analysis
+
+## Creating Notebooks
+
+- A notebook can be created in Rstudio with 
+    + `File --> New File --> R Notebook`
+- The notebook contains example text and code so it is straightforwoard to adapt it to your analysis.
+- To produce an html file with text, code and output:
+    - Press the button "Preview"
+    - Or Select "Knitr to Html"
+
+# Resources and exercises
+
+## Introductory materials
+
+The web is full of all types of materials about R
+
+Below there are a couple of brief introductions:
+
+- [A short introduction to R]( https://stats.idre.ucla.edu/r/seminars/short-introduction-to-r/)
+
+- [Getting started with R](https://github.com/saghirb/Getting-Started-in-R)
+
+## Exercise
+
+- Select a dataset with which you wish to work along the course.
+- Read it into R
+    + How many variables are there in it
+    + What are their types
+- Try to summarize it briefly
+- Create an R notebook to encapsulate all your steps and share it with somebody.
