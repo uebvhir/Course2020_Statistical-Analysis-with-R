@@ -1,0 +1,86 @@
+---
+title: "ejercicio 7"
+author: "Santi Perez Hoyos"
+date: "19/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r normplot }
+
+library(dplyr)
+library(readxl)
+library(magrittr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+
+hta <- read_excel("datasets/hta.xls")
+```
+
+
+
+```{r}
+
+oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
+par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
+with(hta, boxplot(tad1, main="Box-plot") )
+
+with(hta, hist(tad1) )
+
+with(hta, qqnorm(tad1, main="Normal QQplot") );with(hta, qqline(tad1) )
+
+par(oldpar) # Vuelve a los parámetros de dibujo originales
+
+```
+
+
+```{r graph1 pdf, echo=FALSE, include=FALSE}
+ 
+#Plot the data
+bp <- ggplot(hta, aes(x = grupo, y = tad1)) + 
+  geom_boxplot(fill = "#ffd3b9", color = "darkred")
+bp
+```
+
+# ANOVA
+
+```{r}
+library(readxl)
+library(dplyr)
+library(magrittr)
+diabetes <- read_excel("datasets/diabetes.xls")
+sapply(diabetes, class)
+diabetes_factor <- diabetes %>%
+  mutate_if(sapply(diabetes, is.character), as.factor) %>%
+  select (-numpacie)
+
+diabetes%>% 
+  group_by(ecg) %>% 
+  summarise( n=n(),
+    mean = mean(edat),
+            sd=sd(edat)) 
+anova<-aov(edat~ecg,data=diabetes_factor)
+summary(anova)
+
+
+library(multcomp)
+tuk <- glht(anova, linfct = mcp(ecg = "Tukey"))
+
+  print(summary(tuk)) # pairwise tests
+  print(confint(tuk, level=0.95)) # confidence intervals
+  print(cld(tuk, level=0.05)) # compact letter display
+
+  plot(confint(tuk))
+```
+
+
+```{r}
+
+```
+
