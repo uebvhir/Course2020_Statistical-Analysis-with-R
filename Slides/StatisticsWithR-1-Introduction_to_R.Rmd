@@ -91,6 +91,35 @@ footer: "R for Data Science"
 \includegraphics[width=0.85\linewidth]{images/RCommander.png}
 \end{figure}
 
+
+# Dynamic output with Rmarkdown
+
+## Reproducible research with Rmarkdown
+
+- R and Rstudio are strongly involved in promoting [reproducibility](https://en.wikipedia.org/wiki/Reproducibility) and [reproducible research](https://en.wikipedia.org/wiki/Reproducibility#Reproducible_research).
+- This is implemented in **Rmarkdown**
+- A Rmarkdown combines
+    + Natural language text, e.g. describing what we are doing in our own words.
+    + R code with the instructions needed to do the data management or the analysis.
+    + The output of the analysis
+
+## Creating Rmarkdown
+
+- A Rmarkdown can be created in Rstudio with 
+    + `File --> New File --> Rmarkdown`
+- The Rmarkdown contains example text and code so it is straightforwoard to adapt it to your analysis.
+- To produce an html file with text, code and output:
+    - Press the button "Knitr to Html"
+
+
+       
+## Exercise
+
+- Create a new Rmarkdown document
+  - Include a title and your name
+  - Compile document with 'knitr to html'
+  
+
 # Using R
 
 ## Commands, Objects and Functions
@@ -116,6 +145,22 @@ footer: "R for Data Science"
         - A,B,C,D
         - WT, Mut
         
+## Exercise
+
+- Copy and execute next commands:
+
+```{r, eval = FALSE}
+expres <- c(1.02, 3.1, 0.8, 1.4, 2)
+class(expres)
+logExp <- log(expres)
+sigExp1 <- t.test(logExp)
+sigExp2 <- wilcox.test(logExp)
+
+
+```
+
+
+
 
 ## R packages
 
@@ -151,22 +196,29 @@ install.packages("tidyverse")
 - [https://www.tidyverse.org/](https://www.tidyverse.org/)
 
 
+## Exercise
+
+- Install the `rio` package from menu.
+- Load the `rio` package.
+
+
+
 # Getting data into R
 
 ## Importing data with Rstudio
 
 - The easiest way to get data into R is to click on the `Ìmport Datasets` button.
-- Alternatively R code can be written using functions from `Base R` or the `tidyverse`
+- Alternatively R code can be written using functions from `Base R`, the `tidyverse` or `rio` package
     + `Base R` functions start with `read.`: `read.table`, `read.csv`
     + `tidyverse` functions start with `read_`: `read_delim`, `read_csv` or `read_excel`
+    + `rio` function is `import`
 
 ## Reading Excel or csv files
 
 - Files can be read from any location, let it be a physical support or a web site.
 - To read files from disk be sure to indicate their location.
 - Alternatively the default working directory can be set to the folder where the file is located.
-
-- Assume files `Diabetes.xls` and `Osteoporosis.csv` have been downloaded from url \url{https://github.com/uebvhir/uebvhir.github.io/blob/master/datasets} to a sub-folder named `datasets` 
+- Assume files `Diabetes.xls` and `Osteoporosis.csv` have been downloaded from [url](https://github.com/uebvhir/uebvhir.github.io/blob/master/datasets) to a sub-folder named `datasets` 
 - Start setting the default directory to the folder where you have saved the `datasets` folder.
     + `Session --> Set Working directory --> To source file location...`
 
@@ -189,12 +241,20 @@ diabetes <- read_excel("../datasets/diabetes.xls")
 - All options can be selected from the rstudio importer
 
 ```{r message=FALSE}
-# Read csv file
 library(readr)
 osteoporosis <- read_delim("../datasets/osteoporosis.csv", 
      "\t", escape_double = FALSE, locale = locale(date_names = "es", 
-     decimal_mark = ",", encoding = "ISO-8859-1"), 
-     trim_ws = TRUE)
+     decimal_mark = ",", encoding = "ISO-8859-1"))
+```
+
+
+## Reading Excel or csv files with rio
+
+
+```{r, results='hide', message=FALSE}
+require(rio)
+import("../datasets/diabetes.xls")
+import("../datasets/osteoporosis.csv", dec = ",")
 ```
 
 ## Interlude: Summarizing data
@@ -204,28 +264,9 @@ osteoporosis <- read_delim("../datasets/osteoporosis.csv",
 ```{r eval=FALSE}
 head(diabetes)
 str(diabetes)
+dim(diabetes)
 summary (diabetes)
 ```
-
-# Dynamic output with Rmarkdown
-
-## Reproducible research with R notebooks
-
-- R and Rstudio are strongly involved in promoting [reproducibility](https://en.wikipedia.org/wiki/Reproducibility) and [reproducible research](https://en.wikipedia.org/wiki/Reproducibility#Reproducible_research).
-- This is implemented in **R notebooks**
-- A notebook combines
-    + Natural language text, e.g. describing what we are doing in our own words.
-    + R code with the instructions needed to do the data management or the analysis.
-    + The output of the analysis
-
-## Creating Notebooks
-
-- A notebook can be created in Rstudio with 
-    + `File --> New File --> R Notebook`
-- The notebook contains example text and code so it is straightforwoard to adapt it to your analysis.
-- To produce an html file with text, code and output:
-    - Press the button "Preview"
-    - Or Select "Knitr to Html"
 
 # Resources and exercises
 
@@ -246,4 +287,4 @@ Below there are a couple of brief introductions:
     + How many variables are there in it
     + What are their types
 - Try to summarize it briefly
-- Create an R notebook to encapsulate all your steps and share it with somebody.
+- Create an Rmarkdown to encapsulate all your steps and share it with somebody.
