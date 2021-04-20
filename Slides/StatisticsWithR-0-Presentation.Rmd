@@ -1,6 +1,6 @@
 ---
 title: "Basic Statistics with R"
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
+author: "Alex Sanchez, Miriam Mota, Mireia Ferrer and  \n Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit.  \n Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
@@ -71,6 +71,15 @@ footer: "Statistics with R"
 
 - A secondary, but not least important objective: Show how to do it using R
 
+## Course contents
+
+- This is a Standard course on Statistics using R
+    - Exploratory Analysis
+    - Introduction to Inference
+    - Common regression models in biostatistics
+    
+- If there is anything else you would like to learn, let us know and we'll try not to let it out.
+
 
 ## Why learn R
 
@@ -126,9 +135,18 @@ knitr::include_graphics("images/R4statistics1.png")
     + 2nd part: We introduce a few new ideas
     + 3rd part: Practice exercises and start working on the case study suggested/your data.
     
+## Evaluation
+
+- This course needs to be evaluated in order to obtain a certification.
+- Evaluation consists of
+  - Multple choice test to be taking the last session
+  - Class atendance and participation (class atendance should be at least 80%)
+    
 ## Resources and references
 
-- There is a huge variety of resources to learn R, books, tutorials, free online courses, etc.
+- Course materials at: [https://uebvhir.github.io/Course_StatisticsR_2021.html](https://uebvhir.github.io/Course_StatisticsR_2021.html)
+
+There is a huge variety of resources to learn R, books, tutorials, free online courses, etc.
 - This course is based on the book [Data Science for R](http://r4ds.had.co.nz/).
 - Other interesting books
     + [Using R and RStudio for Data Management, Statistical Analysis, and Graphics, 2nd edition](https://www.amazon.com/Management-Statistical-Analysis-Graphics-2015-04-27/dp/B017POAKSK/ref=sr_1_5?ie=UTF8&qid=1539194380&sr=8-5&keywords=using+r+and+rstudio+for+data+management)
