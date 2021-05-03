@@ -1,14 +1,16 @@
 ---
 title: "5- Introduction to Statistical Inference"
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
-        Santiago Perez-Hoyos"
+author: "Alex Sanchez, Miriam Mota, Mireia Ferrer and  \n
+        Santi Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
-    theme: "Copenhagen"
-    colortheme: "dolphin"
-    fonttheme: "structurebold"
+    theme: Copenhagen
+    colortheme: dolphin
+    fonttheme: structurebold
   slide_level: 2
+  incremental: yes
+  slidy_presentation: default
 footer: "R for Data Science"
 
 ---
@@ -85,6 +87,22 @@ _wish to make some comparisons_
 - It is __not always obvious to decide which is the best estimator for each parameter__
 
 - In order to decide which estimator we use we can rely on the _properties_ of the estimators such as __the bias__ or the __precision (the variance)__ of the estimator.
+
+# Estimation
+
+The aim of estimation is to infer properties (parameters) of the distribution of population data from sample data
+
+Some key concepts
+
+- **Point estimate:** Give a numerical value to the parameter of interest
+
+- **Estimator:** Mathematical function to obtain the estimate
+
+- **Interval Estimation:** Give two values between which is the value of the population parameter with a preset confidence level (or probability)
+
+- **Random error:** Difference between estimation and real
+value if the sample is random
+
 
 # Example. Computing estimations (1)
 
@@ -164,6 +182,13 @@ $$
 SEP = \sqrt{\frac{\hat p (1-\hat p)}{n}}
 $$
 
+# Normal approximation of sample distribution
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/tcl.png")
+```
+
+
 # Computing the standard error with R
 
 - R does not include functions for standard errors, although it can be easily programmed.
@@ -239,6 +264,27 @@ ssize <- length(osteo100[["menop"]])
 prop.test (x=cntMenop, n=ssize)
 ```
 
+
+# Interpretation of Confidence Interval (1)
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/int1.png")
+```
+
+
+
+# Interpretation of Confidence Interval (2)
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/int2.png")
+```
+
+
+# Interpretation of Confidence Interval (3)
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/int3.png")
+```
 # Exercise 2.1 Computing Confidence intervals
 
 - Read the file "osteoporosis.csv" into a dataset and call it "osteoporosis"
