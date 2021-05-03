@@ -1,6 +1,9 @@
 ---
 title: "Session 5. Introduction to statistical inference"
-output: html_notebook
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 # Example 1
@@ -20,9 +23,6 @@ osteo100 <- sample_n(osteoporosis, 100)
 # mean bone density
 buaMean <- mean(osteo100$bua)
 print(buaMean)
-# mean population bone density
-buaMean_Pop <- mean(osteoporosis$bua)
-print(buaMean_Pop)
 # Mean bone density ny groups
 osteo100 %>% 
   group_by(menop) %>% 
@@ -125,20 +125,84 @@ prop.test (x=cntMenop, n=ssize)
 
 - Compare these confidence intervals with those that you obtained in example 2. How do they differ?
 
-
+**La solución en el tema 6**
 
 # Exercise 2.2 Computing Confidence intervals
 
 - Read the diabetes dataset. Convert characters into factors before continuing.
 
+
+
+
+```{r diabetes, }
+library(readxl)
+library(dplyr)
+library(magrittr)
+diabetes <- read_excel("datasets/diabetes.xls")
+sapply(diabetes, class)
+diabetes_factor <- diabetes %>%
+  mutate_if(sapply(diabetes, is.character), as.factor) %>%
+  select (-numpacie)
+sapply(diabetes_factor, class)
+
+
+
+```
+
+
 - Provide a confidence interval for:
     - a proportion of at least one categorical variable and 
     - the mean value of at least one numerical variable.
+    
+```{r cisdiab}
+cnt <- table(diabetes[["mort"]])["Muerto"]
+ssize <- length(diabetes[["mort"]])
+prop.test (x=cnt, n=ssize)
+
+t.test(diabetes[["edat"]])
+```
+    
 
 - How would you find alternative approaches to compute these confidence intervals?
 
-- Why would you want to do such a thing?
+Using formulas directly calculanting from  $\bar{x}\pm t_{\alpha/2}\frac{s}{\sqrt{n}}$
 
+
+
+- Why would you want to do such a thing?
+```{r}
+mostra<-diabetes[["edat"]]
+
+m<-mean(mostra)  # Calculate mean
+ 
+sd<-sd(mostra)  # Calculate standard deviation 
+se<-sd/sqrt(length(mostra)) # Calculate standard Error
+li<- m-qt(.975,length(mostra)-1)*se # Calculate 95% CI lower bound
+
+ls<- m+qt(.975,length(mostra)-1)*se # Calculate 95%CI upper bound
+
+
+cat("Mean=",m,"\n")
+cat("Standard deviation=",sd,"\n")
+cat("Standard error=",se,"\n")
+cat("95% Confidence interval=(",li,";",ls,")","\n")
+```
+Se calcula el intervalo de confianza como $\overline{p}\pm z_{1-\alpha/2}\sqrt{\frac{\overline{p}(1-\overline{p})}{n}}$ 
+
+
+``` {r eje2_1}
+cnt <- table(diabetes[["mort"]])["Muerto"]
+ssize <- length(diabetes[["mort"]])
+p<-cnt/ssize
+n<-ssize 
+z<-qnorm(.975)
+ee<-sqrt((p*(1-p))/n)
+lowerli<- p-z*ee
+upperli<- p+z*ee
+
+cat("95% confidence interval for  ", p ,"=(",lowerli,";",upperli,")","\n")
+
+```
 
 # Example 3. Sample size calculation
 
@@ -146,14 +210,51 @@ prop.test (x=cntMenop, n=ssize)
 
 - Find the sample size needed to achieve a margin of error equal to 5 with a $95\%$ confidence interval.
 
+Function  is the solution sample.size.mean(e, S, N = Inf, level = 0.95)
+
+
+```{r}
+library(samplingbook)
+osteoporosis <- read.delim2("datasets/osteoporosis.csv", stringsAsFactors=TRUE)
+sdbua<-sd(osteoporosis$bua)
+merror<-5
+sample.size.mean(merror,sdbua)
+
+
+
+```
+
+
 # Exercise 3. Sample size calculation
 
+Sample size formula is 
+
+$$n= \frac{\overline{p}(1-\overline{p})z_{1-\alpha/2}^2} {marginerror^2}$$
 - Write a function to compute the sample size for proportions in the worst case (p=q=0.5) or assuming $p$ is known.
 
 - Using a $50\%$ planned proportion estimate, find the sample size needed to achieve $5%$ margin of error for a survey at $95%$ confidence level.
 
 - How would this result change if we are told that a pilot study suggests that $p=10\%$?
+```{r pssize}
+
+alpha<-1-.95
+z<-qnorm(1-alpha/2)
+merror<-0.05
+p<-0.5 # Worst proportion 
+nsample<- (p*(1-p) * z^2)/0.05^2
+cat("Sample size for 95% CI and 5% margin error s ",round(nsample))
+
+p<-.1 # Worst proportion 
+nsample<- (p*(1-p) * z^2)/0.05^2
+cat("Sample size for 95% CI and 10% margin error s ",round(nsample))
+
+```
 
 
 
+
+```{r}
+t.test(osteoporosis$bua,mu=72.5
+       )
+```
 
