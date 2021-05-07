@@ -1,0 +1,144 @@
+---
+title: "Statistics with R. Intro to hypothesis testing"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+# Case Study: The `osteoporosis` dataset
+
+Researchers studying osteoporosis have some previous belief about the characteristics of a "typical" population:
+
+Examples of such beliefs are:
+
+- The average ''bua'' value in our population is 70.
+- The ''bua'' mean value in menopausic and non-menopausic women is not the same.
+
+We will use the osteoporosis dataset to check these beliefs. To make it more interestin/realistic we will assume we have small sample sizes and __everyone will have a different sample__
+
+```{r}
+osteoporosis <- read.delim2("/datasets/osteoporosis.csv", stringsAsFactors=TRUE)
+```
+
+We will select a subset of this dataset which is different for everyone.
+
+```{r}
+library(dplyr)
+semilla<- 18101998
+set.seed(semilla)
+numMuestras <- 25
+muestras <- sample( osteoporosis$registro, numMuestras)
+osteoData <- dplyr::filter(osteoporosis, registro  %in%  muestras)
+```
+
+We have used the `filter` function from the ` dplyr` package to select rows.
+If we wanted to keep only a few columns we would have used the ` select` function.
+
+```{r}
+osteoData2 <- dplyr::select(osteoData, c("edad", "imc", "bua", "menop"))
+```
+
+Instead of creating several datasets we can use the "pipe" operator.
+
+```{r}
+osteoData <- osteoporosis %>%  
+  filter(registro  %in%  muestras) %>%
+  select(c("edad", "imc", "bua", "menop"))
+```
+
+## Answering the questions:
+
+- _The average ''bua'' value in our population is 70?_
+
+```{r}
+m <- mean(osteoData$bua)
+print(m)
+```
+Use a confidence interval to decide about your hypothesis:
+
+```{r}
+t.test(osteoData$bua)
+```
+- _The ''bua'' mean value in menopausic and non-menopausic women is not the same._
+
+We could filter twice our subset and compute the means separately.
+An easier way is to use the `group_by` and the `summarize` operators:
+
+```{r}
+osteoData %>% 
+  group_by(menop) %>% 
+  summarize(m=mean(bua), s=sd(bua), l=length(bua))
+
+```
+
+## Computing the critical value for a test
+
+Assuming we do a test for the mean, with an unknown standadr deviation the critical value for a one-sided hypothesis is: 
+$$
+m_c=\overline X + t_{\alpha, n}\times s/\sqrt{n}
+$$
+In our example:
+
+```{r}
+mc <- mean(osteoData$bua) + qt(0.95, numMuestras-1) * sd(osteoData$bua)/sqrt(numMuestras)
+print(mc)
+```
+
+If our sample mean is smaller than we ```r mc```` then the null is rejected
+
+If the population variance is known the formula does not depend on the sample size
+$$
+m_c=\overline X + z_{\alpha}\times \sigma/\sqrt{n}
+$$
+In this case the critical value is:
+```{r}
+alfa=0.05
+sigma <- sd(osteoporosis$bua)
+mc <- mean(osteoData$bua) + qnorm(1-alfa) * sigma/sqrt(numMuestras)
+print(mc)
+```
+
+## Computing the p-values
+
+```{r}
+pval<- pnorm(q=74, mean=70, sd=17, lower.tail=FALSE)
+print(pval)
+
+```
+
+```{r}
+pval<- pnorm(q=85, mean=70, sd=17, lower.tail=FALSE)
+print(pval)
+
+```
+
+## Testing  hypothesis abot BUA using built-in tests
+
+```{r}
+t.test(osteoData$bua, mu=70, alternative="less")
+```
+
+
+```{r}
+t.test(bua~menop, mu=70, data=osteoData)
+```
+
+
+
+
+
+
+
+# Exercises
+
+## Practice filtering
+
+- Read the `diabetes`` dataset and create a subset made by non smokers who are older than 50 years old.
+- Take the previous dataset and keep only three variables: "edad", "sbp" and "dbp"
+- Did you use the "pipe" operator. If not, repeat the exercises in a single step using it.
+
+
+
+
+
+

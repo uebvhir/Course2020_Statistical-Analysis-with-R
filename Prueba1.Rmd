@@ -1,0 +1,68 @@
+---
+title: "Introducción a R"
+author: "Alex Sanchez"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+  html_notebook: null
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=10, fig.height=6, cache=FALSE, 
+                      echo=TRUE, warning=FALSE, message=FALSE,
+                      results ='markup')
+options(warn=-1, width=100)
+```
+
+# Presentación
+
+Este cuaderno contiene el código y los resultados utilizados en las sesiones del curso _R for Data Management_ que complementan las del curso _Estadística y Análisis de Datos con R_
+
+
+
+# Carga de datos
+
+Carga archivo de texto
+
+```{r}
+ dadescancer <- read.csv("~/Escritorio/Curso de Estadistica/dadescancer.txt", row.names=1, stringsAsFactors=TRUE)
+```
+
+Carga archivo de excel
+
+```{r}
+library(readxl)
+hta <- read_excel("~/Escritorio/Curso de Estadistica/hta.xls")
+hta$sexo <- as.factor(hta$sexo)
+hta$grupo <- as.factor(hta$grupo)
+```
+
+Los nombres de las variables en el archivo hta
+
+```{r}
+colnames(hta)
+mean(hta$tas1)
+mean(hta$tad1)
+median(hta$tas1)
+median(hta$tad1)
+mode(hta$tas1)
+mode(hta$tad1)
+```
+
+Resumiendo
+
+```{r}
+summary(hta$tas1)
+summary(hta)
+```
+
+Más bonito:
+
+```{r}
+library(skimr)
+skim(hta)
+```
+
