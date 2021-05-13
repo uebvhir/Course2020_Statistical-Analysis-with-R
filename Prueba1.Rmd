@@ -21,8 +21,6 @@ options(warn=-1, width=100)
 
 Este cuaderno contiene el código y los resultados utilizados en las sesiones del curso _R for Data Management_ que complementan las del curso _Estadística y Análisis de Datos con R_
 
-
-
 # Carga de datos
 
 Carga archivo de texto

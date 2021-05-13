@@ -31,75 +31,172 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 # Introduction
 
 - Categorical variables represent facts that can be better described with _labels_ than with numbers. 
+
     - Example: `Sex`, better choose from {`Male` , `Female`} than from: {1,2}.
 
-- Sometimes ordering of labels makes sense, although it is not reasonable to assign numbers to categories:
-    - Example: `Tumor stage`: {1,2,3,4}, burt $1+2\neq 3$!!!
+- Sometimes ordering of labels makes sense, although _it is not reasonable to assign numbers to categories_:
 
-- `Sex` is an example of a categorical variable in `nominal` scale
-- `Stage` is an example of a categorical variable in `ordinal` scale
+    - Example: `Tumor stage`: {1,2,3,4}, but $1+2\neq 3$!!!
+
+  - `Sex` is an example of a categorical variable in `nominal` scale
+  
+  - `Stage` is an example of a categorical variable in `ordinal` scale
+
+# Representing categorical variables in R
+
+- Categorical variables are well represented with _factors_
 
 ```{r}
 sex <- factor(c("Female", "Male"))
-stage <- factor(1:4, ordered=TRUE)
+blood_group <- factor(c("A", "B", "AB", "O"))
 ```
 
-# Example
+- Besides, factors can be forced to be "ordereded"
+
+```{r}
+tumorstage <- factor(1:4, ordered=TRUE)
+```
+
+- Be careful with the names of factors, by default, _levels_ assigned in alphabetical order.
+
+```{r}
+levels(blood_group)
+```
+
+# Creating factors
+
+- Factors can be created ... 
+
+  - automatically, when reading a file  or 
+  
+    - Not all functions for reading data from file will create a factor!!!
+    - Usually levels will be defined from alphabetic order
+  
+  - using the `factor` or the `as.factor` commands.
+    
+    - more flexible
+    
+# Create factors automatically
+
+- This is achieved by
+
+  - Using the `read.table` or `read.delim` functions for reading
+  
+    - Setting the "character variables as.factors" to TRUE
+
+- Example
+
+  - Load the `diabetes` dataset using the `Import Dataset` feature of Rstudio
+    - From text (base)      (use the file `diabetes.csv`)
+    - From text (readr)     (use the file `diabetes.csv`)
+    - From Excel            (use the file `diabetes.xls`)
+  - What is the class of the variable `mort`
+
+# Exercise 1
 
 - Select one of the datasets that you have worked with during the course
     - diabetes.xls
-    - osteopòrosis.csv
+    - osteoporosis.csv
     - demora.xls
- - Read the dataset and check that the categorical variables you are interested in are converted into factors.
+    
+ - Read the dataset into R and check that the categorical variables you are interested in are converted into factors.
+ 
  - Confirm the conversion by summarizing the variables
+ 
+# Exercise 2
+ 
+- Use the diabetes.sav file and import it into R with the "Import from SPSS" feature.
+
+  - What is the class of the "MORT" variable.
+  
+  - Turn it into one factor so that it has the same levels as when you read it using `read.csv`
+  
+
 
 # The analysis of categorical variables
 
 - The analysis of categorical data proceeds as usual:
 
-    - Start exploring the data with the   tables and graphics
-    - Proceed to estimation and testing if _appropriate_
+ - Start exploring the data with the   tables and graphics
+ - Proceed to estimation and/or testing if _appropriate_
 
 - Estimation
-    - Proportions: Point estimates, confidence intervals, Sample Size
+  - Proportions: Point estimates, confidence intervals, Sample Size
     
 - Testing
+  - One variable (tests with proportions)
+  - With two variables (chi-square and related)
+  
+  
+# Types of test with categorical variables
 
-    - One variable (tests with proportions)
-        - Does the proportion (% affected) match a given value?
-        - Is the proportion (% affected) the same in two populations?
-    - With two variables (chi-square and related)
-        - Is there an association between two categorical variables?
-        - Is there a relationship between the values ​​of a categorical variable before and after treatment?
+- One variable (tests with proportions)
+  - Does the proportion (% affected) match a given value?
+  - Is the proportion (% affected) the same in two populations?
+
+- With two variables (chi-square and related)
+
+  - Is there an association between two categorical variables?
+  - Is there a relationship between the values ​​of a categorical variable before and after treatment?
+
 
 # Example
 
-Consider the following study relating smoking and cancer
+Consider the following study relating smoking and cancer.
 
 ```{r, echo=FALSE, out.width="80%", fig.cap=""}
 knitr::include_graphics("images/cancerAndSmoking1png.png")
 ```
 
+Our goal here would be to determine if there is an association between smoking and cancer.
+
 # Crosstabulating a dataset
 
+- Data may come from a table (aggregated) or disagregated in a data file.
+
+- In this case we need to build the table applying "cross-tabulation"
+
 ```{r}
-dadescancer <- read.csv("datasets/dadescancer.csv", stringsAsFactors = TRUE)
+dadescancer <- read.csv("datasets/dadescancer.csv", 
+                        stringsAsFactors = TRUE)
 ```
 
 ```{r}
-attach(dadescancer)
-mytable <-table(cancer, fumar)
+#attach(dadescancer)
+mytable <-table(dadescancer$cancer, dadescancer$fumar)
 mytable
 ```
 
+# There are many ways to do crosstabulation
+
+```{r}
+with(dadescancer, table(cancer, fumar) )
+```
+
+```{r}
+myXtable <- xtabs (~ cancer + fumar, data = dadescancer)
+myXtable
+```
+
 # Crosstabulation (2): Marginal tables
+
+Marginal values are important to understand the structure of the data:
 
 ```{r}
 margin.table(mytable, 1) # A frequencies (summed over B)
 margin.table(mytable, 2) # B frequencies (summed over A)
 ```
 
-# Crosstabulation (2): In percentages
+---
+
+```{r}
+addmargins(mytable)
+```
+
+
+# Crosstabulation (3): In percentages
+
+Showing tables as percentages is useful for comparisons
 
 ```{r}
 prop.table(mytable) # cell percentages
@@ -108,15 +205,12 @@ prop.table(mytable, 1) # row percentages
 
 ```
 
-
-# Exercice
+# Exercise 3
 
 - With the osteoporosis dataset repeat the crosstabulation done above using 
 
-    - Two categorical variables
-    - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
-
-
+  - Two categorical variables
+  - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
 
 # One variable: Proportion tests
 
@@ -204,7 +298,7 @@ knitr::include_graphics("images/observedvsexpected.png")
 # Chi squared tests with R
 
 ```{r}
-mytable <-table(cancer, fumar)
+mytable<- with(dadescancer, table(cancer, fumar) )
 chisq.test (mytable)
 ```
 

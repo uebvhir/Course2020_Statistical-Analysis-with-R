@@ -1,0 +1,67 @@
+---
+title: "Session 6. Introduction to Hypothesis Testing"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Exercises
+
+a)  A p-value of .08 is more evidence against the null hypothesis than a p-value of .04.
+
+False.  A small p-value means the value of the statistic we observed in the sample is unlikely to have occurred when the null hypothesis is true.  Hence, a .04 p-value means it is even more unlikely the observed statistic would have occurred when the null hypothesis is true than a .08 p-value.   The smaller the p-value, the stronger the evidence against the null hypothesis.
+
+b)  If two independent studies are done on the same population with the purpose of testing the same hypotheses, the study with the larger sample size is more likely to have a smaller p-value than the study with the smaller sample size.  (Hint:  Consider if this is true in the case of the null hypothesis is true and in the case of the null hypothesis is false.)
+
+By definition, p-values take into consideration the sample size, since the test statistic has the standard error in the denominator.  Hence, when the null hypothesis is true, a small p-value should be equally likely regardless of sample size.  However, when the null hypothesis is false, hypothesis tests done with large sample sizes are more likely to reveal the false null, and hence more likely to result in a small p-value.
+
+c)  The statement, "the p-value is .003", is equivalent to the statement, "there is a 0.3% probability that the null hypothesis is true".
+
+False.   The null hypothesis is either true, or it is not true.  Hence, the probability that it is true equals either zero or one.  The p-value is not interpreted as a probability that the null hypothesis is true.   It is the probability of observing a value of the test statistic that is as or more extreme than what was observed in the sample, assuming the null hypothesis is true. 
+
+d)  Even though you rejected the null hypothesis,  it may still be true.
+
+True.  Just by chance it is possible to get a sample that produces a small p-value, even though the null hypothesis is true.  This is called a Type I error.   A Type II error is when the null hypothesis is not rejected when it is in fact false.
+
+e)  Assuming the central limit theorem applies, hypothesis tests are valid.
+By valid, we mean that the p-value is an accurate summary of the evidence against the null hypothesis.
+
+False.  The central limit theorem is needed for hypothesis tests to be valid.   However, it is also necessary that the data be collected from random samples.  Hypothesis tests will not remedy poorly collected data.
+
+f)  A researcher who tried to learn statistics without taking a formal course does a hypothesis test and gets a p-value of .024.   He says, "there is a 98.6% chance that the alternative hypothesis is false, so the null hypothesis is true."    What, if anything, is wrong with his statement?
+
+False.  The researcher is claiming that (1 - p-value) is the probability that the alternative hypothesis is false.  The p-value is not a probability of an alternative (or null) hypothesis being true or false.  See the answer to part c.
+
+g) You perform a hypothesis test using a sample size of four units, and you do not reject the null hypothesis.   Your research colleague says this statistical test provides conclusive evidence that the null hypothesis is true.   Do you agree or disagree with his conclusion?  Explain your reasoning in three or less sentences.
+
+With four units, the null hypothesis is unlikely to be rejected because the variability in the sample mean will be large, i.e. the standard error will be large.  Hence, all we can say is that there is not enough data to determine whether or not the null hypothesis is correct.  In fact, whenever you fail to reject a null hypothesis, essentially you are saying that the evidence in the data does not contradict the null hypothesis.  You never can conclude from a hypothesis test that the null hypothesis is true.
+
+h)  You are the head of the Food and Drug Administration (F.D.A.), in charge of deciding whether new drugs are effective and should be allowed to be sold to people.   A pharmaceutical company trying to win approval for a new drug they manufacture claims that their drug is better than the standard drug at curing a certain disease.   The company bases this claim on a study in which they gave their drug to 1000 volunteers with the disease.   They compared these volunteers to a group of 1000 hospital patients who were treated with the standard drug and whose information is obtained from existing hospital records.  The company found a "statistically significant" difference between the percentage of volunteers who were cured and the percentage of the comparison group who were cured.   That is, they did a statistical hypothesis test and rejected the null hypothesis that the percentages are equal.  As director of the F.D.A., should you permit the new drug to be sold?  Explain your reasoning in three or less sentences.
+
+You should not allow the drug to be manufactured based on this evidence.  The study was not a randomized study, which means there may be differences in the background charcteristics of the people who got the new drug and the people who got the old drug.   Hypothesis tests cannot fix poorly designed studies.
+
+i)  If you get a p-value of 0.13, it means there is a 13% chance that the sample average equals the population average.
+
+False.  In fact, it's almost guaranteed that the sample average won't exactly equal the population average, because the process of taking a random sample guarantees variability in the sample average.  The p-value does not give the probability that the sample average equals the population average.   See part c for the precise definition of p-values.
+
+
+j)  If you get a p-value of 0.13, it means there is a 13% chance that the sample average does not equal the population average.
+
+False.  See the answer to part i.
+
+k)  If you get a p-value of 0.13, it means there is an 87% chance that the sample average equals the population average.
+
+False.  Computing (1 - p-value) does not give the probability that the sample average equals the population average. See the answer to part i.
+
+l)  If you get a p-value of 0.13, it means there is an 87% chance that the sample average does not equal the population average.
+
+False.  See the answer to part k.
+
+
+m)  If you get a p-value of 0.13, it means that the null hypothesis is true in 13% of all samples.
+
+False.  The null hypothesis is either true or false.  Truth does not change with different samples, only the test statistic (which is based on sample means and SEs) changes with different samples.
+
+n)  If you get a p-value of 0.13, it means that when the null hypothesis is true, a value of the test statistic as or more extreme than what was observed occurs in about 13% of all samples.
+
+True.  This is a re-expression of the definition of p-values.  That is, saying there is a 13% chance of observing results as or more extreme than what was observed is equivalent to saying that you'd observe results as or more extreme than what was observed in 13% of (random) samples.
