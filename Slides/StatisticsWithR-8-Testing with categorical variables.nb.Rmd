@@ -5,8 +5,8 @@ date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
 output:
   html_notebook:
     code_folding: hide
-editor_options: 
-  chunk_output_type: console
+editor_options:
+  chunk_output_type: inline
 ---
 
 ```{r setLicense, child = 'license.Rmd'}
@@ -45,6 +45,7 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 ```{r}
 sex <- factor(c("Female", "Male"))
 blood_group <- factor(c("A", "B", "AB", "O"))
+blood_group
 ```
 
 - Besides, factors can be forced to be "ordereded"
@@ -87,6 +88,25 @@ levels(blood_group)
     - From text (readr)     (use the file `diabetes.csv`)
     - From Excel            (use the file `diabetes.xls`)
   - What is the class of the variable `mort`
+  
+```{r}
+library(readxl)
+diabetes1 <- read_excel("datasets/diabetes.xls")
+class(diabetes1$mort)
+summary(diabetes1$mort)
+diabetes1$mort <- as.factor(diabetes1$mort)
+class(diabetes1$mort)
+summary(diabetes1$mort)
+diabetes2 <- read.csv("datasets/diabetes.csv", stringsAsFactors=TRUE)
+class(diabetes2$mort)
+summary(diabetes2$mort)
+library(haven)
+diabetes3 <- read_sav("datasets/diabetes.sav")
+class(diabetes3$MORT)
+summary(diabetes3$MORT)
+```
+
+  
 
 # Exercise 1
 
@@ -218,9 +238,26 @@ prop.table(mytable, 1) # row percentages
 
 # Proportion tests with R
 
+Alternative "NOT EQUAL". This is set by default.
+
 ```{r}
 prop.test(x=142, n=723, p=0.15)
 ```
+
+Alternative "GREATER"
+
+```{r}
+prop.test(x=142, n=723, p=0.15, alternative="g")
+```
+
+
+Alternative "LESS THAN"
+
+```{r}
+prop.test(x=142, n=723, p=0.15, alternative="l")
+```
+
+Notice that _choosing the wrong alternative may yield unreasonable conclusions_.
 
 # Estimation comes with proportion test
 

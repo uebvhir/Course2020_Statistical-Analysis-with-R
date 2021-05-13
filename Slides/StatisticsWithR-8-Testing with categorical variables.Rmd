@@ -222,9 +222,32 @@ prop.table(mytable, 1) # row percentages
 
 # Proportion tests with R
 
+
+Alternative "NOT EQUAL". This is set by default.
+
 ```{r}
 prop.test(x=142, n=723, p=0.15)
 ```
+
+---
+
+Alternative "GREATER"
+
+```{r}
+prop.test(x=142, n=723, p=0.15, alternative="g")
+```
+
+---
+
+Alternative "LESS THAN"
+
+```{r}
+prop.test(x=142, n=723, p=0.15, alternative="l")
+```
+
+
+Notice that _choosing the wrong alternative may yield unreasonable conclusions_.
+
 
 # Estimation comes with proportion test
 
