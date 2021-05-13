@@ -190,7 +190,7 @@ margin.table(mytable, 2) # B frequencies (summed over A)
 ---
 
 ```{r}
-addmargins(mytable)
+mytable<- addmargins(mytable)
 ```
 
 
@@ -214,12 +214,11 @@ prop.table(mytable, 1) # row percentages
 
 # One variable: Proportion tests
 
-- According to medical literature, in the period 1950-1980, the proportion of obese individuals (defined by medical criteria: BMI $\geq 30$) was 15% in the population of men over  55 years old.
+- According to medical literature, in the period 1950-1980, the proportion of obese individuals (defined as: BMI $\geq 30$) was 15% in the population of men over  55 years old.
 
 - A random sample obtained from the same population between 2000 and 2003 showed that, over a total of 723 men older than 55, 142 were obese.
 
-- Considering that the significance level that we use is 5%, can we say that the population of men older than 55 in 2000-2003 had the same 
-proportion of obese cases than that population had in 50'-80'?
+- With a significance level of 5%, can we say that the population of men older than 55 in 2000-2003 had the same proportion of obese cases than that population had in 50'-80'?
 
 # Proportion tests with R
 
@@ -231,32 +230,32 @@ prop.test(x=142, n=723, p=0.15)
 
 - `prop.test` does __three__ distinct calculations
 
-    - A test for the hypothesis $H_0: p=p_0$ is performed
-    - A confidence interval for $p$ is built based on the sample
-    - A point estimate for $p$ is also provided.
+  - A test for the hypothesis $H_0: p=p_0$ is performed
+  - A confidence interval for $p$ is built based on the sample
+  - A point estimate for $p$ is also provided.
 
 ```{r, echo=FALSE, out.width="100%", fig.cap=""}
 knitr::include_graphics("images/propTestsAndCI.png")
 ```
 
-# Exercise
+# Exercise 4
 
-- In the osteoporosis dataset
+- In the osteoporosis dataset.
   
-    - Test the hypothesis that the proportion of women with `osteoporosis` is higher than 7%
-        - In the global population of the study
-        - Only in women with osteoporosis
-    - Select a sample of size 100 and repeat the test. How do the results change?
-    - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%?
+  - Test the hypothesis that the proportion of women with `osteoporosis` is higher than 7%
+      - In the global population of the study
+      - Only in women with osteoporosis
+      
+  - Select a sample of size 100 and repeat the test. How do the results change?
+  
+  - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%?
     
     
 # Contingency tables
 
 - A contingency table (a.k.a cross tabulation or cross tab) is a matrix-like table that displays the (multivariate) frequency distribution of the variables.
 
-- It is bidimensional, and classifies
-all observations according with 
-two qualitative variables 
+- It is bidimensional, and classifies all observations according to two categorical variables 
 (A and B, rows and columns).
 
 ```{r, echo=FALSE, out.width="80%", fig.cap=""}
@@ -265,10 +264,11 @@ knitr::include_graphics("images/contingencytables1.png")
 
 # Chi-squared test
 
+- A _familiy_ of tests receiving its name because they all rely on the _Chi-Squared distribution_ to compute the test probabilities.
+
 **Chi squared independence test**
 
-- When the sample comes from a single population with 2 qualitative variables, the aim is to determine if there is relationship between vars:
-
+- When the sample comes from a single population with 2 categorical variables, the aim is to determine if there is relationship between them.
 
 **Chi squared homogeneity test** 
 
@@ -278,16 +278,16 @@ knitr::include_graphics("images/contingencytables1.png")
 
 - When we have:
 
-    - quantitative data, 
-    - one or more categories, 
-    - independent observations, 
-    - adequate sample size (>10)
+  - quantitative data, 
+  - one or more categories, 
+  - independent observations, 
+  - adequate sample size (>10)
 
 - and our questions are like...
 
-    - _Do the number of individuals or objects that fall in each category differ significantly from the number you would expect? _
+   - _Do the number of individuals or objects that fall in each pair of categories differ significantly from the number you would expect if there was no association?_
 
-    - _Is this difference between the expected and observed due to sampling variation, or is it a real difference?_
+   - _Is this difference between the expected and observed due to chance ("sampling variation"), or is it a real difference?_
 
 # Chi squared.test: Observed vs expected
 
@@ -302,13 +302,19 @@ mytable<- with(dadescancer, table(cancer, fumar) )
 chisq.test (mytable)
 ```
 
-Alternatively use Fisher test
+# Fisher test. an assumptions-free alternative
+
+Chi-squared test require that sample sizes are "big" and expected frequencies are, at least greater than 5.
+
+Fisher test can be an alternative if these assumptions are not met, especially for two times two tables.
 
 ```{r}
 fisher.test(mytable)
 ```
 
-# Exercise
+
+
+# Exercise 5
 
 - Use the osteoporosis dataset to study if it can be detected an association between the variables `menop` and `classific` in the osteoporosis dataset.
 
