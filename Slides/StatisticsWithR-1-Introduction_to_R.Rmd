@@ -9,7 +9,7 @@ output:
     colortheme: "dolphin"
     fonttheme: "structurebold"
   slide_level: 2
-footer: "R for Data Science"
+footer: "Statistics with R"
 
 ---
 

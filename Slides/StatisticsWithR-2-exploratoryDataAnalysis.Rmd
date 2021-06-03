@@ -1,0 +1,426 @@
+---
+title: "Exploratory Analysis with R"
+author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
+        Santiago Perez-Hoyos"
+date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
+output:
+  beamer_presentation:
+    theme: "Copenhagen"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
+    slide_level: 2
+footer: "R for Data Science"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r  include=FALSE}
+require(knitr)
+opts_chunk$set(
+concordance=FALSE, echo=TRUE, cache=FALSE, warning=FALSE, error=FALSE, message=TRUE, fig.height=4, size = "footnotesize")
+
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r setLicense, child = 'license.Rmd', eval =F}
+```
+
+## Outline: Exploratory Analysis with R
+
+```{=tex}
+\begin{itemize}
+  \item Descriptive Statistics
+  \begin{itemize}
+    \item Numerical summaries
+    \item Graphical exploration
+  \end{itemize}
+\end{itemize}
+```
+\vspace{1cm}
+
+\tiny *Based on this Course:\* [*BIMS 8382, University of Virginia School of Medicine (USA)*] (<https://bioconnector.github.io/workshops/index.html>).
+
+## What packages we will use today?
+
+Please be sure you have the following packages installed:
+
+-   **dplyr** - subletting, sorting, transforming variables, grouping
+-   **ggplot2** - system for creating graphics
+-   **readxl** - reading .xls files
+
+```{r, message=FALSE}
+# install.packages("dplyr", dependencies = TRUE)
+# install.packages("ggplot2", dependencies = TRUE)
+# install.packages("readxl", dependencies = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(readxl)
+```
+
+## The Data Science Approach in R
+
+```{=tex}
+\begin{figure}
+  \includegraphics[width=.9\linewidth]{images/data-science.png}
+\end{figure}
+```
+# Getting started
+
+## Getting started (I)
+
+1.  Load the dataset \emph{diabetes}:
+
+```{r, size="footnotesize", message=FALSE}
+diab <- read_excel("datasets/diabetes_mod.xls")
+```
+
+2.  Check if we have loaded it correctly:
+
+```{r, size="tiny"}
+diab[1:4, 1:8]
+```
+
+## Getting started (II): functions to check a dataframe:
+
+-   Content
+
+    -   head(name of dataframe): shows the first few rows - tail(): shows the last few rows
+
+-   Size
+
+    -   dim(): returns the number of rows and the number of columns - nrow(): returns the number of rows - ncol(): returns the number of columns
+
+-   Summary
+
+    -   colnames() or names(): returns the column names - glimpse(): returns a glimpse of your data: structure, class, length and content of each column
+
+## Getting started (III)
+
+```{r size="tiny"}
+head(diab)
+```
+
+## Getting started (IV)
+
+```{r}
+dim(diab)
+nrow(diab)
+colnames(diab)
+```
+
+## Getting started (IV)
+
+```{r size="tiny"}
+glimpse(diab)
+```
+
+## Variables and data types
+
+-   Data managed in R ...
+
+    -   is stored as *variables*
+
+-   Variables can be of distinct types
+
+    -   Numerical
+
+        -   numeric (13.7)
+        -   int (3)
+
+    -   Character
+
+        -   "R is cute"
+
+    -   Factors
+
+        -   A,B,C,D
+        -   WT, Mut
+
+    -   Logical
+
+        -   TRUE/FALSE
+
+## Exercise I
+
+-   Load the osteoporosis dataset
+
+-   Proceed similarly as to what we have done above and obtain information on
+
+    -   How many variables and observations
+    -   How are them
+
+## More about factors
+
+-   Each data type is what it seems to be, but factors require more explanation.
+
+-   Factors are intended to describe categories such as "sex", "blood group", but also "risk" or "stage".
+
+-   Factors are useful to describe groups without having to use numeric codes.
+
+-   Factors may be created while reading the file or later using the `factor` and `as.factor` commands.
+
+## Create factor while reading
+
+-   Import the diabetes dataset from the `diabetes.csv` file using the Rstudio dialog.
+
+    ![](images/paste-B48BD9A3.png)
+
+## Check variable type
+
+```{r}
+diabetes <- read.csv("datasets/diabetes.csv", stringsAsFactors=TRUE)
+class(diabetes$mort)
+sapply(diabetes, class)
+```
+
+Repeat
+
+- Re-read the file from excel or without setting the "stringsAsFactors" to TRUE
+
+
+## Check the levels of a factor
+
+Usually when humans fill the database...a plenty of errors could be found :(
+
+    - An answer like "SI", could be entered like: 
+          "SI", "Si", "si", "SI ", "SÍ", .....
+
+All this possible answers **will be differents levels for the same variable**
+
+## How to correct it?
+
+We can use: `recode_factor`:
+
+```{r}
+diab$mort <- recode_factor(diab$mort, "Muerto" = "muerto")
+levels(diab$mort)
+```
+
+Return to the original version:
+
+```{r}
+diab$mort <- recode_factor(diab$mort, "muerto" = "Muerto")
+levels(diab$mort)
+```
+
+## Changing *characters (chr)* to *factors (Factor)*
+
+Use dplyr function `mutate_if` can do it easily:
+
+```{r size="tiny"}
+diab <- diab %>% mutate_if(is.character, as.factor)
+
+glimpse(diab)
+```
+
+# Descriptive Statistics: Numerical summaries
+
+## Numerical Summaries (I)
+
+We can access individual variables within a data frame using the `$` operator. Let's print out all the *edat* values in the data. Let's then see what are `unique` values of each. Then let's calculate the <b><code> mean </code></b> , `median` and `range` for the *edad* variable:
+
+```{r size="tiny"}
+#display all the values
+diab$edat
+```
+
+## Numerical Summaries (II)
+
+```{r size="tiny"}
+# Get the unique values of edat
+diab$edat %>% unique()
+diab$edat %>% unique() %>% length()
+```
+
+## Numerical Summaries (III)
+
+```{r size="tiny"}
+#Mean, median and rang
+mean(diab$edat)
+median(diab$edat)
+sd(diab$edat)
+var(diab$edat)
+range(diab$edat)
+```
+
+## Numerical Summaries (IV)
+
+If we want to group the descriptive summaries by other variables we can use `group_by` function:
+
+```{r size="tiny"}
+diab %>% 
+  group_by(tabac, ecg) %>%
+  summarize(mean(edat))
+```
+
+## Numerical Summaries (V)
+
+A general summary of all variables:
+
+```{r size="tiny"}
+summary(diab[, 2:11])
+```
+
+## Numerical Summaries (VI)
+
+What happens if we have missing data in our dataset?
+
+```{r size="tiny"}
+mean(diab$sbp)
+```
+
+**NA** indicates *missing data* in the variable
+
+Let's look the `sbp` variable:
+
+```{r size="tiny"}
+diab$sbp
+```
+
+## Numerical Summaries (VII)
+
+How to work with *missing data*:
+
+```{r size="tiny"}
+?mean
+mean(diab$sbp, na.rm = TRUE)
+is.na(diab$sbp)
+```
+
+## Numerical Summaries (VIII)
+
+How to work with *missing data*:
+
+```{r}
+sum(is.na(diab$sbp))
+sum(is.na(diab$dbp))
+```
+
+## EXERCISE
+
+1.  With the `diab` dataset
+
+-   Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
+
+-   Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
+
+-   Display the unique values for the variable *bmi*. Count how many exist.
+
+-   Display the mean of *edatdiag*, grouped by *ecg*
+
+# Descriptive Statistics: Graphical summaries
+
+## Exploratory Data Analysis (EDA)
+
+We could dedicate half of the course only to EDA. Here we will only see the most common approaches to visualize data:
+
+    - Histograms
+    - Scatterplots
+    - Boxplots
+
+## Histograms
+
+We will use histograms to plot the frequencies of each level of variables. This is the way to see the data distribution of particulars variables.
+
+```{r}
+ggplot(diab, aes(edat)) + 
+  geom_histogram(bins = 30)
+```
+
+## Histograms (II)
+
+```{r}
+ggplot(diab, aes(dbp)) + 
+  geom_histogram(bins = 30)
+```
+
+## Scatterplots. Two Continuous variables
+
+This is the graphical way to check the relation between two variables:
+
+```{r}
+ggplot(diab, aes(tempsviu, sbp, col = ecg)) + 
+  geom_point()
+```
+
+## Scatterplots (II)
+
+```{r eval=FALSE}
+ggplot(diab, aes(tempsviu, sbp, col = ecg)) + 
+  geom_point(size = 4, pch = 17) +
+  geom_smooth(lwd=2, se=FALSE, method="lm", col="red")
+```
+
+## Scatterplots (II)
+
+```{r echo=FALSE}
+ggplot(diab, aes(tempsviu, sbp, col = ecg)) + 
+  geom_point(size = 4, pch = 17) +
+  geom_smooth(lwd=2, se=FALSE, method="lm", col="red")
+```
+
+## Faceting
+
+```{r eval=FALSE}
+ggplot(diab, aes(tempsviu, sbp, col = ecg)) +
+  geom_point(size = 4, pch = 17) +
+  geom_smooth(lwd = 2, se=FALSE, method="lm", col="red") +
+  facet_wrap(~ ecg, ncol = 1)
+```
+
+## Faceting
+
+```{r echo=FALSE, fig.height=6}
+ggplot(diab, aes(tempsviu, sbp, col = ecg)) +
+  geom_point(size = 4, pch = 17) +
+  geom_smooth(lwd = 2, se=FALSE, method="lm", col="red") +
+  facet_wrap(~ ecg, ncol = 1)
+```
+
+## Boxplot. Continuous versus categorical
+
+```{r}
+ggplot(diab, aes(tabac, edat)) + 
+  geom_boxplot()
+```
+
+## Boxplot (II)
+
+```{r}
+ggplot(diab, aes(x= reorder(tabac, edat), y = edat)) + 
+  geom_boxplot()
+```
+
+## EXERCISE
+
+2.  With the `diab` dataset
+
+-   Use the best graphic type to plot the relation between *sbp* and *dbp*
+
+-   Show graphically the relation between *edat* and *ecg*
+
+-   Plot the *sbp* frequencies
+
+-   Improve the first graphic (add linear regression, avoid strange data in dbp, ...)
+
+```{r eval=FALSE, echo=FALSE}
+diab %>%
+ filter(dbp < 500) %>%
+ ggplot(aes(sbp, dbp)) +
+ geom_point(size = 4, pch = 17, col = "blue") +
+ geom_smooth(lwd = 2, se=FALSE, method="lm", col="red")
+```
+
+## EXERCISE
+
+4.  Using the *osteoporosis.csv* dataset
+
+    -   Load the dataset and check if it is correctly loaded
+    -   Calculate the mean and standard deviation of imc grouped by clasific
+    -   Plot the distribution of edat
+    -   Plot the relationship between talla and peso <!-- - Compute the model between talla and peso. Add the linear regression to previous plot --> <!-- - Is bua values different between levels of menop? --> <!-- - Is imc values different among levels of grupedad? Between which levels? --> <!-- - Build a contingency table between clasific and grupedad. Check if there is independence between the levels of clasific and grupedad. -->
