@@ -1,0 +1,279 @@
+---
+title: "EDA with R"
+output: html_notebook
+---
+
+## The Data Science Approach in R
+
+```{=tex}
+\begin{figure}
+  \includegraphics[width=.9\linewidth]{images/data-science.png}
+\end{figure}
+```
+# Getting started
+
+## Getting started (I)
+
+1.  Load the dataset \emph{diabetes}:
+
+```{r, size="footnotesize", message=FALSE}
+diab <- read_excel("datasets/diabetes_mod.xls")
+```
+
+2.  Check if we have loaded it correctly:
+
+```{r, size="tiny"}
+diab[1:4, 1:8]
+```
+
+## Getting started (II): functions to check a dataframe:
+
+-   Content
+
+    -   head(name of dataframe): shows the first few rows - tail(): shows the last few rows
+
+-   Size
+
+    -   dim(): returns the number of rows and the number of columns - nrow(): returns the number of rows - ncol(): returns the number of columns
+
+-   Summary
+
+    -   colnames() or names(): returns the column names - glimpse(): returns a glimpse of your data: structure, class, length and content of each column
+
+## Getting started (III)
+
+```{r size="tiny"}
+head(diab)
+```
+
+## Getting started (IV)
+
+```{r}
+dim(diab)
+nrow(diab)
+colnames(diab)
+```
+
+## Getting started (IV)
+
+```{r size="tiny"}
+glimpse(diab)
+```
+
+## Variables and data types
+
+-   Data managed in R ...
+
+    -   is stored as *variables*
+
+-   Variables can be of distinct types
+
+    -   Numerical
+
+        -   numeric (13.7)
+        -   int (3)
+
+    -   Character
+
+        -   "R is cute"
+
+    -   Factors
+
+        -   A,B,C,D
+        -   WT, Mut
+
+    -   Logical
+
+        -   TRUE/FALSE
+
+## Exercise I
+
+-   Load the osteoporosis dataset
+
+-   Proceed similarly as to what we have done above and obtain information on
+
+    -   How many variables and observations
+    -   How are them
+
+## More about factors
+
+-   Each data type is what it seems to be, but factors require more explanation.
+
+-   Factors are intended to describe categories such as "sex", "blood group", but also "risk" or "stage".
+
+-   Factors are useful to describe groups without having to use numeric codes.
+
+-   Factors may be created while reading the file or later using the `factor` and `as.factor` commands.
+
+## Create factor while reading
+
+-   Import the diabetes dataset from the `diabetes.csv` file using the Rstudio dialog.
+
+    ![](images/paste-B48BD9A3.png)
+
+## Check variable type
+
+```{r}
+diabetes <- read.csv("datasets/diabetes.csv", stringsAsFactors=TRUE)
+class(diabetes$mort)
+sapply(diabetes, class)
+```
+
+Repeat
+
+- Re-read the file from excel or without setting the "stringsAsFactors" to TRUE
+
+
+## Creating factors directly
+
+- Use `factor` or `as.factor`
+
+```{r}
+diabetes <- read.csv("datasets/diabetes.csv", stringsAsFactors=FALSE)
+class(diabetes$mort)
+diabetes$mort <- as.factor(diabetes$mort)
+class(diabetes$mort)
+levels(diabetes$mort)
+```
+
+Warning! by default alphabetic order is used when creating factor levels.
+
+```{r}
+vitalStatus <- factor(diabetes$mort, levels=c("Vivo", "Muerto"))
+class(vitalStatus)
+levels(vitalStatus)
+```
+
+## Change the levels of a factor
+
+- When humans fill the database... many errors can happen :(
+
+    - An answer like "SI", could be entered like: 
+    
+          "SI", "Si", "si", "SI ", "SÍ", .....
+
+- All this possible answers **will be differents levels for the same variable**
+
+- Tis may be solved using `recode_factor`:
+
+```{r}
+diab$mort <- recode_factor(diab$mort, "Muerto" = "muerto")
+levels(diab$mort)
+```
+
+
+## Changing *characters (chr)* to *factors (Factor)*
+
+An alternative way to turn characters into factors is the  `mutate_if` function:
+
+```{r size="tiny"}
+library(dplyr)
+diab <- diabetes %>% mutate_if(is.character, as.factor)
+glimpse(diab)
+```
+
+# Descriptive Statistics: Numerical summaries
+
+## Numerical Summaries (I)
+
+- There are many functions to provide numerical summaries
+
+```{r size="tiny"}
+#Mean, median and rang
+mean(diab$edat)
+median(diab$edat)
+sd(diab$edat)
+var(diab$edat)
+range(diab$edat)
+```
+
+## Numerical Summaries (II)
+
+A general summary of all variables is provided by distinct functions
+
+```{r size="tiny"}
+summary(diab[, 2:11])
+```
+
+## Improving the `summary` function
+
+- There are many packages to do descriptive statistics.
+
+- See [Dabbling with data](https://dabblingwithdata.wordpress.com/2018/01/02/my-favourite-r-package-for-summarising-data/)
+
+- Give a try, for instance to the `skimr` or `summarytools` packages.
+
+## More complete descriptions (I)
+
+```{r}
+library(skimr)
+skim(diabetes)
+```
+
+
+## Grouped summeries
+
+If we want to group the descriptive summaries by other variables we can use `group_by` function:
+
+```{r size="tiny"}
+diab %>% 
+  group_by(tabac, ecg) %>%
+  summarize(mean(edat))
+```
+
+## Handling missing data
+
+- What happens if we have missing data in our dataset?
+
+- The file `diabetes_mod.xls` contains some missings
+
+```{r size="tiny"}
+diabetes_mod <- read_excel("datasets/diabetes_mod.xls")
+diab <- diabetes_mod %>% mutate_if(is.character, as.factor)
+mean(diab$sbp)
+```
+
+**NA** indicates *missing data* in the variable
+
+Let's look the `sbp` variable:
+
+```{r size="tiny"}
+diab$sbp
+```
+
+## Numerical Summaries (VII)
+
+How to work with *missing data*:
+
+```{r size="tiny"}
+?mean
+mean(diab$sbp, na.rm = TRUE)
+is.na(diab$sbp)
+```
+
+## Numerical Summaries (VIII)
+
+How to work with *missing data*:
+
+```{r}
+sum(is.na(diab$sbp))
+sum(is.na(diab$dbp))
+diab_noNAS <-na.omit(diab)  
+dim(diab)
+dim(diab_noNAS)
+```
+
+See also: [Remove Rows with NA in R Data Frame](https://statisticsglobe.com/r-remove-data-frame-rows-with-some-or-all-na)
+
+## EXERCISE
+
+1.  With the `diab` dataset
+
+-   Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
+
+-   Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
+
+-   Display the unique values for the variable *bmi*. Count how many exist.
+
+-   Display the mean of *edatdiag*, grouped by *ecg*
+
