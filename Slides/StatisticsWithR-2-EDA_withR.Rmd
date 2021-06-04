@@ -1,56 +1,9 @@
 ---
-title: "Exploratory Analysis with R"
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
-        Santiago Perez-Hoyos"
-date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
-output:
-  beamer_presentation:
-    theme: "Copenhagen"
-    colortheme: "dolphin"
-    fonttheme: "structurebold"
-    slide_level: 2
-footer: "R for Data Science"
-editor_options: 
-  chunk_output_type: console
+title: "EDA with R"
+output: html_notebook
 ---
 
-```{r  include=FALSE}
-require(knitr)
-opts_chunk$set(
-concordance=FALSE, echo=TRUE, cache=FALSE, warning=FALSE, error=FALSE, message=TRUE, fig.height=4, size = "footnotesize")
-
-def.chunk.hook  <- knitr::knit_hooks$get("chunk")
-knitr::knit_hooks$set(chunk = function(x, options) {
-  x <- def.chunk.hook(x, options)
-  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
-})
-```
-
-```{r setLicense, child = 'license.Rmd', eval =F}
-```
-
-## Outline: Exploratory Analysis with R
-
-```{=tex}
-- Getting and looking at datasets and data types
-
-- Numerical summaries for exploring data
-
-- Graphical summaries
-
-```
-\vspace{1cm}
-
-<!-- \tiny *Based on this Course:\* [*BIMS 8382, University of Virginia School of Medicine (USA)*] (<https://bioconnector.github.io/workshops/index.html>). -->
-
-
 ## The Data Science Approach in R
-
-```{=tex}
-\begin{figure}
-  \includegraphics[width=.9\linewidth]{images/data-science.png}
-\end{figure}
-```
 
 # Getting started
 
@@ -60,7 +13,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 ```{r, size="footnotesize", message=FALSE}
 library(readxl)
-diab <- read_excel("datasets/diabetes_mod.xls")
+diab <- read_excel("diabetes.xls")
 ```
 
 2.  Check if we have loaded it correctly:
@@ -69,8 +22,8 @@ diab <- read_excel("datasets/diabetes_mod.xls")
 diab[1:4, 1:8]
 ```
 
-## Getting started (II): functions to check a dataframe:
 
+## Getting started (II): functions to check a dataframe:
 -   Content
 
     - `head`(): shows the first few rows 
@@ -86,7 +39,8 @@ diab[1:4, 1:8]
 
     - `colnames`() or names(): returns the column names 
     - `glimpse`(): returns a glimpse of your data: structure, class, length and content of each column
-    
+
+
 ## Getting started (III)
 
 ```{r size="tiny"}
@@ -132,16 +86,16 @@ glimpse(diab)
 
   - Logical
 
-    - TRUE/FALSE
+    -  TRUE/FALSE
 
 ## Exercise I
 
--   Load the osteoporosis dataset
+- Load the osteoporosis dataset
 
--   Proceed similarly as to what we have done above and obtain information on
+- Proceed similarly as to what we have done above and obtain information on
 
-    -   How many variables and observations
-    -   How are them
+  - How many variables and observations
+  - How are them
 
 ## More about factors
 
@@ -155,7 +109,7 @@ glimpse(diab)
 
 ## Create factor while reading
 
-- Factors may be created automatically from string data when ...
+- Factors may be created automatically from string data when
 
   - Files are read using the `read.delim`, `read.csv`  or `read.table` functions of R base
   - Option `stringAsFactors' is set to TRUE
@@ -177,7 +131,6 @@ glimpse(diabetes)
 
   - from excel (`diabetes.xls`)
   - or without setting the "stringsAsFactors" to TRUE
-
 
 ```{r}
 diab <- read.csv("datasets/diabetes.csv", stringsAsFactors=FALSE)
@@ -208,11 +161,11 @@ levels(vitalStatus)
 
 - When humans fill the database... many errors can happen :(
 
- - An answer like "YES", could be entered like: 
+  - An answer like "YES", could be entered like: 
     
-    "YES", "yes", "Yes", "Yeah "
+          "YES", "yes", "Yes", "Yeah "
 
-- All this possible answers **would be differents levels for the same variable**
+- All this possible answers **will be different levels for the same variable**
 
 - This may be solved using `recode_factor`:
 
@@ -252,11 +205,15 @@ glimpse(diab[,2:5])
 
 ```{r size="tiny"}
 #Mean, median and rang
+mean(edat)
 mean(diab$edat)
 median(diab$edat)
 sd(diab$edat)
 var(diab$edat)
 range(diab$edat)
+attach(diab)
+mean(edat)
+detach(diab)
 ```
 
 ## Numerical Summaries (II)
@@ -264,6 +221,7 @@ range(diab$edat)
 A general summary of all variables is provided by distinct functions
 
 ```{r size="tiny"}
+summary(diab)
 summary(diab[, 2:11])
 ```
 
@@ -353,18 +311,14 @@ See also: [Remove Rows with NA in R Data Frame](https://statisticsglobe.com/r-re
 
 With the `diab` dataset
 
-  - Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
+-   Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
 
-  - Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
+-   Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
 
-  - Recode the BMI variable into a factor defined by 
-  
-    - Thin: < 20
-    - Normal [20-25)
-    - Overweight [25-30)
-    - Obese >= 30
+-   Display the unique values for the variable *bmi*. Count how many exist.
 
-  - Display the mean of *edatdiag*, grouped by *ecg*
+-   Display the mean of *edatdiag*, grouped by *ecg*
+
 
 ## Exercise III
 
@@ -374,25 +328,6 @@ With the `diab` dataset
   
   - Display the range of `bua`, grouped by `clasific`
   
-
-# Descriptive Statistics: Graphical summaries
-
-## Exploratory Data Analysis (EDA)
-
-We could dedicate half of the course only to EDA. Here we will only see the most common approaches to visualize data:
-
-    - Histograms
-    - Scatterplots
-    - Boxplots
-
-## Histograms
-
-We will use histograms to plot the frequencies of each level of variables. This is the way to see the data distribution of particulars variables.
-
-```{r}
-hist(diab$edat)
-```
-
 ## Tuning plots with graphic parameters
 
 The aspect of plots can be improved using "graphical parameters"
@@ -462,25 +397,3 @@ plot(edat~bmi, data=diab)
 - With the variables in the osteoporosis dataset
 
 - Try to represent the different variables using _the most appropriate plot_ for each of them.
-
-
-## EXERCISE
-
-2.  With the `diab` dataset
-
--   Use the best graphic type to plot the relation between *sbp* and *dbp*
-
--   Show graphically the relation between *edat* and *ecg*
-
--   Plot the *sbp* frequencies
-
-
-
-## EXERCISE
-
-4.  Using the *osteoporosis.csv* dataset
-
-    -   Load the dataset and check if it is correctly loaded
-    -   Calculate the mean and standard deviation of imc grouped by clasific
-    -   Plot the distribution of edat
-    -   Plot the relationship between talla and peso <!-- - Compute the model between talla and peso. Add the linear regression to previous plot --> <!-- - Is bua values different between levels of menop? --> <!-- - Is imc values different among levels of grupedad? Between which levels? --> <!-- - Build a contingency table between clasific and grupedad. Check if there is independence between the levels of clasific and grupedad. -->

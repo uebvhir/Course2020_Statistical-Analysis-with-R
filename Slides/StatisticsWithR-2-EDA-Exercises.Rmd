@@ -1,0 +1,46 @@
+---
+title: "StatisticsWithR-2-EDA-Exercises.Rmd"
+author: "Alex Sánchez (et alt.)"
+date: "4/6/2021"
+output: html_document
+---
+## Exercise I
+
+- Load the osteoporosis dataset
+
+- Proceed similarly as to what we have done above and obtain information on
+
+  - How many variables and observations
+  - How are them
+  
+## EXERCISE II
+
+With the `diab` dataset
+
+  - Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
+
+  - Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
+
+  - Recode the BMI variable into a factor defined by 
+  
+    - Thin: < 20
+    - Normal [20-25)
+    - Overweight [25-30)
+    - Obese >= 30
+
+  - Display the mean of *edatdiag*, grouped by *ecg*
+
+
+## Exercise III
+
+  - Read the `osteoporosis.csv` data set  into R so that character variables are automatically converted into factors.
+  
+  - Make a summary of the dataset using standard and non-standard summary functions.
+  
+  - Display the range of `bua`, grouped by `clasific`
+  
+## Exercise IV
+
+- With the variables in the osteoporosis dataset
+
+- Try to represent the different variables using _the most appropriate plot_ for each of them.
