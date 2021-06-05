@@ -1,4 +1,4 @@
-# Course_2020_Statistical-Analysis-with-R
+# Materials for the course of Statistical Analysis with R
 
 A repository for materials from the 2020 Statistical-Analysis-with-R course at UEB
 
