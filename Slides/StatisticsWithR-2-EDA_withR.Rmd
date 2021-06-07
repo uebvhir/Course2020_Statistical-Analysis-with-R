@@ -327,30 +327,85 @@ With the `diab` dataset
   - Make a summary of the dataset using standard and non-standard summary functions.
   
   - Display the range of `bua`, grouped by `clasific`
+
+# Exploratory Data Analysis (EDA): Graphical summaries
+
+- We could dedicate one whole course to Data Visualization (at least see our "Statistical Pill on Data Visualization")
+
+- Here we will only see the most common approaches to visualize data:
+
+    - Histograms
+    - Barplots
+    - Piecharts
+    - Boxplots
+    - Scatterplots
+
+## R graphics engines
+
+- R is very powerful and flexible at doing graphics.
+
+- This comes at a price: Complex graphics (that we do not show here) may require sonme extra effort.
+
+- Much work has been done to simplify this
+
+  + There exist graphical tools that allow for the interactive construction of plots.
   
-## Tuning plots with graphic parameters
+  + There exist new approaches to plotting that try to be more intuitive than "traditional" ones.
 
-The aspect of plots can be improved using "graphical parameters"
+- `ggplot` is one of such approaches.
 
-Some parameters are passed as arguments to the plotting function
+## Histograms
 
-Others are set globally.
+- We will use histograms to plot the frequencies of each range of values in continuous variables.
 
-Setting graphical parameters has become so sophisticated that a new approach to graphics -in principle more intuitive- has emerged and come to change the way that graphics are created.
+- These plots provide an approximation to the distribution of the variables being represented.
 
-- The "traditional" approach relies on the `plot` function available in Rbase
-- The "modern" approch is based on the `ggplots2` package and its "language" of graphics.
-
-## An improved histogram 
 
 ```{r}
-hist(diab$edat, main="Age at diagnostic of diabetes",
-     probability = TRUE, xlab="Age", ylab="Percentage", 
-     col="lightblue", breaks = 10)
+hist(diab$edat)
+```
+
+## A histogram in `ggplot`
+
+- Every ggplot has, at least, three components
+
+  + The data used 
+  + The variables that go in each axis (the "aesthetics")
+  + The type of plot
+- Plots are built progressively "adding layers"
+  
+```{r}
+library(ggplot2)
+ggplot(data=diab, aes(x=edat))+
+  geom_histogram()
 ```
 
 
-## Boxplot. A unidimensional histogram
+## Improving plots with graphic parameters
+
+- Plots can be improved using _graphical parameters_
+
+- Some parameters are the same in all graphs. Others are specific of one or other graph.
+
+```{r}
+hist(diab$edat, main="Age at diagnostic", probability = TRUE, xlab="Age", ylab="Percentage")
+```
+
+## Improving plots in ggplots
+
+- Plots can be improved using _graphical parameters_
+
+- Some parameters are the same in all graphs. Others are specific of one or other graph.
+
+```{r}
+ggplot(data=diab, aes(x=edat))+
+  geom_histogram(aes(y=..density..))+
+  ggtitle("Age at diagnostic")+
+  xlab("Age") + ylab("Percentage")
+```
+
+
+## Boxplot. A one-dimensional histogram
 
 ```{r}
 boxplot (diab$edat, main ="Age")
@@ -392,8 +447,25 @@ barplot(t)
 plot(edat~bmi, data=diab)
 ```
 
-## Exercise IV
 
-- With the variables in the osteoporosis dataset
 
-- Try to represent the different variables using _the most appropriate plot_ for each of them.
+## EXERCISE
+
+With the `diab` dataset
+
+-   Use the best graphic type to plot the relation between *sbp* and *dbp*
+
+-   Show graphically the relation between *edat* and *ecg*
+
+-   Plot the *sbp* frequencies
+
+
+
+## EXERCISE
+
+Using the *osteoporosis.csv* dataset
+
+ -   Load the dataset and check if it is correctly loaded
+ -   Calculate the mean and standard deviation of imc grouped by clasific
+ -   Plot the distribution of edat
+ -   Plot the relationship between talla and peso

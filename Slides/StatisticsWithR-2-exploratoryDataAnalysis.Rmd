@@ -9,7 +9,7 @@ output:
     colortheme: "dolphin"
     fonttheme: "structurebold"
     slide_level: 2
-footer: "R for Data Science"
+footer: "Statistics with R"
 editor_options: 
   chunk_output_type: console
 ---
@@ -32,17 +32,35 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 ## Outline: Exploratory Analysis with R
 
 ```{=tex}
-- Getting and looking at datasets and data types
-
-- Numerical summaries for exploring data
-
-- Graphical summaries
-
+\begin{itemize}
+  \item Descriptive Statistics
+  \begin{itemize}
+    \item Numerical summaries
+    \item Graphical exploration
+  \end{itemize}
+\end{itemize}
 ```
 \vspace{1cm}
 
-<!-- \tiny *Based on this Course:\* [*BIMS 8382, University of Virginia School of Medicine (USA)*] (<https://bioconnector.github.io/workshops/index.html>). -->
+\tiny *Based on this Course:\* [*BIMS 8382, University of Virginia School of Medicine (USA)*] (<https://bioconnector.github.io/workshops/index.html>).
 
+## What packages we will use today?
+
+Please be sure you have the following packages installed:
+
+-   **dplyr** - subletting, sorting, transforming variables, grouping
+-   **ggplot2** - system for creating graphics
+-   **readxl** - reading .xls files
+
+```{r, message=FALSE}
+# install.packages("dplyr", dependencies = TRUE)
+# install.packages("ggplot2", dependencies = TRUE)
+# install.packages("readxl", dependencies = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(readxl)
+```
 
 ## The Data Science Approach in R
 
@@ -51,7 +69,6 @@ knitr::knit_hooks$set(chunk = function(x, options) {
   \includegraphics[width=.9\linewidth]{images/data-science.png}
 \end{figure}
 ```
-
 # Getting started
 
 ## Getting started (I)
@@ -59,7 +76,6 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 1.  Load the dataset \emph{diabetes}:
 
 ```{r, size="footnotesize", message=FALSE}
-library(readxl)
 diab <- read_excel("datasets/diabetes_mod.xls")
 ```
 
@@ -73,20 +89,16 @@ diab[1:4, 1:8]
 
 -   Content
 
-    - `head`(): shows the first few rows 
-    - `tail`(): shows the last few rows
+    -   head(name of dataframe): shows the first few rows - tail(): shows the last few rows
 
 -   Size
 
-    - `dim`(): returns the number of rows and the number of columns 
-    - `nrow`(): returns the number of rows 
-    - `ncol`(): returns the number of columns
+    -   dim(): returns the number of rows and the number of columns - nrow(): returns the number of rows - ncol(): returns the number of columns
 
 -   Summary
 
-    - `colnames`() or names(): returns the column names 
-    - `glimpse`(): returns a glimpse of your data: structure, class, length and content of each column
-    
+    -   colnames() or names(): returns the column names - glimpse(): returns a glimpse of your data: structure, class, length and content of each column
+
 ## Getting started (III)
 
 ```{r size="tiny"}
@@ -104,35 +116,34 @@ colnames(diab)
 ## Getting started (IV)
 
 ```{r size="tiny"}
-library(tidyverse)
 glimpse(diab)
 ```
 
 ## Variables and data types
 
-- Data managed in R ...
+-   Data managed in R ...
 
-  - is stored as *variables*
+    -   is stored as *variables*
 
-- Variables can be of distinct types
+-   Variables can be of distinct types
 
-  - Numerical
+    -   Numerical
 
-    -  numeric (13.7)
-    -  int (3)
+        -   numeric (13.7)
+        -   int (3)
 
-  - Character
+    -   Character
 
-     - "R is cute"
+        -   "R is cute"
 
-  - Factors are used to represent _categorical data_
+    -   Factors
 
-    - A,B,C,D
-    - WT, Mut
+        -   A,B,C,D
+        -   WT, Mut
 
-  - Logical
+    -   Logical
 
-    - TRUE/FALSE
+        -   TRUE/FALSE
 
 ## Exercise I
 
@@ -155,34 +166,22 @@ glimpse(diab)
 
 ## Create factor while reading
 
-- Factors may be created automatically from string data when ...
+-   Import the diabetes dataset from the `diabetes.csv` file using the Rstudio dialog.
 
-  - Files are read using the `read.delim`, `read.csv`  or `read.table` functions of R base
-  - Option `stringAsFactors' is set to TRUE
+    ![](images/paste-B48BD9A3.png)
 
-- Reading files from Excel (`read_excel`) or using `tidyverse` functions such as `read_csv` does not allow to  create factors automatically.
-
-## Read a file and create factors automatically
-
-- Import the diabetes dataset from the `diabetes.csv` file using the Rstudio dialog.
+## Check variable type
 
 ```{r}
 diabetes <- read.csv("datasets/diabetes.csv", stringsAsFactors=TRUE)
-glimpse(diabetes)
+class(diabetes$mort)
+sapply(diabetes, class)
 ```
 
-## Read a file without creating factors automatically
+Repeat
 
-- Re-read the file 
+- Re-read the file from excel or without setting the "stringsAsFactors" to TRUE
 
-  - from excel (`diabetes.xls`)
-  - or without setting the "stringsAsFactors" to TRUE
-
-
-```{r}
-diab <- read.csv("datasets/diabetes.csv", stringsAsFactors=FALSE)
-glimpse(diab)
-```
 
 ## Creating factors directly
 
@@ -196,7 +195,7 @@ class(diabetes$mort)
 levels(diabetes$mort)
 ```
 
-**Warning!** by default alphabetic order is used when creating factor levels.
+Warning! by default alphabetic order is used when creating factor levels.
 
 ```{r}
 vitalStatus <- factor(diabetes$mort, levels=c("Vivo", "Muerto"))
@@ -208,18 +207,19 @@ levels(vitalStatus)
 
 - When humans fill the database... many errors can happen :(
 
- - An answer like "YES", could be entered like: 
+    - An answer like "SI", could be entered like: 
     
-    "YES", "yes", "Yes", "Yeah "
+          "SI", "Si", "si", "SI ", "SÍ", .....
 
-- All this possible answers **would be differents levels for the same variable**
+- All this possible answers **will be differents levels for the same variable**
 
-- This may be solved using `recode_factor`:
+- Tis may be solved using `recode_factor`:
 
 ```{r}
 diab$mort <- recode_factor(diab$mort, "Muerto" = "muerto")
 levels(diab$mort)
 ```
+
 
 ## Changing *characters (chr)* to *factors (Factor)*
 
@@ -231,20 +231,7 @@ diab <- diabetes %>% mutate_if(is.character, as.factor)
 glimpse(diab)
 ```
 
-## Creating factors when categorizing numerical variables
-
-- `diab$edat` is a numerical variable but we may want to categorize it that is creat a new factor variable whose categories are defined by nuemric intervals.
-
-```{r}
-grupsEdat <- cut(diab$edat, breaks=c(0,30,50,75,Inf),
-                include.lowest=TRUE,
-                labels=c("<30","30-50","50-75",">75"))
-library(tibble)
-diab <- diab %>% add_column (grupsEdat, .after="edat")
-glimpse(diab[,2:5])
-```
-
-# Descriptive Statistics: Numerical summaries
+# Exploratory Data Analysis: Numerical summaries
 
 ## Numerical Summaries (I)
 
@@ -267,17 +254,6 @@ A general summary of all variables is provided by distinct functions
 summary(diab[, 2:11])
 ```
 
-## Numerical SUmmaries (III)
-
-If categorical variables are not adequately represented summaries will be less informative.
-
-Remember that we read created `diabetes` without turning variables into factors.
-
-```{r}
-diabetes <- read.csv("datasets/diabetes.csv", stringsAsFactors=FALSE)
-summary(diabetes)
-```
-
 ## Improving the `summary` function
 
 - There are many packages to do descriptive statistics.
@@ -290,10 +266,11 @@ summary(diabetes)
 
 ```{r}
 library(summarytools)
-summarytools::dfSummary(diabetes)
+dfSummary(diabetes)
 ```
 
-## Grouped summaries
+
+## Grouped summeries
 
 If we want to group the descriptive summaries by other variables we can use `group_by` function:
 
@@ -323,7 +300,9 @@ Let's look the `sbp` variable:
 diab$sbp
 ```
 
-## How to work with *missing data*:
+## Numerical Summaries (VII)
+
+How to work with *missing data*:
 
 ```{r size="tiny"}
 ?mean
@@ -331,17 +310,13 @@ mean(diab$sbp, na.rm = TRUE)
 is.na(diab$sbp)
 ```
 
-## How to work with *missing data*:
+## Numerical Summaries (VIII)
 
-- Count missings
+How to work with *missing data*:
 
 ```{r}
 sum(is.na(diab$sbp))
 sum(is.na(diab$dbp))
-```
-
-- Remove all rows with missing
-```{r}
 diab_noNAS <-na.omit(diab)  
 dim(diab)
 dim(diab_noNAS)
@@ -349,73 +324,97 @@ dim(diab_noNAS)
 
 See also: [Remove Rows with NA in R Data Frame](https://statisticsglobe.com/r-remove-data-frame-rows-with-some-or-all-na)
 
-## EXERCISE II
+## EXERCISE
 
-With the `diab` dataset
+1.  With the `diab` dataset
 
-  - Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
+-   Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
 
-  - Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
+-   Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
 
-  - Recode the BMI variable into a factor defined by 
-  
-    - Thin: < 20
-    - Normal [20-25)
-    - Overweight [25-30)
-    - Obese >= 30
+-   Display the unique values for the variable *bmi*. Count how many exist.
 
-  - Display the mean of *edatdiag*, grouped by *ecg*
+-   Display the mean of *edatdiag*, grouped by *ecg*
 
-## Exercise III
 
-  - Read the `osteoporosis.csv` data set  into R so that character variables are automatically converted into factors.
-  
-  - Make a summary of the dataset using standard and non-standard summary functions.
-  
-  - Display the range of `bua`, grouped by `clasific`
-  
+# Exploratory Data Analysis (EDA): Graphical summaries
 
-# Descriptive Statistics: Graphical summaries
+- We could dedicate one whole course to Data Visualization (at least see our "Statistical Pill on Data Visualization")
 
-## Exploratory Data Analysis (EDA)
-
-We could dedicate half of the course only to EDA. Here we will only see the most common approaches to visualize data:
+- Here we will only see the most common approaches to visualize data:
 
     - Histograms
-    - Scatterplots
+    - Barplots
+    - Piecharts
     - Boxplots
+    - Scatterplots
+
+## R graphics engines
+
+- R is very powerful and flexible at doing graphics.
+
+- This comes at a price: Complex graphics (that we do not show here) may require sonme extra effort.
+
+- Much work has been done to simplify this
+
+  + There exist graphical tools that allow for the interactive construction of plots.
+  
+  + There exist new approaches to plotting that try to be more intuitive than "traditional" ones.
+
+- `ggplot` is one of such approaches.
 
 ## Histograms
 
-We will use histograms to plot the frequencies of each level of variables. This is the way to see the data distribution of particulars variables.
+- We will use histograms to plot the frequencies of each range of values in continuous variables.
+
+- These plots provide an approximation to the distribution of the variables being represented.
+
 
 ```{r}
 hist(diab$edat)
 ```
 
-## Tuning plots with graphic parameters
+## A histogram in `ggplot`
 
-The aspect of plots can be improved using "graphical parameters"
+- Every ggplot has, at least, three components
 
-Some parameters are passed as arguments to the plotting function
-
-Others are set globally.
-
-Setting graphical parameters has become so sophisticated that a new approach to graphics -in principle more intuitive- has emerged and come to change the way that graphics are created.
-
-- The "traditional" approach relies on the `plot` function available in Rbase
-- The "modern" approch is based on the `ggplots2` package and its "language" of graphics.
-
-## An improved histogram 
-
+  + The data used 
+  + The variables that go in each axis (the "aesthetics")
+  + The type of plot
+- Plots are built progressively "adding layers"
+  
 ```{r}
-hist(diab$edat, main="Age at diagnostic of diabetes",
-     probability = TRUE, xlab="Age", ylab="Percentage", 
-     col="lightblue", breaks = 10)
+library(ggplot2)
+ggplot(data=diab, aes(x=edat))+
+  geom_histogram()
 ```
 
 
-## Boxplot. A unidimensional histogram
+## Improving plots with graphic parameters
+
+- Plots can be improved using _graphical parameters_
+
+- Some parameters are the same in all graphs. Others are specific of one or other graph.
+
+```{r}
+hist(diab$edat, main="Age at diagnostic", probability = TRUE, xlab="Age", ylab="Percentage")
+```
+
+## Improving plots in ggplots
+
+- Plots can be improved using _graphical parameters_
+
+- Some parameters are the same in all graphs. Others are specific of one or other graph.
+
+```{r}
+ggplot(data=diab, aes(x=edat))+
+  geom_histogram(aes(y=..density..))+
+  ggtitle("Age at diagnostic")+
+  xlab("Age") + ylab("Percentage")
+```
+
+
+## Boxplot. A one-dimensional histogram
 
 ```{r}
 boxplot (diab$edat, main ="Age")
@@ -457,30 +456,25 @@ barplot(t)
 plot(edat~bmi, data=diab)
 ```
 
-## Exercise IV
-
-- With the variables in the osteoporosis dataset
-
-- Try to represent the different variables using _the most appropriate plot_ for each of them.
 
 
 ## EXERCISE
 
-2.  With the `diab` dataset
+- With the `diab` dataset
 
--   Use the best graphic type to plot the relation between *sbp* and *dbp*
+  -  Use the best graphic type to plot the relation between *sbp* and *dbp*
 
--   Show graphically the relation between *edat* and *ecg*
+  - Show graphically the relation between *edat* and *ecg*
 
--   Plot the *sbp* frequencies
+  - Plot the *sbp* frequencies
 
 
 
 ## EXERCISE
 
-4.  Using the *osteoporosis.csv* dataset
+- Using the *osteoporosis.csv* dataset
 
-    -   Load the dataset and check if it is correctly loaded
-    -   Calculate the mean and standard deviation of imc grouped by clasific
-    -   Plot the distribution of edat
-    -   Plot the relationship between talla and peso <!-- - Compute the model between talla and peso. Add the linear regression to previous plot --> <!-- - Is bua values different between levels of menop? --> <!-- - Is imc values different among levels of grupedad? Between which levels? --> <!-- - Build a contingency table between clasific and grupedad. Check if there is independence between the levels of clasific and grupedad. -->
+ - Load the dataset and check if it is correctly loaded
+ - Calculate the mean and standard deviation of imc grouped by clasific
+ - Plot the distribution of edat
+
