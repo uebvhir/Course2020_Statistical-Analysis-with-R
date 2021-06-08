@@ -5,7 +5,7 @@ author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
 date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
-    theme: "Copenhagen"
+    theme: "Madrid"
     colortheme: "dolphin"
     fonttheme: "structurebold"
     slide_level: 2
@@ -87,17 +87,21 @@ diab[1:4, 1:8]
 
 ## Getting started (II): functions to check a dataframe:
 
--   Content
+-  Content
 
-    -   head(name of dataframe): shows the first few rows - tail(): shows the last few rows
+    - `head`(): shows the first few rows 
+    - `tail`(): shows the last few rows
 
--   Size
+-  Size
 
-    -   dim(): returns the number of rows and the number of columns - nrow(): returns the number of rows - ncol(): returns the number of columns
+    - `dim`(): returns the number of rows and the number of columns 
+    - `nrow`(): returns the number of rows 
+    - `ncol`(): returns the number of columns
 
--   Summary
+-  Summary
 
-    -   colnames() or names(): returns the column names - glimpse(): returns a glimpse of your data: structure, class, length and content of each column
+    - `colnames`() or names(): returns the column names 
+    - `glimpse`(): returns a glimpse of your data: structure, class, length and content of each column
 
 ## Getting started (III)
 
@@ -121,11 +125,9 @@ glimpse(diab)
 
 ## Variables and data types
 
--   Data managed in R ...
+-   Data managed in R is stored as *variables*
 
-    -   is stored as *variables*
-
--   Variables can be of distinct types
+-   Variables can be of distinct types:
 
     -   Numerical
 
@@ -147,12 +149,12 @@ glimpse(diab)
 
 ## Exercise I
 
--   Load the osteoporosis dataset
+-   Load the `osteoporosis` dataset
 
 -   Proceed similarly as to what we have done above and obtain information on
 
-    -   How many variables and observations
-    -   How are them
+    -  How many variables and observations
+    -  How are them (What are their types)
 
 ## More about factors
 
@@ -207,13 +209,13 @@ levels(vitalStatus)
 
 - When humans fill the database... many errors can happen :(
 
-    - An answer like "SI", could be entered like: 
+  - An answer like "YES", could be entered like: 
     
-          "SI", "Si", "si", "SI ", "SÍ", .....
+          "YES", "yes", "Yes", "Yeah "
 
-- All this possible answers **will be differents levels for the same variable**
+- All this possible answers **will become differents levels for the same factor variable**
 
-- Tis may be solved using `recode_factor`:
+- This may be solved using `recode_factor`:
 
 ```{r}
 diab$mort <- recode_factor(diab$mort, "Muerto" = "muerto")
@@ -264,7 +266,7 @@ summary(diab[, 2:11])
 
 ## More complete descriptions (I)
 
-```{r}
+```{r, size="tiny", message=FALSE}
 library(summarytools)
 dfSummary(diabetes)
 ```
@@ -382,7 +384,9 @@ hist(diab$edat)
   + The variables that go in each axis (the "aesthetics")
   + The type of plot
 - Plots are built progressively "adding layers"
-  
+
+---
+
 ```{r}
 library(ggplot2)
 ggplot(data=diab, aes(x=edat))+
@@ -406,6 +410,8 @@ hist(diab$edat, main="Age at diagnostic", probability = TRUE, xlab="Age", ylab="
 
 - Some parameters are the same in all graphs. Others are specific of one or other graph.
 
+---
+
 ```{r}
 ggplot(data=diab, aes(x=edat))+
   geom_histogram(aes(y=..density..))+
@@ -423,7 +429,8 @@ boxplot (diab$edat, main ="Age")
 ## Boxplot: Decomposing plots by groups
 
 ```{r}
-boxplot(edat~tabac, data=diab, main="Age of diabetes onset according smoking status")
+boxplot(edat~tabac, data=diab, 
+        main="Age at diagnostic according smoking status")
 ```
 
 

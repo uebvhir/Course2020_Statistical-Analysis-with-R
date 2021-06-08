@@ -251,6 +251,11 @@ library(summarytools)
 summarytools::dfSummary(diabetes)
 ```
 
+```{r}
+library(skimr)
+summarytools::skim(diabetes)
+```
+
 ## Grouped summaries
 
 If we want to group the descriptive summaries by other variables we can use `group_by` function:
@@ -414,7 +419,8 @@ boxplot (diab$edat, main ="Age")
 ## Boxplot: Decomposing plots by groups
 
 ```{r}
-boxplot(edat~tabac, data=diab, main="Age of diabetes onset according smoking status")
+boxplot(edat~tabac, data=diab, 
+        main="Age st diagnosis according smoking status")
 ```
 
 
