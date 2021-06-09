@@ -367,6 +367,7 @@ With the `diab` dataset
 
 
 ```{r}
+diab=diabetes
 hist(diab$edat)
 ```
 
@@ -393,7 +394,9 @@ ggplot(data=diab, aes(x=edat))+
 - Some parameters are the same in all graphs. Others are specific of one or other graph.
 
 ```{r}
-hist(diab$edat, main="Age at diagnostic", probability = TRUE, xlab="Age", ylab="Percentage")
+hist(diab$edat, main="Age at diagnostic", 
+     probability = TRUE, xlab="Age", ylab="Percentage", 
+     col="orange", breaks=5)
 ```
 
 ## Improving plots in ggplots
@@ -420,7 +423,7 @@ boxplot (diab$edat, main ="Age")
 
 ```{r}
 boxplot(edat~tabac, data=diab, 
-        main="Age st diagnosis according smoking status")
+        main="Age at diagnosis according smoking status")
 ```
 
 
@@ -451,6 +454,7 @@ barplot(t)
 
 ```{r}
 plot(edat~bmi, data=diab)
+plot(diab$edat, diab$bmi)
 ```
 
 
@@ -466,12 +470,86 @@ With the `diab` dataset
 -   Plot the *sbp* frequencies
 
 
-
 ## EXERCISE
 
 Using the *osteoporosis.csv* dataset
 
  -   Load the dataset and check if it is correctly loaded
+
+```{r}
+osteo <- read.delim2("datasets/osteoporosis.csv", stringsAsFactors=TRUE)
+summary(osteo)
+```
+
  -   Calculate the mean and standard deviation of imc grouped by clasific
+ 
+```{r size="tiny"}
+# "pipe"
+osteo  %>% 
+  group_by(clasific) %>%
+  summarize(mean(imc))
+```
+
+```{r size="tiny"}
+library(tidyverse)
+osteo  %>% 
+  group_by(clasific) %>%
+  summarize(mean(bua), sd(bua))
+```
+```{r}
+boxplot(bua~clasific, data=osteo)
+```
+
  -   Plot the distribution of edat
+ 
+```{r}
+hist(osteo$edad)
+```
+ 
  -   Plot the relationship between talla and peso
+ 
+```{r}
+plot(talla~peso, data=osteo)
+```
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

@@ -96,14 +96,23 @@ head(osteoporosis)
 
 ```{r}
 #contingency table
-table(osteoporosis$grupedad, osteoporosis$clasific)
+tabEdatClassific <- table(osteoporosis$grupedad, osteoporosis$clasific)
+tabEdatClassific
 ```
 
 
 ```{r}
 #contingency table in %
-prop.table(table(osteoporosis$grupedad, osteoporosis$clasific))
+prop.table(tabEdatClassific)
 ```
+
+```{r}
+barplot(tabEdatClassific, beside = TRUE)
+```
+```{r}
+barplot(t(tabEdatClassific), beside = TRUE)
+```
+
 
 
 ```{r}
