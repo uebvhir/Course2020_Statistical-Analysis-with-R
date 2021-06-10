@@ -1,0 +1,80 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Data managements with dplyr
+
+## filter
+```{r}
+require(readxl)
+diab <-read_excel("diabetes.xls")
+diab_filt <- dplyr::filter(diab, tabac=="No fumador", edat>=50)
+head(diab_filt, n = 4)
+```
+
+## select
+
+```{r}
+diab_small <-select(diab, mort, edat, tabac, sbp)
+head(diab_small, n = 4)
+```
+
+## sort
+
+```{r}
+diab_sort <-arrange(diab,desc(mort), edat)
+head(diab_sort, n = 4)
+```
+
+
+## mutate
+
+```{r}
+diab_mut <-mutate(diab,edatcat =cut(edat, breaks =c(0,40,50,60,70,120)),highbmi = bmi> mean(bmi))
+tail(diab_mut, n = 4)
+```
+
+
+# The pipe operator
+
+```{r}
+diab40 <-filter(diab, mort=="Vivo"&edat<40)
+diab40_small <-select(diab40, edat, dbp)
+head(diab40_small,n = 4)
+```
+
+
+```{r}
+diab40_small <- diab %>%
+  filter(mort=="Vivo"&edat<40) %>%
+  select(edat, dbp)
+head(diab40_small,n = 4)
+```
+
+
+
+# Merging datasets
+
+```{r}
+band_members
+band_instruments
+```
+```{r}
+bind_rows(band_members, band_instruments)
+
+
+## PROBLEMES!
+bind_cols(band_members, band_instruments)
+```
+
+## mutating
+
+```{r}
+band_members%>%inner_join(band_instruments, by = "name")
+```
+
+```{r}
+band_members%>%left_join(band_instruments)
+```
+
