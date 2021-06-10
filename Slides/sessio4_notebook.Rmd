@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
 output: html_notebook
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Data managements with dplyr
@@ -9,14 +11,16 @@ output: html_notebook
 ```{r}
 require(readxl)
 diab <-read_excel("diabetes.xls")
-diab_filt <- dplyr::filter(diab, tabac=="No fumador", edat>=50)
+
+require(dplyr)
+diab_filt <- filter(diab, tabac=="No fumador", edat>=50)
 head(diab_filt, n = 4)
 ```
 
 ## select
 
 ```{r}
-diab_small <-select(diab, mort, edat, tabac, sbp)
+diab_small <- select(diab, mort, edat, tabac, sbp)
 head(diab_small, n = 4)
 ```
 
