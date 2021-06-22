@@ -51,17 +51,24 @@ sex <- factor(c("Female", "Male"))
 blood_group <- factor(c("A", "B", "AB", "O"))
 ```
 
-- Besides, factors can be forced to be "ordereded"
+<!-- - Besides, factors can be forced to be "ordereded" -->
 
-```{r}
-tumorstage <- factor(1:4, ordered=TRUE)
+```{r, echo=FALSE}
+# tumorstage <- factor(1:4, ordered=TRUE)
 ```
 
 - Be careful with the names of factors, by default, _levels_ assigned in alphabetical order.
 
-```{r}
+```{r,size="tiny"}
 levels(blood_group)
 ```
+
+- To verify class of a variable
+
+```{r}
+class(sex)
+```
+
 
 # Creating factors
 
@@ -87,29 +94,50 @@ levels(blood_group)
 - Example
 
   - Load the `diabetes` dataset using the `Import Dataset` feature of Rstudio
-    - From text (base)      (use the file `diabetes.csv`)
-    - From text (readr)     (use the file `diabetes.csv`)
-    - From Excel            (use the file `diabetes.xls`)
-  - What is the class of the variable `mort`
+    - From text (base)      (use the file `osteoporosis.csv`)
+    - From text (readr)     (use the file `osteoporosis.csv`)
+    
+    <!-- - From Excel            (use the file `diabetes.xls`) -->
+    
+  - What is the class of the variable `menop`
+  
+
+# Create factors automatically
+  
+```{r, size=5, results='hide'}
+
+osteo1 <- read.csv("datasets/osteoporosis.csv",sep = "\t",
+                   stringsAsFactors=TRUE)
+class(osteo1$menop)
+summary(osteo1$menop)
+str(osteo1)
+
+library(readr)
+osteo2 <- read_delim("datasets/osteoporosis.csv", "\t", 
+                     escape_double = FALSE)
+class(osteo2$menop)
+osteo2$menop <- as.factor(osteo2$menop)
+class(osteo2$menop)
+summary(osteo2$menop)
+str(osteo2)
+```
 
 # Exercise 1
 
-- Select one of the datasets that you have worked with during the course
-    - diabetes.xls
-    - osteoporosis.csv
-    - demora.xls
+- Select `diabetes.xls` datasets 
     
- - Read the dataset into R and check that the categorical variables you are interested in are converted into factors.
+ - Read the dataset into R and check that the categorical variables you are interested (mort, tabac, ecg) in are converted into factors.
  
  - Confirm the conversion by summarizing the variables
- 
-# Exercise 2
- 
-- Use the diabetes.sav file and import it into R with the "Import from SPSS" feature.
 
-  - What is the class of the "MORT" variable.
-  
-  - Turn it into one factor so that it has the same levels as when you read it using `read.csv`
+ 
+<!-- # Exercise 2 -->
+
+<!-- - Use the diabetes.sav file and import it into R with the "Import from SPSS" feature. --> 
+
+<!--   - What is the class of the "MORT" variable. -->
+
+<!--   - Turn it into one factor so that it has the same levels as when you read it using `read.csv` -->
   
 
 
@@ -120,12 +148,12 @@ levels(blood_group)
  - Start exploring the data with the   tables and graphics
  - Proceed to estimation and/or testing if _appropriate_
 
-- Estimation
-  - Proportions: Point estimates, confidence intervals, Sample Size
+  - Estimation
+    - Proportions: Point estimates, confidence intervals
     
-- Testing
-  - One variable (tests with proportions)
-  - With two variables (chi-square and related)
+  - Testing
+    - One variable (tests with proportions)
+    - With two variables (chi-square and related)
   
   
 # Types of test with categorical variables
@@ -137,7 +165,12 @@ levels(blood_group)
 - With two variables (chi-square and related)
 
   - Is there an association between two categorical variables?
-  - Is there a relationship between the values ​​of a categorical variable before and after treatment?
+  - Is there a relationship between the values of a categorical variable before and after treatment?
+  
+# Types of test with categorical variables
+
+![](images/arbrequali.PNG)
+
 
 
 # Example
@@ -167,30 +200,14 @@ mytable <-table(dadescancer$cancer, dadescancer$fumar)
 mytable
 ```
 
-# There are many ways to do crosstabulation
-
-```{r}
-with(dadescancer, table(cancer, fumar) )
-```
-
-```{r}
-myXtable <- xtabs (~ cancer + fumar, data = dadescancer)
-myXtable
-```
-
 # Crosstabulation (2): Marginal tables
 
 Marginal values are important to understand the structure of the data:
 
-```{r}
-margin.table(mytable, 1) # A frequencies (summed over B)
-margin.table(mytable, 2) # B frequencies (summed over A)
-```
-
----
 
 ```{r}
 mytable<- addmargins(mytable)
+mytable
 ```
 
 
@@ -205,12 +222,14 @@ prop.table(mytable, 1) # row percentages
 
 ```
 
-# Exercise 3
+# Exercise 2
 
-- With the osteoporosis dataset repeat the crosstabulation done above using 
-
+- With the diabetes dataset repeat the crosstabulation done above using 
   - Two categorical variables
-  - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
+  - Variable "mort" and a newly created variable "bmi30" created by properly categorizing variable bmi.
+  
+
+  
 
 # One variable: Proportion tests
 
@@ -261,17 +280,17 @@ Notice that _choosing the wrong alternative may yield unreasonable conclusions_.
 knitr::include_graphics("images/propTestsAndCI.png")
 ```
 
-# Exercise 4
+# Exercise 3
 
-- In the osteoporosis dataset.
+- In the diabetes dataset.
   
-  - Test the hypothesis that the proportion of women with `osteoporosis` is higher than 7%
+  - Test the hypothesis that the proportion of patients with `bmi30` is higher than 40%
       - In the global population of the study
-      - Only in women with osteoporosis
+      - Only in patients with 'mort' equal "Muerto"
       
-  - Select a sample of size 100 and repeat the test. How do the results change?
-  
-  - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%?
+  <!-- - Select a sample of size 100 and repeat the test. How do the results change? -->
+
+  <!-- - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%? -->
     
     
 # Contingency tables
@@ -302,7 +321,7 @@ knitr::include_graphics("images/contingencytables1.png")
 - When we have:
 
   - quantitative data, 
-  - one or more categories, 
+  - two or more categories, 
   - independent observations, 
   - adequate sample size (>10)
 
@@ -318,12 +337,22 @@ knitr::include_graphics("images/contingencytables1.png")
 knitr::include_graphics("images/observedvsexpected.png")
 ```
 
+# Chi squared tests: Observed vs expected with R
+
+```{r, results='hide'}
+require(gmodels)
+mytable <- table(dadescancer$cancer, dadescancer$fumar)
+CrossTable(mytable,expected = T,prop.chisq = F,prop.c = F,prop.r = F)
+```
+![](images/chi.PNG)
+
 # Chi squared tests with R
 
 ```{r}
-mytable<- with(dadescancer, table(cancer, fumar) )
 chisq.test (mytable)
 ```
+
+
 
 # Fisher test. an assumptions-free alternative
 
@@ -337,11 +366,29 @@ fisher.test(mytable)
 
 
 
-# Exercise 5
+# Exercise 4
 
-- Use the osteoporosis dataset to study if it can be detected an association between the variables `menop` and `classific` in the osteoporosis dataset.
+- Use the diabetes dataset to study if it can be detected an association between the variables `mort` and `tabac` in the diabetes dataset.
 
 - Do not start with a test but with an appropriate summarization and visualization!
 
+# Mcnemar test
+
+Mcnemar test is used to compare the frequencies of paired samples of dichotomous data
+
+- Ho: There is no significant change in individuals after the treatment
+
+- H1: There is a significant change in individuals after the treatment
+
+
+# Mcnemar test. Example 
+
+![](images/mcnemar.PNG)
+
+
+```{r}
+.Table <- matrix(c(69,28,5,63), 2, 2, byrow=TRUE)
+mcnemar.test(.Table)
+```
 
 

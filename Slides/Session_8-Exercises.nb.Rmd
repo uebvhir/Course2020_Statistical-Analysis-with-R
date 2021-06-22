@@ -8,69 +8,79 @@ output:
 
 # Exercise 1
 
-- Select one of the datasets that you have worked with during the course
- 
-  - `diabetes.xls`
-  - `osteoporosis.csv` (in this case select a random sample of 100 observations)
-  - `demora.xls`
+- Select `diabetes.xls` datasets 
     
- - Read the dataset into R and check that the categorical variables you are interested in are converted into factors.
+ - Read the dataset into R and check that the categorical variables you are interested (mort, tabac, ecg) in are converted into factors.
  
  - Confirm the conversion by summarizing the variables
  
 ```{r}
-library(dplyr)
-semilla<- 18101998
-set.seed(semilla)
-numMuestras <- 100
-muestras <- sample( osteoporosis$registro, numMuestras)
-osteoData <- dplyr::filter(osteoporosis, registro  %in%  muestras)
+library(readxl)
+diabetes <- read_excel("datasets/diabetes.xls")
+str(diabetes)
+
+diabetes$mort <- as.factor(diabetes$mort)
+diabetes$tabac <- as.factor(diabetes$tabac)
+diabetes$ecg <- as.factor(diabetes$ecg)
+
 ```
  
  
- 
-# Exercise 2
- 
-- Use the diabetes.sav file and import it into R with the "Import from SPSS" feature.
 
-  - What is the class of the "MORT" variable.
-  
-  - Turn it into one factor so that it has the same levels as when you read it using `read.csv`
   
   
+# Exercise 2
+
+- With the diabetes dataset repeat the crosstabulation done above using 
+  - Two categorical variables
+  - Variable "mort" and a newly created variable "bmi30" created by properly categorizing variable bmi.
+  
+```{r}
+diabetes <- diabetes %>% mutate(bmi30 = bmi >30 )
+
+mt <- addmargins(table(diabetes$mort, diabetes$bmi30))
+mt
+prop.table(mt)
+```
+
+
 # Exercise 3
 
-- With the osteoporosis dataset repeat the crosstabulation done above using:
-  - Two categorical variables
-  - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
+- In the diabetes dataset.
   
-- Take a random sample of 100 observations or use the file `osteo100.txt`
-
-```{r}
-osteo100 <- read.delim("datasets/osteo100.txt", stringsAsFactors=TRUE)
-osteoOrderd <- osteo100[order(osteo100$bua),]
-osteo100$buaCat <- cut (osteo100$bua, c(0,50, 75, 100)) #https://www.r-bloggers.com/2012/09/from-continuous-to-categorical/
-table(osteo100$buaCat)
-with(osteo100, table(buaCat, clasific))
-```
-
-# Exercise 4
-
-- In the osteoporosis dataset.
-  
-  - Test the hypothesis that the proportion of women with `osteoporosis` is higher than 7%
+  - Test the hypothesis that the proportion of patients with `bmi30` is higher than 40%
       - In the global population of the study
-      - Only in women with osteoporosis
+      - Only in patients with 'mort' equal "Muerto"
       
-- Select a sample of size 100 and repeat the test. How do the results change?
+```{r}
+prop.test(table(diabetes$bmi30), p = 0.4)
+
+diab_mort <- diabetes %>% filter(mort == "Muerto")
+prop.test(table(diab_mort$bmi30), p = 0.4)
+```
   
-- What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%?
+
+<!-- - Select a sample of size 100 and repeat the test. How do the results change? -->
+
+<!-- - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%? -->
 
  
 
-# Exercise 5
+# Exercise 4
 
 - Use the osteoporosis dataset to study if it can be detected an association between the variables `menop` and `classific` in the osteoporosis dataset.
 
 - Do not start with a test but with an appropriate summarization and visualization!
+
+```{r}
+require(ggplot2)
+ggplot(data = diabetes, aes(x=tabac, fill = mort)) + 
+  geom_bar()
+```
+
+
+```{r}
+CrossTable(table(diabetes$mort, diabetes$tabac),expected = T,prop.chisq = F,prop.c = F,prop.r = F)
+```
+
 
