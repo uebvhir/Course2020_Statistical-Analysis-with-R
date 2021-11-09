@@ -2,8 +2,7 @@
 title: "Session 8 - Categorical data Analyisis. Exercises"
 output:
   html_notebook:
-    code_folding: hide
-
+    code_folding: show
 ---
 
 # Exercise 1
@@ -36,6 +35,7 @@ diabetes$ecg <- as.factor(diabetes$ecg)
   - Variable "mort" and a newly created variable "bmi30" created by properly categorizing variable bmi.
   
 ```{r}
+library(dplyr)
 diabetes <- diabetes %>% mutate(bmi30 = bmi >30 )
 
 mt <- addmargins(table(diabetes$mort, diabetes$bmi30))
@@ -65,22 +65,3 @@ prop.test(table(diab_mort$bmi30), p = 0.4)
 <!-- - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%? -->
 
  
-
-# Exercise 4
-
-- Use the osteoporosis dataset to study if it can be detected an association between the variables `menop` and `classific` in the osteoporosis dataset.
-
-- Do not start with a test but with an appropriate summarization and visualization!
-
-```{r}
-require(ggplot2)
-ggplot(data = diabetes, aes(x=tabac, fill = mort)) + 
-  geom_bar()
-```
-
-
-```{r}
-CrossTable(table(diabetes$mort, diabetes$tabac),expected = T,prop.chisq = F,prop.c = F,prop.r = F)
-```
-
-
