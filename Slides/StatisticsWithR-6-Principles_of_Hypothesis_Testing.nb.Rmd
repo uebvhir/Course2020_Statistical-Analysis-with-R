@@ -14,10 +14,10 @@ Examples of such beliefs are:
 - The average ''bua'' value in our population is 70.
 - The ''bua'' mean value in menopausic and non-menopausic women is not the same.
 
-We will use the osteoporosis dataset to check these beliefs. To make it more interestin/realistic we will assume we have small sample sizes and __everyone will have a different sample__
+We will use the osteoporosis dataset to check these beliefs. To make it more interesting/realistic we will assume we have small sample sizes and __everyone will have a different sample__
 
 ```{r}
-osteoporosis <- read.delim2("/datasets/osteoporosis.csv", stringsAsFactors=TRUE)
+osteoporosis <- read.delim2("datasets/osteoporosis.csv", stringsAsFactors=TRUE)
 ```
 
 We will select a subset of this dataset which is different for everyone.
