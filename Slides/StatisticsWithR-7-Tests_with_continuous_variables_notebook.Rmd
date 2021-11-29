@@ -6,6 +6,8 @@ output:
     df_print: paged
   html_notebook:
     code_folding: show
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -66,23 +68,26 @@ with(hta,t.test(tad1,mu=90) ) # One sample T.test
 
 
 ```{r}
-ggplot(hta, aes(x=sexo, y=tad1)) +
+ggplot(hta, aes(x=grupo, y=tad1)) +
   geom_boxplot()
 ```
 
 
-## Homogeneity variance Test
+## Homogeneity of variances Test
 
+Start with a descriptive analysis
 
-```{r vartest , mysize=TRUE, size='\\small'}
+```{r vartestDescript , mysize=TRUE, size='\\small'}
 library(car)
 hta%>% 
-  group_by(sexo) %>% 
-  summarise(var = sd(tad1)) 
+  group_by(grupo) %>% 
+  summarise(var = sd(tad1))
+```
 
+Then do the test
 
+```{r vartest , mysize=TRUE, size='\\small'}
 with(hta,leveneTest(tad1~factor(sexo),center="median"))
-
 ```
   - p value is over 0.05
   - We can assume homogeneity of variances
@@ -94,7 +99,7 @@ with(hta,leveneTest(tad1~factor(sexo),center="median"))
 
 
 ```{r eqttest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tad1~factor(sexo),var.equal=TRUE ))
+with(hta,t.test(tad1~factor(grupo),var.equal=TRUE ))
 
 ```
 - Type I Error is over than 0.05
@@ -108,7 +113,7 @@ with(hta,t.test(tad1~factor(sexo),var.equal=TRUE ))
 
 
 ```{r neqttest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tas1~factor(sexo),var.equal=FALSE ))
+with(hta,t.test(tad1~factor(grupo),var.equal=FALSE ))
 
 ```
 - Same conclusions as before
@@ -119,13 +124,17 @@ with(hta,t.test(tas1~factor(sexo),var.equal=FALSE ))
   
 ## U Mann-Whitney or Sum Rank non parametric test
 
-```{r umtest , mysize=TRUE, size='\\small'}
-with(hta,wilcox.test(tad1~factor(sexo)
-    ,alternative='two.sided',exact=TRUE, correct=FALSE))
-
+```{r descriptiveComp , mysize=TRUE, size='\\small'}
 hta%>% 
   group_by(sexo) %>% 
   summarise(median = median(tad1)) 
+```
+
+
+```{r umtest , mysize=TRUE, size='\\small'}
+with(hta,wilcox.test(tad1~factor(grupo), 
+                     alternative='two.sided',
+                     exact=TRUE, correct=FALSE))
 ```
 
  - Null Hypothesis cannot be rejected
