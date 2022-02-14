@@ -1,0 +1,657 @@
+---
+title: "Application of Hypothesis Tests"
+author: "Alex Sanchez, Miriam Mota and Santiago Perez-Hoyos"
+date: "Versión `r Sys.Date()`"
+institute: "Statistics and Bioinformatics Unit.\n Vall d'Hebron Institut de Recerca"
+output:
+  beamer_presentation:
+    theme: "Copenhagen"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
+  slide_level: 1
+footer: "Statistics for Biomedical Research"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning=FALSE)
+```
+
+```{r echo=FALSE}
+knitr::knit_hooks$set(mysize = function(before, options, envir) {
+  if (before) 
+    return(options$size)
+})
+```
+
+# Outline
+
+1. INTRODUCTION. TYPES OF TESTS
+2. NORMALITY TESTS
+3. ONE GROUP COMPARISON
+4. TWO GROUPS COMPARISON IN INDEPENDENT / DEPENDENT SAMPLES
+5. CATEGORICAL VARIABLES
+6. PROPORTION TESTS
+7. INDEPENDENCE TESTS
+
+---
+
+# Introduction 
+
+- Once the concept of hypothesis testing is established, 
+- Researchers face the problem of _which test should be applied at every possible situation_.
+- Best solution: 
+  - understand the problem and the questions addressed
+  - know available tests for each problem
+  - be aware of applicability assumptions of each test and how to check them.
+- Easier to say than to do. 
+  - Sometimes cheatsheets may be helpful, 
+  - but be warned against a blind use, that is: 
+  - __understand__ and __be critic__ with the steps. 
+
+
+# Select the test according to each situation (1)
+
+## Some test options when variables are numerical
+
+```{r, echo=FALSE, out.width="80%", out.height="100%", fig.cap=""}
+knitr::include_graphics("images/tests4numericalVariables.png")
+```
+
+
+# Introductory Example
+
+- A study was designed to compare two distinct hypertension control programs.
+- 60 individuals with HTA were randomly assigned to either one or the other group (30 per group) 
+- Blood pressure was measured each month during a year 
+
+```{r, echo=FALSE, out.width="90%", out.height="90%", fig.cap=""}
+knitr::include_graphics("images/ExampleDataHTA.png")
+```
+
+# Introductory Example (2)
+
+```{r loadlibs, echo=FALSE, include=FALSE}
+library(dplyr)
+library(readxl)
+library(magrittr)
+library(ggplot2)
+```
+
+```{r readExampleData , echo=TRUE, size='\\tiny'}
+hta <- read_excel("datasets/hta.xls")
+print(head(hta))
+```
+
+---
+
+# Some questions to be answered
+
+- Is diastolic (min) tension above 90, "on average", at the beginning of the study?
+- Are samples at baseline equivalent?
+  – In Age? Sex%? Sist? Diast?
+- Has there been a change in BP between month 1 (first measure) and month 12?
+- Has this change been different between treatment groups?
+
+---
+
+# What type of test for each question? 
+
+- Is diastolic (min) tension above 90, "on average", at the beginning of the study?
+
+  – _One variable. Test about the mean_
+  
+- Are samples at baseline equivalent?
+
+  – _Comparison between distinct groups of individuals in two groups (A/B, Male/Fem)_
+
+- Has there been a change in BP between month 1 (first measure) and month 12?
+  
+  – _Comparison between same individuals at different time points_
+
+---
+
+# Always start looking at the data
+
+
+```{r ,eval=TRUE, size='\\tidy',out.width="90%", out.height="90%"}
+par(mfrow=c(1,2)) # Draw four plots in one panel 
+with(hta, boxplot(tad1, main="Box-plot") )
+with(hta, hist(tad1) )
+par(mfrow=c(1,1)) # Back to one plot per panel
+```
+
+# General approach
+
+- Hypothesis tesing is useful to answer some questions in problems.
+
+-  These can be applied in distinct scenarios:
+    - With numerical/continuos or categorical variables.
+    - With data distribued as a gaussian population or not
+    - With one or more groups of data.
+    - With dependent or independent data.
+  
+- Try not to blindly apply recipes
+  - Think about the situation that generated the data
+  - Think about how your question becomes a test
+  - Think about the assumptions of the test, how to check them and how robust may the test be to assumption violations.
+  - Know how to apply the test 
+  - Do not blindly and dumby rely on cutoffs!
+
+
+# Normality Test
+
+
+```{r, echo=FALSE, out.width="80%", out.length="60%", fig.cap=""}
+knitr::include_graphics("images/normalityplot.png")
+```
+
+
+```{r normtest , mysize=TRUE, size='\\small'}
+with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
+```
+
+
+# One sample Test
+
+- We do not use it very often.
+
+- Very similar to estimation questions. It can be solved calculating a confidence interval
+
+- Idea: We want to verify from a sample a previous hypothesis about the mean in a population 
+
+- Example: _Can it be accepted that the initial TAD is 90 or greater in hypertensive patients?_
+
+- If data is assumed to follow a normal distribution: _t-test_
+- If data is __not__ assumed to follow a normal distribution: _wilcoxon-tets_
+
+
+# Example of one-sample test
+
+Assuming data does not follow a normal distribution ...
+
+```{r ontestNP, mysize=TRUE, size='\\tiny'}
+with(hta,wilcox.test(tad1,mu=90) ) # One sample wilcoxon.test
+```
+
+
+The t-test is robust to small departures of normality ...
+
+```{r onetest , mysize=TRUE, size='\\tiny'}
+with(hta,t.test(tad1,mu=90) ) # One sample T.test
+```
+
+# Exercise 1
+
+1. Check the normality of tas1 variable, call it "TAS" in hta dataset
+2. Can it be accepted that the initial TAS is 120 in Hipertensive patients?
+3. Find the 95% confidence interval for the mean of tas1 variable
+4. Extra: Can it be accepted that the initial TAS is higher than 120 in Hipertensive women?
+
+# Comparison between two groups ("two-sample problems")
+
+- Most of the times, tests are associated with comparison between two or more groups.
+
+  - Are the two groups A and B comparable?, that is, given a certain variable, does it take on average, the same value, at baseline time?
+  - Is blood pressure comparable between first and 12th measures?
+  
+Notice that:
+
+- the first question implies comparison between distinct groups of individuals
+- while the first one assumes comparison between the same individuals at two time points.
+
+<!-- # Homogeneity variance Test -->
+
+
+<!-- ```{r vartest , mysize=TRUE, size='\\small'} -->
+<!-- library(car) -->
+<!-- hta%>%  -->
+<!--   group_by(sexo) %>%  -->
+<!--   summarise(var = sd(tas1))  -->
+
+
+<!-- with(hta,leveneTest(tad1~factor(sexo),center="median")) -->
+
+<!-- ``` -->
+<!--   - p value is over 0.05 -->
+<!--   - We can assume homogeneity of variances -->
+
+
+
+<!-- # T test when variances are equal -->
+
+
+
+<!-- ```{r eqttest , mysize=TRUE, size='\\small'} -->
+<!-- with(hta,t.test(tas1~factor(sexo),var.equal=TRUE )) -->
+
+<!-- ``` -->
+<!-- - Type I Error is over than 0.05 -->
+<!-- - We cannot reject mean equality -->
+
+# Start looking at the data
+
+```{r}
+with(hta, boxplot(tad1~grupo))
+```
+
+
+# Compare two groups assuming normality: 
+## two sample t-test for independent groups
+
+- The two-sample t-test is used to compàre two groups assuming normality.
+- The test changes depending on if the variances of the two groups can be considered equal or not. 
+
+  - This preliminary comparison is omitted here.
+
+```{r neqttest , mysize=TRUE, size='\\tiny'}
+with(hta,t.test(tad1~factor(sexo),var.equal=FALSE ))
+```
+
+
+# Compare two groups without assuming normality
+## U Mann-Whitney or Sum Rank non parametric test
+
+```{r umtest , mysize=TRUE, size='\\tiny'}
+hta%>% 
+  group_by(grupo) %>% 
+  summarise(median = median(tad1)) 
+
+with(hta,wilcox.test(tad1~factor(grupo)
+    ,alternative='two.sided',exact=TRUE, correct=FALSE))
+```
+
+ - Null Hypothesis cannot be rejected
+ 
+# Exercise 2
+
+1. Is Diastolic pressure ("TDA") comparable at baseline time between Men and women?
+2. What is the Hypothesis that we want to test? Describe the null hypothesis and the alternative hypothesis.
+3. What test would be appropiate to answer the question?
+4. Compute and decide
+5. Apply a non-parametric test and compare the results
+
+
+# Comparisons with dependent (paired) data
+
+- If we consider two groups of dependent data we are in a prticular situation.
+
+  - Apparently two groups
+  - Only one group of individuals
+  
+- Computer programs usually provide tests for "paired data", but they are essentially one-sample tests fro the difference between the values of the same individuals.
+
+- Again, depending on, if normality is assumed or not, we rely on _paired-t-test_ or _wilcoxon test for paired data_.
+
+# Exercise 3
+
+- Can we consider that systolic and diastolic pressure have changed between baseline and month 12?
+- Choose the appropriate test and apply it to yioeld a decision.
+- Think carefully about the hypothesis being tested. 
+  - What is a reasonable option for the alternative hypothesis?
+
+
+
+
+# Categorical Variables
+
+- Categorical variables represent facts that can be better described with _labels_ than with numbers. 
+
+    - Example: `Sex`, better choose from {`Male` , `Female`} than from: {1,2}.
+
+- Sometimes ordering of labels makes sense, although _it is not reasonable to assign numbers to categories_:
+
+    - Example: `Tumor stage`: {1,2,3,4}, but $1+2\neq 3$!!!
+
+  - `Sex` is an example of a categorical variable in `nominal` scale
+  
+  - `Stage` is an example of a categorical variable in `ordinal` scale
+
+# Representing categorical variables in R
+
+- Categorical variables are well represented with _factors_
+
+```{r}
+sex <- factor(c("Female", "Male"))
+blood_group <- factor(c("A", "B", "AB", "O"))
+```
+
+<!-- - Besides, factors can be forced to be "ordereded" -->
+
+```{r, echo=FALSE}
+# tumorstage <- factor(1:4, ordered=TRUE)
+```
+
+- Be careful with the names of factors, by default, _levels_ assigned in alphabetical order.
+
+```{r,size="tiny"}
+levels(blood_group)
+```
+
+- To verify class of a variable
+
+```{r}
+class(sex)
+```
+
+
+# Creating factors
+
+- Factors can be created ... 
+
+  - automatically, when reading a file  or 
+  
+    - Not all functions for reading data from file will create a factor!!!
+    - Usually levels will be defined from alphabetic order
+  
+  - using the `factor` or the `as.factor` commands.
+    
+    - more flexible
+    
+# Create factors automatically
+
+- This is achieved by
+
+  - Using the `read.table` or `read.delim` functions for reading
+  
+    - Setting the "character variables as.factors" to TRUE
+
+- Example
+
+  - Load the `diabetes` dataset using the `Import Dataset` feature of Rstudio
+    - From text (base)      (use the file `osteoporosis.csv`)
+    - From text (readr)     (use the file `osteoporosis.csv`)
+    
+    <!-- - From Excel            (use the file `diabetes.xls`) -->
+    
+  - What is the class of the variable `menop`
+  
+
+# Create factors automatically
+  
+```{r, size=5, results='hide'}
+
+osteo1 <- read.csv("datasets/osteoporosis.csv",sep = "\t",
+                   stringsAsFactors=TRUE)
+class(osteo1$menop)
+summary(osteo1$menop)
+str(osteo1)
+
+library(readr)
+osteo2 <- read_delim("datasets/osteoporosis.csv", "\t", 
+                     escape_double = FALSE)
+class(osteo2$menop)
+osteo2$menop <- as.factor(osteo2$menop)
+class(osteo2$menop)
+summary(osteo2$menop)
+str(osteo2)
+```
+
+# Exercise 4
+
+- Select `diabetes.xls` datasets 
+    
+ - Read the dataset into R and check that the categorical variables you are interested (mort, tabac, ecg) in are converted into factors.
+ 
+ - Confirm the conversion by summarizing the variables
+
+ 
+<!-- # Exercise 2 -->
+
+<!-- - Use the diabetes.sav file and import it into R with the "Import from SPSS" feature. --> 
+
+<!--   - What is the class of the "MORT" variable. -->
+
+<!--   - Turn it into one factor so that it has the same levels as when you read it using `read.csv` -->
+  
+
+# The analysis of categorical variables
+
+- The analysis of categorical data proceeds as usual:
+
+ - Start exploring the data with the   tables and graphics
+ - Proceed to estimation and/or testing if _appropriate_
+
+  - Estimation
+    - Proportions: Point estimates, confidence intervals
+    
+  - Testing
+    - One variable (tests with proportions)
+    - With two variables (chi-square and related)
+  
+  
+# Types of test with categorical variables
+
+- One variable (tests with proportions)
+  - Does the proportion (% affected) match a given value?
+  - Is the proportion (% affected) the same in two populations?
+
+- With two variables (chi-square and related)
+
+  - Is there an association between two categorical variables?
+  - Is there a relationship between the values of a categorical variable before and after treatment?
+  
+# Select the test according to each situation (3)
+
+## Some test options when variables are categorical
+
+```{r, echo=FALSE, out.width="90%", out.height="90%", fig.cap=""}
+knitr::include_graphics("images/tests4categoricalVariables.png")
+```
+
+
+
+# Example
+
+Consider the following study relating smoking and cancer.
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/cancerAndSmoking1png.png")
+```
+
+Our goal here would be to determine if there is an association between smoking and cancer.
+
+# Crosstabulating a dataset
+
+- Data may come from a table (aggregated) or disagregated in a data file.
+
+- In this case we need to build the table applying "cross-tabulation"
+
+```{r}
+dadescancer <- read.csv("datasets/dadescancer.csv", 
+                        stringsAsFactors = TRUE)
+```
+
+```{r}
+#attach(dadescancer)
+mytable <-table(dadescancer$cancer, dadescancer$fumar)
+mytable
+```
+
+# Crosstabulation (2): Marginal tables
+
+Marginal values are important to understand the structure of the data:
+
+
+```{r}
+mytable<- addmargins(mytable)
+mytable
+```
+
+
+# Crosstabulation (3): In percentages
+
+Showing tables as percentages is useful for comparisons
+
+```{r}
+prop.table(mytable) # cell percentages
+prop.table(mytable, 1) # row percentages
+# prop.table(mytable, 2) # column percentages
+
+```
+
+# Exercise 5
+
+- With the diabetes dataset repeat the crosstabulation done above using 
+  - Two categorical variables
+  - Variable "mort" and a newly created variable "bmi30" created by properly categorizing variable bmi.
+  
+
+# One variable: Proportion tests
+
+- According to medical literature, in the period 1950-1980, the proportion of obese individuals (defined as: BMI $\geq 30$) was 15% in the population of men over  55 years old.
+
+- A random sample obtained from the same population between 2000 and 2003 showed that, over a total of 723 men older than 55, 142 were obese.
+
+- With a significance level of 5%, can we say that the population of men older than 55 in 2000-2003 had the same proportion of obese cases than that population had in 50'-80'?
+
+# Proportion tests with R
+
+
+Alternative "NOT EQUAL". This is set by default.
+
+```{r}
+prop.test(x=142, n=723, p=0.15)
+```
+
+---
+
+Alternative "GREATER"
+
+```{r}
+prop.test(x=142, n=723, p=0.15, alternative="g")
+```
+
+---
+
+Alternative "LESS THAN"
+
+```{r}
+prop.test(x=142, n=723, p=0.15, alternative="l")
+```
+
+
+Notice that _choosing the wrong alternative may yield unreasonable conclusions_.
+
+
+# Estimation comes with proportion test
+
+- `prop.test` does __three__ distinct calculations
+
+  - A test for the hypothesis $H_0: p=p_0$ is performed
+  - A confidence interval for $p$ is built based on the sample
+  - A point estimate for $p$ is also provided.
+
+```{r, echo=FALSE, out.width="100%", fig.cap=""}
+knitr::include_graphics("images/propTestsAndCI.png")
+```
+
+# Exercise 3
+
+- In the diabetes dataset.
+  
+  - Test the hypothesis that the proportion of patients with `bmi30` is higher than 40%
+      - In the global population of the study
+      - Only in patients with 'mort' equal "Muerto"
+      
+  <!-- - Select a sample of size 100 and repeat the test. How do the results change? -->
+
+  <!-- - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%? -->
+    
+# Contingency tables
+
+- A contingency table (a.k.a cross tabulation or cross tab) is a matrix-like table that displays the (multivariate) frequency distribution of the variables.
+
+- It is bidimensional, and classifies all observations according to two categorical variables 
+(A and B, rows and columns).
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/contingencytables1.png")
+```
+
+# Chi-squared test
+
+- A _familiy_ of tests receiving its name because they all rely on the _Chi-Squared distribution_ to compute the test probabilities.
+
+**Chi squared independence test**
+
+- When the sample comes from a single population with 2 categorical variables, the aim is to determine if there is relationship between them.
+
+**Chi squared homogeneity test** 
+
+- When each row is a sample from distinct populations (groups, subgroups...), the aim is to determine if both groups have significative differences in that variable
+
+# Chi-squared tests
+
+- When we have:
+
+  - quantitative data, 
+  - two or more categories, 
+  - independent observations, 
+  - adequate sample size (>10)
+
+- and our questions are like...
+
+   - _Do the number of individuals or objects that fall in each pair of categories differ significantly from the number you would expect if there was no association?_
+
+   - _Is this difference between the expected and observed due to chance ("sampling variation"), or is it a real difference?_
+
+# Chi squared.test: Observed vs expected
+
+```{r, echo=FALSE, out.width="80%", fig.cap=""}
+knitr::include_graphics("images/observedvsexpected.png")
+```
+
+# Chi squared tests: Observed vs expected with R
+
+```{r, results='hide'}
+require(gmodels)
+mytable <- table(dadescancer$cancer, dadescancer$fumar)
+CrossTable(mytable,expected = T,prop.chisq = F,prop.c = F,prop.r = F)
+```
+![](images/chi.PNG)
+
+# Chi squared tests with R
+
+```{r}
+chisq.test (mytable)
+```
+
+
+
+# Fisher test. an assumptions-free alternative
+
+Chi-squared test require that sample sizes are "big" and expected frequencies are, at least greater than 5.
+
+Fisher test can be an alternative if these assumptions are not met, especially for two times two tables.
+
+```{r}
+fisher.test(mytable)
+```
+
+
+
+# Exercise 6
+
+- Use the diabetes dataset to study if it can be detected an association between the variables `mort` and `tabac` in the diabetes dataset.
+
+- Do not start with a test but with an appropriate summarization and visualization!
+
+# Mcnemar test
+
+Mcnemar test is used to compare the frequencies of paired samples of dichotomous data
+
+- Ho: There is no significant change in individuals after the treatment
+
+- H1: There is a significant change in individuals after the treatment
+
+
+# Mcnemar test. Example 
+
+![](images/mcnemar.PNG)
+
+
+```{r}
+.Table <- matrix(c(69,28,5,63), 2, 2, byrow=TRUE)
+mcnemar.test(.Table)
+```

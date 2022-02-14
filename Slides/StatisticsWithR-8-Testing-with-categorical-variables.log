@@ -1,0 +1,33 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.12.19)  14 FEB 2022 18:32
+entering extended mode
+**./StatisticsWithR-8-Testing-with-categorical-variables.tex
+(StatisticsWithR-8-Testing-with-categorical-variables.tex
+LaTeX2e <2021-11-15>
+L3 programming layer <2020-10-05> (C:\Users\asanc\AppData\Roaming\MiKTeX\2.9\te
+x/latex/beamer\beamer.cls
+Document Class: beamer 2018/02/20 v3.50 A class for typesetting presentations
+
+(C:\Users\asanc\AppData\Roaming\MiKTeX\2.9\tex/latex/beamer\beamerbasemodes.sty
+(C:\Users\asanc\AppData\Roaming\MiKTeX\2.9\tex/latex/etoolbox\etoolbox.sty
+Package: etoolbox 2018/02/11 v2.5e e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count177
+
+! LaTeX Error: Command \AtBeginEnvironment already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1752   \csgappto{@begin@#1@hook}}
+                                    
+Here is how much of TeX's memory you used:
+ 368 strings out of 479701
+ 5862 string characters out of 2876233
+ 284479 words of memory out of 3000000
+ 17521 multiletter control sequences out of 15000+600000
+ 535088 words of font info for 29 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 68i,0n,74p,682b,17s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+!  ==> Fatal error occurred, no output PDF file produced!
