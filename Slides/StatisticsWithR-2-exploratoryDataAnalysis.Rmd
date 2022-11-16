@@ -1,6 +1,6 @@
 ---
 title: "Exploratory Analysis with R"
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n
+author: "Alex Sanchez, Miriam Mota and  \n
         Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:
@@ -372,69 +372,49 @@ See also: [Remove Rows with NA in R Data Frame](https://statisticsglobe.com/r-re
 - These plots provide an approximation to the distribution of the variables being represented.
 
 
-```{r}
-hist(diab$edat)
-```
-
-## A histogram in `ggplot`
-
-- Every ggplot has, at least, three components
-
-  + The data used 
-  + The variables that go in each axis (the "aesthetics")
-  + The type of plot
-- Plots are built progressively "adding layers"
-
----
-
-```{r}
+```{r, message=FALSE}
 library(ggplot2)
-ggplot(data=diab, aes(x=edat))+
-  geom_histogram()
+ggplot(data=diab, aes(x=edat))+  geom_histogram()
 ```
 
 
-## Improving plots with graphic parameters
 
-- Plots can be improved using _graphical parameters_
+<!-- ## Improving plots with graphic parameters -->
 
-- Some parameters are the same in all graphs. Others are specific of one or other graph.
+<!-- - Plots can be improved using _graphical parameters_ -->
 
-```{r}
-hist(diab$edat, main="Age at diagnostic", probability = TRUE, xlab="Age", ylab="Percentage")
-```
+<!-- - Some parameters are the same in all graphs. Others are specific of one or other graph. -->
 
-## Improving plots in ggplots
+<!-- ```{r} -->
+<!-- hist(diab$edat, main="Age at diagnostic", probability = TRUE, xlab="Age", ylab="Percentage") -->
+<!-- ``` -->
 
-- Plots can be improved using _graphical parameters_
+<!-- ## Improving plots in ggplots -->
 
-- Some parameters are the same in all graphs. Others are specific of one or other graph.
+<!-- - Plots can be improved using _graphical parameters_ -->
 
----
+<!-- - Some parameters are the same in all graphs. Others are specific of one or other graph. -->
 
-```{r}
-ggplot(data=diab, aes(x=edat))+
-  geom_histogram(aes(y=..density..))+
-  ggtitle("Age at diagnostic")+
-  xlab("Age") + ylab("Percentage")
+<!-- --- -->
+
+```{r, echo=F}
+# ggplot(data=diab, aes(x=edat))+
+#   geom_histogram(aes(y=..density..))+
+#   ggtitle("Age at diagnostic")+
+#   xlab("Age") + ylab("Percentage")
 ```
 
 
 ## Boxplot. A one-dimensional histogram
 
 ```{r}
-boxplot (diab$edat, main ="Age")
-```
-
-## Boxplot: Decomposing plots by groups
-
-```{r}
-boxplot(edat~tabac, data=diab, 
-        main="Age at diagnostic according smoking status")
+ggplot(data=diab, aes(y=edat))+
+  geom_boxplot()
 ```
 
 
-## Plots for categorical variables
+
+## Plots for categorical variables. Barplots
 
 - Some simple principles
 
@@ -443,25 +423,17 @@ boxplot(edat~tabac, data=diab,
   + Never use 3D-plots
 
 ```{r}
-t <- table(diab$mort)
-pie(t)
+ggplot(data=diab, aes(x=mort))+
+  geom_bar()
 ```
 
-## Barplots
+<!-- ## Scatterplots -->
 
-- Similar to pie charts but, implicitly, suggest ordering
+<!-- - For two variables, simply use `plot` -->
 
-```{r}
-barplot(t)
-```
-
-## Scatterplots
-
-- For two variables, simply use `plot`
-
-```{r}
-plot(edat~bmi, data=diab)
-```
+<!-- ```{r} -->
+<!-- plot(edat~bmi, data=diab) -->
+<!-- ``` -->
 
 
 
