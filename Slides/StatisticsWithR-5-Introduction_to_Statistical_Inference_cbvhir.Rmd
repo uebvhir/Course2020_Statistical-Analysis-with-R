@@ -1,6 +1,6 @@
 ---
 title: "5- Introduction to Statistical Inference"
-author: "Alex Sanchez, Miriam Mota, Mireia Ferrer and  \n
+author: "Alex Sanchez, Miriam Mota, Augusto Sao and  \n
         Santi Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
 output:
@@ -37,6 +37,16 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 - Confidence intervals
 - Sample size calculations
 
+
+# First of all
+
+ - Download osteoporosis.csv and diabetes.xls in a folder datasets ( i. e. in documents)
+ - Set woking directory to the folder where you create datasets
+ - Download exercise notebook
+ - Open downloaded notebook
+ 
+
+
 # The objectives of Statistical Inference (I)
 
 Taking the observed (measured) values of a group of samples...
@@ -70,7 +80,7 @@ knitr::include_graphics("images/statisticalinference2.png")
         - The percentage of non osteopenic or menopausic women 
         - The mean bone density in each of these groups
         
-- HYPOTHESIS TESING
+- HYPOTHESIS TESTING
 
     - When we wish to _check about some statement on some characteristic of the population_ or we
 _wish to make some comparisons_
