@@ -1,5 +1,5 @@
 ---
-title: "Hypotheses tests with continuous variables"
+title: "Hypothesis tests with continuous variables"
 author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
 date: "Versión `r Sys.Date()`"
 institute: "Statistics and Bioinformatics Unit.\n Vall d'Hebron Institut de Recerca"
@@ -9,7 +9,7 @@ output:
     colortheme: "dolphin"
     fonttheme: "structurebold"
   slide_level: 1
-footer: "Basic Statistics for Biomedical Research"
+footer: "R for Data Science"
 
 ---
 

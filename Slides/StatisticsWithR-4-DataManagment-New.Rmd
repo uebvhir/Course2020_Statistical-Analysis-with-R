@@ -1,69 +1,35 @@
 ---
-title: |
-  | Statistical Analysis with R:
-  | Data Managment and Automation
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and 
-        Santi Pérez"
-date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
-output:
-  beamer_presentation:
-    theme: "Copenhagen"
-    colortheme: "dolphin"
-    fonttheme: "structurebold"
-    slide_level: 2
-footer: "Statistical Analysis with R"
-editor_options: 
-  chunk_output_type: console
+title: "Statistical Analysis with R: Data Management and Automation"
+author: "Alex Sanchez"
+format: revealjs
+editor: visual
 ---
 
-```{r  include=FALSE}
-require(knitr)
-opts_chunk$set(
-concordance=FALSE, echo=TRUE, cache=FALSE, warning=FALSE, error=FALSE, message=TRUE, fig.height=4, size = "footnotesize")
+## Outline: Data Exploration
 
-def.chunk.hook  <- knitr::knit_hooks$get("chunk")
-knitr::knit_hooks$set(chunk = function(x, options) {
-  x <- def.chunk.hook(x, options)
-  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
-})
-```
-
-```{r setLicense, child = 'license.Rmd', eval =F}
-```
-
-## Outline: Data Exploration*
-
-\vspace{2cm}
 
 - Data managements with dplyr
-- The pipe operator %>%
+
+- The pipe operator %\>%
+
 - Merging datasets
 
-\vspace{2.5cm}
-
-\tiny *Based on this presentation: [*Data Managment, UCLA*](https://stats.idre.ucla.edu/stat/data/rdm/data_management_seminar.html#153).
+*Based on this presentation: [Data Managment, UCLA](https://stats.idre.ucla.edu/stat/data/rdm/data_management_seminar.html#153).
 
 ## Data Management packages
-**tidyverse:** a collection of packages with tools for most aspects of data analysis, particularly strong in data import, management, and visualization. Packages within tidyverse:
+
+- tidyverse: a collection of packages with tools for most aspects of data analysis, particularly strong in data import, management, and visualization. Packages within tidyverse:
 
 - **dplyr** - subsetting, sorting, transforming variables, grouping
 - **tidyr** - restructuring rows and columns
 - **magrittr** - piping a chain of commands
 - **stringr** - string variable manipulation
 
-<!-- **Hmisc**: another large collection of tools for most aspects of data analysis, but we use it here for describe(), a dataset summary function -->
-
-```{r, message=FALSE}
-# install.packages("tidyverse", dependencies = TRUE)
-library(tidyverse)
-```
-
-
 ## Example dataset
-\begin{figure}
-\includegraphics[width=.9\linewidth]{images/dataset.png}
-\end{figure}
 
+```{r}
+knitr::include_graphics("images/dataset.png")
+```
 
 # Data managements with dplyr
 
@@ -76,17 +42,20 @@ The **dplyr** package provides tools for some of the most common data management
 - **arrange()**: sort rows
 - **mutate()**: add new columns
 
-The **dplyr** package is automatically loaded with **library(tidyverse)**.
+
+```{r}
+library(dplyr)
+```
 
 
 ## Selecting rows with filter
 
 The dplyr function filter() provides a cleaner syntax for subsetting datasets. Conditions separated by , are joined by & (logical AND).
 
-```{r, size="footnotesize", message=FALSE}
-require(readxl)
+```{r message=FALSE}
+library(readxl)
 diab <- read_excel("datasets/diabetes.xls")
-diab_filt <- filter(diab, tabac == "No fumador", edat >= 50)
+diab_filt <- dplyr::filter(diab, tabac == "No fumador", edat >= 50)
 head(diab_filt, n = 4)
 ```
 
@@ -95,7 +64,7 @@ head(diab_filt, n = 4)
 Use dplyr function select() to keep only the variables you need.
 
 ```{r}
-diab_small <- select(diab, mort, edat, tabac, sbp)
+diab_small <- dplyr::select(diab, mort, edat, tabac, sbp)
 head(diab_small, n = 4)
 ```
 
@@ -107,7 +76,7 @@ Be default, ascending order will be used. Surround a sorting variable with **des
 
 ```{r}
 # sort, with males before 'vivo', then by age, youngest first
-diab_sort <- arrange(diab, desc(mort), edat) 
+diab_sort <- dplyr::arrange(diab, desc(mort), edat) 
 head(diab_sort, n = 4)
 ```
 
@@ -144,7 +113,7 @@ Useful R functions for transforming:
 ## Example: mutate()
 create age category variable, and highbmi binary variable
 ```{r, size="tiny"}
-diab_mut <- mutate(diab,
+diab_mut <- dplyr::mutate(diab,
             edatcat = cut(edat, breaks = c(0,40,50,60,70,120)),
             highbmi = bmi > mean(bmi))
 tail(diab_mut, n = 4)
@@ -175,7 +144,6 @@ select(diab, edat,bmi,sbp,sbp)
 
 arrange(diab, desc(tempsviu))
 ```
-
 
 
 # The pipe operator %>%
@@ -245,9 +213,9 @@ diab %>%
 ## Merging datasets 
 Appending adds more rows of observations, whereas merging adds more columns of variables. Datasets to be merged should be matched on some id variable(s).
 
-\begin{figure}
-\includegraphics[width=.83\linewidth]{images/merge.png}
-\end{figure}
+```{r}
+knitr::include_graphics("images/merge.png")
+```
 
 ## Data example
 
@@ -322,3 +290,4 @@ band_members %>%
 band_members %>% 
 	full_join(band_instruments)
 ```
+
