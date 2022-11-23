@@ -68,33 +68,27 @@ library(magrittr)
 library(ggplot2)
 ```
 
-```{r readExampleData , echo=TRUE, include=FALSE}
-hta <- read_excel("datasets/hta.xls")
-print(head(hta))
-```
 ---
 
+```{r readExampleData , echo=TRUE}
+hta <- read_excel("datasets/hta.xls")
+print(head(hta[,1:7]))
+```
 
+---
 
-```{r ,eval=FALSE, mysize=TRUE, size='\\tiny'}
+# Always start looking at the data
 
+```{r , eval=FALSE, mysize=TRUE, size='\\tiny'}
 oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
 par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
 with(hta, boxplot(tas1, main="Box-plot") )
-
 with(hta, hist(tas1) )
-
 with(hta, qqnorm(tas1, main="Normal QQplot") );with(hta, qqline(tas1) )
-
 par(oldpar) # Vuelve a los parámetros de dibujo originales
-
 ```
 
-
-```{r, echo=FALSE, out.width="80%", out.length="60%", fig.cap=""}
-knitr::include_graphics("images/normalityplot.png")
-```
-
+---
 
 # Normality Test
 
