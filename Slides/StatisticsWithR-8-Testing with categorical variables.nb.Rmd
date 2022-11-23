@@ -3,6 +3,8 @@ title: "8- Hypothesis testing with qualitative variables"
 author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
 output:
+  html_document:
+    df_print: paged
   html_notebook:
     code_folding: hide
 editor_options:
