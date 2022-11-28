@@ -1,0 +1,163 @@
+---
+title: "EBB2022_Exercici_Solució"
+author: "Santi"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    number_sections: true
+  pdf_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio 1 
+
+1.- **Indica que tipo de análisis o que pruebas estadísticas utilizarías y si fuera necesario algún tipo de prueba adicional para llevar a cabo el análisis. Formula la hipótesis a contrastar de acuerdo con las hipótesis seleccionadas**
+
+**a.- Se efectúa un estudio de seguimiento a 1018 sujetos atendidos en una clínica de obesidad. Se mide el Indice de Masa Corporal(IMC) y el perfil lipídico. Al cabo de 12 meses se evalúa de nuevo el IMC y el colesterol estando interesados en cuantficar la disminución de ambos parámetros**
+
+Disponemos de dos variables cuantitativas medidas en dos momentos distintos. Se quiere analizar si los valores pre y post sufren algún cambio, para ello debemos: en primer lugar evaluar la normalidad de las variables. En caso de que se ajusten a una distribución normal, miramos la homegeneidad de las variables y realizamos un test t de Student para muestras apareadas. En el caso de que no sigan una distribución normal, realizaremos el test no paramétrico de wilcoxon para muestras apareadas.
+
+**b.- Se analizan un grupo de variables inmunologica(leucocitos totales, linfocitos B, natural Killer, etc) en una muestra de 102 hombres y 147 mujeres mayores de 65 años. Se está interesado en ver la existencia de diferencias por sexo.**
+
+Disponemos de distintas variables cuantitativas (leucocitos,linfocitos, etc. ) y una variable cualitativa, sexo. Queremos ver si existen diferencias de las variables cuantitativas según el sexo, para ello debemos: en primer lugar evaluar la normalidad de las variables. En caso de que se ajusten a una distribución normal, miramos la homegeneidad de las variables y realizamos un test t de Student. En el caso de que no sigan una distribución normal, realizaremos el test no paramétrico U de Mann-Whitnney.
+
+**c.- La supervivencia de los pacientes con cardiopatía isquémica se asocia al valor de la fracción de eyección(FE). Se desea comparar los resultados obtenidos en 125 pacientes mediante la fracción de eyección isotópica en la asignación de sujetos a grupos de alto y bajo riesgo con la asignación obtenida a partir de la FE angiográfica. Plantea el análisis.**
+
+Disponemos de dos variables cualitativas, queremos ver si existe relación entre el riesgo y la clasificación según FE angiográfica, para ello debemos: en primer lugar realizamos una tabla de frecuencias, en el caso de obtener en alguna celda un valor inferior a 0.05 realizamos un test exacto de Fisher, en caso contrario un test Chi Cuadrado.
+
+# Ejercicio Práctico
+
+Este ejercicio consta de diversas partes en un intento de simular lo que se lleva a cabo en un estudio real. Se ha simplicado para hacerlo más practicable por lo que no hace falta que os agobiéis si algo no os cuadre del todo. De lo que se trata es que veamos como aplicar las distintas técnicas que hemos estudiado, de forma integral, en un problema de análisis de datos.
+
+## Los datos
+
+La demora entre el comienzo de los síntomas y el ingreso hospitalario es un factor que determina la mortalidad del infarto agudo de miocardio (IAM). Se estudian 426 sujetos que acuden al servicio de urgencias de 5 hospitales por dolor torácico , recogiendo el tiempo entre los primeros síntomas y la llegada al hospital y una serie de variables sociodemográficas. Se está interesado en estimar el retraso prehospitalario y determinar las variables asociadas.
+
+![](demora.png)
+
+
+Los datos los podéis encontrar en los ficheros de Stata demora.dta, de Excel demora.xls y de texto plano separado por comas demora.csv
+
+```{r  }
+dat <- read.csv("demora.csv")
+dat$noche <- factor(dat$noche, 0:1, c("Dia", "Noche"))
+dat$noche <- relevel(dat$noche,ref = "Noche")
+```
+
+## Los análisis
+
+### Apartado a
+**Se está interesado en conocer la relación entre la demora y la aparición nocturna del síntoma.**
+ 
+- **Comprueba la normalidad de la variable**
+
+
+Realizamos gráficos y test de normalidad Shapiro Wilks.
+
+```{r  }
+qqnorm(dat$demora)
+qqline(dat$demora)
+
+shapiro.test(dat$demora)
+```
+
+Con un p-valor inferior a 0.05 concluimos que los datos no se ajustan a una distribución normal. Indica el procedimiento de análisis. En primer lugar, debemos realizar un análisis gráfico.
+
+
+- **Indica el procedimiento de análisis.**
+
+
+Dado que los datos no se ajustan a una distribución normal, las pruebas que usemos deberán ser no paramétricas.
+
+- **Aunque no sea el método más adecuado realiza el contraste paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+```{r}
+t.test(dat$demora ~dat$noche)
+```
+
+
+- **Aunque no sea el método más adecuado realiza el contraste no paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+
+```{r}
+wilcox.test(dat$demora ~dat$noche)
+```
+- **Justifica cual es la mejor opci´on de las efectuadas anteriormente**
+
+De forma teórica (y basandonos en no normalidad) escogeriamos el test U de Mann-Withney. Usemos el test paramétrico o no paramétrico llegamos a la misma conclusión.
+
+
+### Apartado b
+
+**Se está interesado en conocer la relación entre la demora y la intensidad del dolor.**
+
+- **Indica el procedimiento de análisis.**
+
+Dado que los datos no se ajustan a una distribución normal, las pruebas que usemos deberán ser no paramétricas.
+
+
+- **Aunque no sea el método más adecuado realiza el contraste paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+```{r}
+
+dat$dolor <- as.factor(dat$dolor)
+anova_dd<- aov(dat$demora~dat$dolor)
+TukeyHSD(anova_dd)
+plot(TukeyHSD(anova_dd))
+```
+
+
+- **Aunque no sea el método más adecuado realiza el contraste no paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+
+```{r}
+kruskal.test(dat$demora~dat$dolor)
+```
+
+
+<!-- ### Apartado c -->
+
+<!-- **Se cree que a un 20% de los pacientes les aparecen los síntomas por la noche. Comprueba dicha hipotesis. Que conclusión se obtiene** -->
+
+<!-- Realizamos un test de proporciones para una muestra. Con un p-valor inferior a 0.05 rechazamos que al 20% de los pacientes les aparezcan los síntomas por la noche. -->
+
+<!-- ```{r  } -->
+<!-- prop.test(table(dat$noche),p = .2) -->
+<!-- ``` -->
+
+
+### Apartado d 
+
+**Se esta interesado en estudiar la relación entre el nivel de dolor y la aparición nocturna de los sintomas. Indica el procedimiento de análisis.**
+
+- **Indica el procedimiento de análisis.**
+
+Realizamos una tabla de frecuencias para ver como se distribuyen los datos y si en alguna de las celdas tenemos un valor inferior a 5, si es así realizamos un test exacto de Fisher, en caso contrario un test chi cuadrado para evaluar independencia entre variables. Ejecuta dicho análisis e interpreta los resultados.
+
+```{r  }
+gmodels::CrossTable(dat$dolor, dat$noche, prop.c = F,prop.r = F,chisq = F,prop.chisq = F)
+```
+- **Ejecuta dicho análisis e interpreta los resultados**
+
+Como ningún valor de la tabla es inferior a 5 realizamos un test chi-cuadrado.
+
+```{r  }
+chisq.test(table(dat$dolor, dat$noche))
+```
+
+Con los resultados del test, p.valor superior a 0.05, no podemos rechazar la hipotesis nu- la,consideramos que noche y dolor son independientes.
+
+
+
+```{r}
+# fisher.test(table(dat$dolor, dat$noche))
+```
+
+
+

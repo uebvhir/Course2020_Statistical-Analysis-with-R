@@ -1,0 +1,107 @@
+---
+title: "EBB2022_Exercici_Solució"
+author: "Santi"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    number_sections: true
+  pdf_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio 1 
+
+1.- **Indica que tipo de análisis o que pruebas estadísticas utilizarías y si fuera necesario algún tipo de prueba adicional para llevar a cabo el análisis. Formula la hipótesis a contrastar de acuerdo con las hipótesis seleccionadas**
+
+**a.- Se efectúa un estudio de seguimiento a 1018 sujetos atendidos en una clínica de obesidad. Se mide el Indice de Masa Corporal(IMC) y el perfil lipídico. Al cabo de 12 meses se evalúa de nuevo el IMC y el colesterol estando interesados en cuantficar la disminución de ambos parámetros**
+
+
+
+**b.- Se analizan un grupo de variables inmunologica(leucocitos totales, linfocitos B, natural Killer, etc) en una muestra de 102 hombres y 147 mujeres mayores de 65 años. Se está interesado en ver la existencia de diferencias por sexo.**
+
+
+
+**c.- La supervivencia de los pacientes con cardiopatía isquémica se asocia al valor de la fracción de eyección(FE). Se desea comparar los resultados obtenidos en 125 pacientes mediante la fracción de eyección isotópica en la asignación de sujetos a grupos de alto y bajo riesgo con la asignación obtenida a partir de la FE angiográfica. Plantea el análisis.**
+
+
+
+# Ejercicio Práctico
+
+Este ejercicio consta de diversas partes en un intento de simular lo que se lleva a cabo en un estudio real. Se ha simplicado para hacerlo más practicable por lo que no hace falta que os agobiéis si algo no os cuadre del todo. De lo que se trata es que veamos como aplicar las distintas técnicas que hemos estudiado, de forma integral, en un problema de análisis de datos.
+
+## Los datos
+
+La demora entre el comienzo de los síntomas y el ingreso hospitalario es un factor que determina la mortalidad del infarto agudo de miocardio (IAM). Se estudian 426 sujetos que acuden al servicio de urgencias de 5 hospitales por dolor torácico , recogiendo el tiempo entre los primeros síntomas y la llegada al hospital y una serie de variables sociodemográficas. Se está interesado en estimar el retraso prehospitalario y determinar las variables asociadas.
+
+![](demora.png)
+
+
+Los datos los podéis encontrar en los ficheros de Stata demora.dta, de Excel demora.xls y de texto plano separado por comas demora.csv
+
+```{r  }
+dat <- read.csv("demora.csv")
+dat$noche <- factor(dat$noche, 0:1, c("Dia", "Noche"))
+dat$noche <- relevel(dat$noche,ref = "Noche")
+```
+
+## Los análisis
+
+### Apartado a
+**Se está interesado en conocer la relación entre la demora y la aparición nocturna del síntoma.**
+ 
+- **Comprueba la normalidad de la variable**
+
+- **Indica el procedimiento de análisis.**
+
+
+
+- **Aunque no sea el método más adecuado realiza el contraste paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+
+- **Aunque no sea el método más adecuado realiza el contraste no paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+
+- **Justifica cual es la mejor opci´on de las efectuadas anteriormente**
+
+
+
+### Apartado b
+
+**Se está interesado en conocer la relación entre la demora y la intensidad del dolor.**
+
+- **Indica el procedimiento de análisis.**
+
+
+
+- **Aunque no sea el método más adecuado realiza el contraste paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+
+- **Aunque no sea el método más adecuado realiza el contraste no paramétrico para contrastar la existencia de relación. Interpreta los resultados**
+
+
+<!-- ### Apartado c -->
+
+<!-- **Se cree que a un 20% de los pacientes les aparecen los síntomas por la noche. Comprueba dicha hipotesis. Que conclusión se obtiene** -->
+
+<!-- Realizamos un test de proporciones para una muestra. Con un p-valor inferior a 0.05 rechazamos que al 20% de los pacientes les aparezcan los síntomas por la noche. -->
+
+<!-- ```{r  } -->
+<!-- prop.test(table(dat$noche),p = .2) -->
+<!-- ``` -->
+
+
+### Apartado d 
+
+**Se esta interesado en estudiar la relación entre el nivel de dolor y la aparición nocturna de los sintomas. Indica el procedimiento de análisis.**
+
+- **Indica el procedimiento de análisis.**
+
+- **Ejecuta dicho análisis e interpreta los resultados**
+
+
