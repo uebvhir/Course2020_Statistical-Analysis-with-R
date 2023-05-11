@@ -6,38 +6,37 @@ output: html_document
 ---
 ## Exercise I
 
-- Load the osteoporosis dataset
+-   Load the `osteoporosis` dataset
 
-- Proceed similarly as to what we have done above and obtain information on
+-   Proceed similarly as to what we have done above and obtain information on
 
-  - How many variables and observations
-  - How are them
+    -  How many variables and observations
+    -  How are them (What are their types)
   
 ## EXERCISE II
 
-With the `diab` dataset
+1.  With the `diab` dataset
 
-  - Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
+-   Show only the rows from 35 to 98 and columns 5, 7, and from 9 to 11
 
-  - Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
+-   Change the level of the variable *tabac*, from **No Fumador** to **No\_Fumador**
 
-  - Recode the BMI variable into a factor defined by 
-  
-    - Thin: < 20
-    - Normal [20-25)
-    - Overweight [25-30)
-    - Obese >= 30
+-   Display the unique values for the variable *bmi*. Count how many exist.
 
-  - Display the mean of *edatdiag*, grouped by *ecg*
+-   Display the mean of *edatdiag*, grouped by *ecg*
 
 
 ## Exercise III
 
-  - Read the `osteoporosis.csv` data set  into R so that character variables are automatically converted into factors.
-  
-  - Make a summary of the dataset using standard and non-standard summary functions.
-  
-  - Display the range of `bua`, grouped by `clasific`
+- Using the *osteoporosis.csv* dataset
+
+ - Read the `osteoporosis.csv` data set  into R so that character variables are automatically converted into factors.
+ - Load the dataset and check if it is correctly loaded
+ - Make a numerical summary of the dataset.
+ - Calculate the mean and standard deviation of imc grouped by clasific
+ - Plot the distribution of edat
+
+
   
 ## Exercise IV
 

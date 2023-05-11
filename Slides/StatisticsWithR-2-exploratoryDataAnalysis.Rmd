@@ -309,22 +309,26 @@ How to work with *missing data*:
 ```{r size="tiny"}
 ?mean
 mean(diab$sbp, na.rm = TRUE)
-is.na(diab$sbp)
-```
-
-## Numerical Summaries (VIII)
-
-How to work with *missing data*:
-
-```{r}
+is.na(diab$sbp)[1:50]
 sum(is.na(diab$sbp))
 sum(is.na(diab$dbp))
-diab_noNAS <-na.omit(diab)  
-dim(diab)
-dim(diab_noNAS)
 ```
 
 See also: [Remove Rows with NA in R Data Frame](https://statisticsglobe.com/r-remove-data-frame-rows-with-some-or-all-na)
+
+<!-- ## Numerical Summaries (VIII) -->
+
+<!-- How to work with *missing data*: -->
+
+<!-- ```{r} -->
+<!-- sum(is.na(diab$sbp)) -->
+<!-- sum(is.na(diab$dbp)) -->
+<!-- diab_noNAS <-na.omit(diab)   -->
+<!-- dim(diab) -->
+<!-- dim(diab_noNAS) -->
+<!-- ``` -->
+
+
 
 ## EXERCISE
 
@@ -437,23 +441,23 @@ ggplot(data=diab, aes(x=mort))+
 
 
 
-## EXERCISE
-
-- With the `diab` dataset
-
-  -  Use the best graphic type to plot the relation between *sbp* and *dbp*
-
-  - Show graphically the relation between *edat* and *ecg*
-
-  - Plot the *sbp* frequencies
-
-
 
 ## EXERCISE
 
 - Using the *osteoporosis.csv* dataset
 
+ - Read the `osteoporosis.csv` data set  into R so that character variables are automatically converted into factors.
  - Load the dataset and check if it is correctly loaded
+ - Make a numerical summary of the dataset.
  - Calculate the mean and standard deviation of imc grouped by clasific
  - Plot the distribution of edat
+
+
+
+## EXERCISE
+
+
+- With the variables in the osteoporosis dataset
+
+- Try to represent the different variables using _the most appropriate plot_ for each of them.
 
