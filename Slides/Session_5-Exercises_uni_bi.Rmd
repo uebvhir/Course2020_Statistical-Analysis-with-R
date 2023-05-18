@@ -55,11 +55,28 @@ dat <- read.csv("datasets/demora.csv")
 
 - Crea una nueva base de datos que contenga únicamente las variables con las que se va a trabajar: demora, edad, noche, ambulan y dolor
 
+```{r}
+
+```
+
+
 - De cuantos individuos y variables dispone ahora la base de datos? 
+
+```{r}
+
+```
 
 - Verifica de que tipo es cada una de las variables. 
 
+```{r}
+
+```
+
 - Asigna las variables: noche, ambulan y dolor a factor con los niveles y etiquetas correspondientes.
+
+```{r}
+
+```
 
 
 
@@ -71,6 +88,10 @@ dat <- read.csv("datasets/demora.csv")
  
 - **Realizar un resumen numérico de las variables demora y edad que incluya medidas de tendencia central y de dispersión. Interpretar los resultados**
 
+```{r}
+
+```
+
   - **Que medida es más adecuada para describir los datos, media o mediana?** 
   
   - **Que nos indica el percentil 50%? i el 100%?**
@@ -78,6 +99,10 @@ dat <- read.csv("datasets/demora.csv")
   - **Que variable tiene más dispersión?**
   
 - **Realizar un resumen gráfico de las variables demora y edad. Interpretar los resultados** 
+
+```{r}
+
+```
   
   - **Son simétricas las variables?**
   
@@ -99,15 +124,31 @@ dat <- read.csv("datasets/demora.csv")
 - **El equipo investigador cree que la demora en acudir al hospital y el momento en el que aparece el dolor (variable noche) están relacionadas.**
 
   - **Realizar el resum numérico de la variable ‘demora’ según els grupo de la variable ‘noche’. Comentar los resultados** 
+
+```{r}
+
+```
   
   - **Realizar el resum gráfico de la variable ‘demora’ según els grupo de la variable ‘noche’. Comentar los resultados** 
+
+```{r}
+
+```
 
 
 - **El equipo investigador cree que la demora en acudir al hospital y la edad están relacionadas.**
 
   - **Realizar el resum gráfico de la variable ‘demora’  y 'edad'. Comentar los resultados** 
+
+```{r}
+
+```
   
   - **Calcula el coeficiente de correlación de Pearson y Spearman para las variables 'demora' y ‘edad’ e interpreta el resultado.**
+
+```{r}
+
+```
   
   
 
@@ -115,6 +156,10 @@ dat <- read.csv("datasets/demora.csv")
 ### Apartado c
 
 - **Realiza el resumen gráfico para todas las parejas de variables posibles (Pista: usar funcion ggpairs)**
+
+```{r}
+
+```
 
 - **¿Crees que hay algún gráfico que no sea útil? ¿Por qué?**
 
