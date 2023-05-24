@@ -1,7 +1,11 @@
 ---
 title: "Session 5. Introduction to statistical inference"
-output: html_notebook
-editor_options: 
+output:
+  html_document:
+    df_print: paged
+  html_notebook:
+    code_folding: hide
+editor_options:
   chunk_output_type: console
 ---
 
@@ -10,8 +14,8 @@ editor_options:
 - Read the Osteoporosis dataset and turn factors into variables automatically with Rbase function `read.delim`
 - Take a sample of size 100 from the original file. Call it 'osteo100' and work with this file from now on.
 - Compute the mean value of the variable containing bone density values `BUA`
-- Split the computation between all subgroups from variable `classific` and variable `menop`
-- Compute the percentage of menopausic women from variable `menop`
+- Split the computation between all subgroups from variable `classific` and variable `menop`.
+- Compute the percentage of menopausic women from variable `menop`.
 
 ```{r}
 library(dplyr)
@@ -132,8 +136,7 @@ prop.test (x=cntMenop, n=ssize)
 
 
 
-
-```{r diabetes, }
+```{r diabetes}
 library(readxl)
 library(dplyr)
 library(magrittr)
@@ -144,14 +147,12 @@ diabetes_factor <- diabetes %>%
   select (-numpacie)
 sapply(diabetes_factor, class)
 
-
-
 ```
 
 
 - Provide a confidence interval for:
-    - a proportion of at least one categorical variable and 
-    - the mean value of at least one numerical variable.
+  - a proportion of at least one categorical variable and 
+  - the mean value of at least one numerical variable.
     
 ```{r cisdiab}
 cnt <- table(diabetes[["mort"]])["Muerto"]
@@ -164,11 +165,13 @@ t.test(diabetes[["edat"]])
 
 - How would you find alternative approaches to compute these confidence intervals?
 
-Using formulas directly calculanting from  $\bar{x}\pm t_{\alpha/2}\frac{s}{\sqrt{n}}$
-
-
+  - An option is to apply formulas directly, calculating from:
+  $$
+  \bar{x}\pm t_{\alpha/2}\frac{s}{\sqrt{n}}
+  $$
 
 - Why would you want to do such a thing?
+
 ```{r}
 mostra<-diabetes[["edat"]]
 
@@ -186,7 +189,10 @@ cat("Standard deviation=",sd,"\n")
 cat("Standard error=",se,"\n")
 cat("95% Confidence interval=(",li,";",ls,")","\n")
 ```
-Se calcula el intervalo de confianza como $\overline{p}\pm z_{1-\alpha/2}\sqrt{\frac{\overline{p}(1-\overline{p})}{n}}$ 
+
+- An *approximate* confidence interval for proportions can also be computed using a normal approximation such as:
+
+$$\hat{p}\pm z_{1-\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$ 
 
 
 ``` {r eje2_1}
@@ -209,7 +215,10 @@ cat("95% confidence interval for  ", p ,"=(",lowerli,";",upperli,")","\n")
 
 - Find the sample size needed to achieve a margin of error equal to 5 with a $95\%$ confidence interval.
 
-Function  is the solution sample.size.mean(e, S, N = Inf, level = 0.95)
+- This can be computed with distinct packages.
+- An option is the `sample.size.mean`function from the `samplingbook` package.
+
+- TYpe `? sample.size.mean` to learn about it 
 
 
 ```{r}
@@ -219,16 +228,18 @@ sdbua<-sd(osteoporosis$bua)
 merror<-5
 sample.size.mean(merror,sdbua)
 
-
-
 ```
 
 
 # Exercise 3. Sample size calculation
 
-Sample size formula is 
+- The sample size formula for proportions is: 
 
-$$n= \frac{\overline{p}(1-\overline{p})z_{1-\alpha/2}^2} {marginerror^2}$$
+$$
+n= \frac{\hat{p}(1-\hat{p})z_{1-\alpha/2}^2} {\Delta^2},
+$$
+where $\Delta$ is the margin error, that is the maximum expected difference between the true value and its estimation, that one expects to have with a probability of, at least $1-\alpha$.
+
 - Write a function to compute the sample size for proportions in the worst case (p=q=0.5) or assuming $p$ is known.
 
 - Using a $50\%$ planned proportion estimate, find the sample size needed to achieve $5%$ margin of error for a survey at $95%$ confidence level.
