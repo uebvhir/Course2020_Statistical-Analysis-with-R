@@ -1655,19 +1655,19 @@ osteo100 &lt;- sample_n(osteoporosis, 100)
 # mean bone density
 buaMean &lt;- mean(osteo100$bua)
 print(buaMean)</code></pre>
-<pre><code>## [1] 71.82</code></pre>
+<pre><code>## [1] 75.53</code></pre>
 <pre class="r"><code># Mean bone density ny groups
 osteo100 %&gt;% 
   group_by(menop) %&gt;% 
   summarize(m = mean(bua))</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["menop"],"name":[1],"type":["fct"],"align":["left"]},{"label":["m"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"NO","2":"79.8"},{"1":"SI","2":"68.4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["menop"],"name":[1],"type":["fct"],"align":["left"]},{"label":["m"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"NO","2":"80.40625"},{"1":"SI","2":"73.23529"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code># Proportion of menop women (Proportion  is a mean of 0-1 values)
 mean(ifelse(osteo100$menop==&quot;SI&quot;,1,0))</code></pre>
-<pre><code>## [1] 0.7</code></pre>
+<pre><code>## [1] 0.68</code></pre>
 </div>
 <div id="exercise-1" class="section level1">
 <h1>Exercise 1</h1>
@@ -1772,13 +1772,13 @@ DBP with distinct estimators</p>
 ##  One Sample t-test
 ## 
 ## data:  osteo100[[&quot;bua&quot;]]
-## t = 35.363, df = 99, p-value &lt; 2.2e-16
+## t = 43.309, df = 99, p-value &lt; 2.2e-16
 ## alternative hypothesis: true mean is not equal to 0
 ## 95 percent confidence interval:
-##  67.79017 75.84983
+##  72.06954 78.99046
 ## sample estimates:
 ## mean of x 
-##     71.82</code></pre>
+##     75.53</code></pre>
 <hr />
 </div>
 <div id="example-2-.-computing-confidence-intervals-with-r-3" class="section level2">
@@ -1790,13 +1790,13 @@ prop.test (x=cntMenop, n=ssize)</code></pre>
 ##  1-sample proportions test with continuity correction
 ## 
 ## data:  cntMenop out of ssize, null probability 0.5
-## X-squared = 15.21, df = 1, p-value = 9.619e-05
+## X-squared = 12.25, df = 1, p-value = 0.0004653
 ## alternative hypothesis: true p is not equal to 0.5
 ## 95 percent confidence interval:
-##  0.5989396 0.7854574
+##  0.5782080 0.7677615
 ## sample estimates:
-##   p 
-## 0.7</code></pre>
+##    p 
+## 0.68</code></pre>
 </div>
 </div>
 <div id="exercise-2.1-computing-confidence-intervals" class="section level1">
@@ -1869,13 +1869,14 @@ prop.test (x=cnt, n=ssize)</code></pre>
 ## mean of x 
 ##  52.16779</code></pre>
 <ul>
-<li>How would you find alternative approaches to compute these
-confidence intervals?</li>
-</ul>
-<p>Using formulas directly calculanting from <span class="math inline">\(\bar{x}\pm
-t_{\alpha/2}\frac{s}{\sqrt{n}}\)</span></p>
+<li><p>How would you find alternative approaches to compute these
+confidence intervals?</p>
 <ul>
-<li>Why would you want to do such a thing?</li>
+<li>An option is to apply formulas directly, calculating from: <span class="math display">\[
+\bar{x}\pm t_{\alpha/2}\frac{s}{\sqrt{n}}
+\]</span></li>
+</ul></li>
+<li><p>Why would you want to do such a thing?</p></li>
 </ul>
 <pre class="r"><code>mostra&lt;-diabetes[[&quot;edat&quot;]]
 
@@ -1896,8 +1897,12 @@ cat(&quot;Mean=&quot;,m,&quot;\n&quot;)</code></pre>
 <pre><code>## Standard error= 0.9644696</code></pre>
 <pre class="r"><code>cat(&quot;95% Confidence interval=(&quot;,li,&quot;;&quot;,ls,&quot;)&quot;,&quot;\n&quot;)</code></pre>
 <pre><code>## 95% Confidence interval=( 50.26188 ; 54.0737 )</code></pre>
-<p>Se calcula el intervalo de confianza como <span class="math inline">\(\overline{p}\pm
-z_{1-\alpha/2}\sqrt{\frac{\overline{p}(1-\overline{p})}{n}}\)</span></p>
+<ul>
+<li>An <em>approximate</em> confidence interval for proportions can also
+be computed using a normal approximation such as:</li>
+</ul>
+<p><span class="math display">\[\hat{p}\pm
+z_{1-\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}\]</span></p>
 <pre class="r"><code>cnt &lt;- table(diabetes[[&quot;mort&quot;]])[&quot;Muerto&quot;]
 ssize &lt;- length(diabetes[[&quot;mort&quot;]])
 p&lt;-cnt/ssize
@@ -1918,9 +1923,11 @@ deviation is a good aproximation to <span class="math inline">\(\sigma\)</span>.
 <li><p>Find the sample size needed to achieve a margin of error equal to
 5 with a <span class="math inline">\(95\%\)</span> confidence
 interval.</p></li>
+<li><p>This can be computed with distinct packages.</p></li>
+<li><p>An option is the <code>sample.size.mean</code>function from the
+<code>samplingbook</code> package.</p></li>
+<li><p>TYpe <code>? sample.size.mean</code> to learn about it</p></li>
 </ul>
-<p>Function is the solution sample.size.mean(e, S, N = Inf, level =
-0.95)</p>
 <pre class="r"><code>library(samplingbook)</code></pre>
 <pre><code>## Loading required package: pps</code></pre>
 <pre><code>## Loading required package: sampling</code></pre>
@@ -1955,12 +1962,18 @@ sample.size.mean(merror,sdbua)</code></pre>
 </div>
 <div id="exercise-3.-sample-size-calculation" class="section level1">
 <h1>Exercise 3. Sample size calculation</h1>
-<p>Sample size formula is</p>
-<p><span class="math display">\[n=
-\frac{\overline{p}(1-\overline{p})z_{1-\alpha/2}^2}
-{marginerror^2}\]</span> - Write a function to compute the sample size
-for proportions in the worst case (p=q=0.5) or assuming <span class="math inline">\(p\)</span> is known.</p>
 <ul>
+<li>The sample size formula for proportions is:</li>
+</ul>
+<p><span class="math display">\[
+n= \frac{\hat{p}(1-\hat{p})z_{1-\alpha/2}^2} {\Delta^2},
+\]</span> where <span class="math inline">\(\Delta\)</span> is the
+margin error, that is the maximum expected difference between the true
+value and its estimation, that one expects to have with a probability
+of, at least <span class="math inline">\(1-\alpha\)</span>.</p>
+<ul>
+<li><p>Write a function to compute the sample size for proportions in
+the worst case (p=q=0.5) or assuming <span class="math inline">\(p\)</span> is known.</p></li>
 <li><p>Using a <span class="math inline">\(50\%\)</span> planned
 proportion estimate, find the sample size needed to achieve <span class="math inline">\(5%\)</span> margin of error for a survey at <span class="math inline">\(95%\)</span> confidence level.</p></li>
 <li><p>How would this result change if we are told that a pilot study

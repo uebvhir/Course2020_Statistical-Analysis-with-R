@@ -1,10 +1,11 @@
 ---
 title: "Session 5. Introduction to statistical inference"
 output:
-  html_document:
-    df_print: paged
+  pdf_document: default
   html_notebook:
     code_folding: hide
+  html_document:
+    df_print: paged
 editor_options:
   chunk_output_type: console
 ---
