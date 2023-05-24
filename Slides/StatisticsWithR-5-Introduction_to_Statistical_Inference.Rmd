@@ -259,9 +259,9 @@ $$
 - Confidence interval for the proportion
 
 $$
-\hat {p} - \underbrace{z_{\epsilon/2} \sqrt{\frac{\hat p (1-\hat p)}{n}}}_{Precision} \leq \mu \leq
+\hat {p} - \underbrace{z_{\epsilon/2} \sqrt{\frac{\hat p (1-\hat p)}{n}}}_{Precision} \leq p \leq
 \hat {p} + z_{\epsilon/2} \sqrt{\frac{\hat p (1-\hat p)}{n}} = 
-\mathbf{\hat {p} \pm z_{\epsilon/2} \cdot \mbox{SEM}}
+\mathbf{\hat {p} \pm z_{\epsilon/2} \cdot \mbox{SEP}}
 $$
 
 # Example 2. Computing Confidence Intervals with R
