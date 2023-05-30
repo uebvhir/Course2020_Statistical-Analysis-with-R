@@ -9,7 +9,7 @@ output:
     colortheme: "dolphin"
     fonttheme: "structurebold"
   slide_level: 1
-footer: "Basic Statistics for Biomedical Research"
+footer: "Statistics for Biomedical Research"
 
 ---
 
@@ -41,10 +41,11 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 
 - Once the concept of hypothesis testing is established, 
 - Researchers face the problem of _which test should be applied at every possible situation_.
-- Best solution: 
-  - understand the problem and the questions addressed
-  - know available tests for each problem
-  - be aware of applicability assumptions of each test and how to check them.
+- For this, ideally, they should... 
+  - understand the problem and the questions addressed,
+  - know available tests for each problem,
+  - know (how to check) applicability assumptions of each test,
+  - know how robust each test is to assumptions violation.
 - Easier to say than to do. 
   - Sometimes cheatsheets may be helpful, but be warned against a blind use, that is understand and be critic with the steps. 
 
@@ -55,11 +56,13 @@ knitr::include_graphics("images/testsXCadaSituacio.png")
 ```
 
 
-# Example situation
+# Example situation (1): Introduction
 
-- A study was designed to compare two distinct hypertension control programs.
+- Many experimental questions may be answered through hypothesis testing.
+- Imagine, for example, a study designed to compare two distinct hypertension control programs.
 - 60 individuals with HTA were randomly assigned to either one or the other group (30 per group) 
 - Blood pressure was measured each month during a year 
+  - For simplicity we may keep only data at months 1 and 12
 
 ```{r loadlibs, echo=FALSE, include=FALSE}
 library(dplyr)
@@ -70,16 +73,82 @@ library(ggplot2)
 
 ---
 
+# Example situation (2): Data collected
+
 ```{r readExampleData , echo=TRUE}
 hta <- read_excel("datasets/hta.xls")
-print(head(hta[,1:7]))
+htaSimple <- hta %>% select(grupo, sexo, tas1, tad1, tas12, tad12)
+head(as.data.frame(htaSimple))
+```
+
+<!-- - Exercise: modify the code to create two new variables "difftas=tas12-tas1" and "difftad=tad12-tad1". -->
+
+---
+
+# Example situation (3): Reasonable questions
+
+- The goal of the study is to compare the treatment effect
+so a reasonable question is:
+  - *Is the average decrease in "tad" the same in both groups A and B?*
+
+- Or, if we are testing a new treatment "B", hat is intended to be batter than "A"
+  - *Is the average decrease in "tad" greater in group B?*
+  
+- *Although they are not planned in this study* other relevant questions may lead to questions that need a test to be answered, such as:
+  - *Is the average `tad` above 150?*
+  - *Has the average `tad` (in group A) decreased in 12 months?*
+  - *Is the average `tad` different in men and women at basal time?*
+  
+---
+
+# Types of tests (1): Confirmatory vs Independence
+
+Distinct classifications can be found in textbooks
+
+- Confirmatory
+  - Is average HTA above 150?
+  - Is the the tas1 variable normally distributed
+- Independence
+  - Is sex related to HTA (or is mean(HTA) the same in men or women)
+  - Is average HTA decrease the same for both groups?
+
+- *This classification is useful but artificial, not to say that the term "independence" is slightly abused*
+
+---
+
+# Types of tests (2): Parametric vs Non-parametric
+
+- Parametric tests 
+  - assume some underlying distribution for the data
+  - pose the test in terms of the distribution's parameters
+    - E.g. the t-test assumes normality and relies on the normal and t-distribution's parameters
+  
+- Non-parametric tests
+  - Do not assume an underlying distribution, but they are not assumption-free!
+  - Check: [Distribution free is not assumption free](https://www.isixsigma.com/hypothesis-testing/nonparametric-distribution-free-not-assumption-free/)
+  
+- Permutation tests
+  - If sample size is not tiny *permutation tests* are a good alternative.
+
+---
+
+# Hands on: Always start looking at the data
+
+```{r , eval=FALSE}
+oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
+par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
+with(hta, boxplot(tas1, main="Box-plot") )
+with(hta, hist(tas1) )
+with(hta, qqnorm(tas1, main="Normal QQplot") )
+with(hta, qqline(tas1) )
+par(oldpar) # Vuelve a los parámetros de dibujo originales
 ```
 
 ---
 
-# Always start looking at the data
+# Data visualization
 
-```{r , eval=FALSE, mysize=TRUE, size='\\tiny'}
+```{r , echo=FALSE}
 oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
 par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
 with(hta, boxplot(tas1, main="Box-plot") )
@@ -90,13 +159,34 @@ par(oldpar) # Vuelve a los parámetros de dibujo originales
 
 ---
 
+# Normality and tests
+
+- The choice of test seems to pivot around the question of ¿is my data normally distributed?
+
+- Leaving apart a tence to repeat what we have been taught, why is this so?
+
+  - If the data is normally distributed there exist some *optimal tests* for some one or two sample problems.
+  - Data show often a bell-shaped form that can be assimilated to have a gaussian distribution (it is *normal* to observe this).
+  - Iven if data is not bell-shaped, if sample size is big enough th sample mean tends to be bell -shaped as sample size increase.
+  
+- In summary, normality is not only "practical" but common.
+
+
+
+---
+
 # Normality Test
+
+- Normality tests can be used to decide if the data can be considered to follow a normal distribution.
+- This is more a theoretical than practical issue because ...
+  - If the sample size is too small, the test is not powerful enough.
+  - If the sample size is too big, the test will almost always reject the normality htypothesis
+  
 
 ```{r normtest , mysize=TRUE, size='\\small'}
 with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
 
 ```
-
 
 
 # One sample Test
