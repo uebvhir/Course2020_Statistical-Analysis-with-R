@@ -171,7 +171,8 @@ par(oldpar) # Vuelve a los parámetros de dibujo originales
   
 - In summary, normality is not only "practical" but common.
 
-
+- As a consequence checking normality has become one of the first steps of any data analysis. 
+  - It doesn't hurt, but it is clearly over-rated.
 
 ---
 
@@ -182,6 +183,20 @@ par(oldpar) # Vuelve a los parámetros de dibujo originales
   - If the sample size is too small, the test is not powerful enough.
   - If the sample size is too big, the test will almost always reject the normality htypothesis
   
+- Normality can be tested 
+  - Graphically:
+    - Check if it is a symmetric distribution
+    - Probability graphs (QQ-plots)
+  - Using Hypothesis test (Normality)
+    - Kolmogorov tests
+    - Shapiro-Wilks test
+
+# Normality test: Shapiro-Wilks
+
+- In normality test, the null hypothesis is normality
+- That is, rejecting the null suggests departure of normality.
+  - $H_0$: The data follow a normal distribution
+  - $H_1$: The data do not follow a normal distribution
 
 ```{r normtest , mysize=TRUE, size='\\small'}
 with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
@@ -189,11 +204,42 @@ with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
 ```
 
 
-# One sample Test
+# One sample tests
 
-```{r onetest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tad1,mu=90) ) # One sample T.test
+- One sample tests refer to a single characteristic of the population such as:
+  - *Is it true that the average tad in HTA population is above 150*?
+  
+- It is often said that they are less interesting because they are rarely used in most practical situations where the main goal is comparison
 
+- *However*, noticing that a paired tests is equivalent to a one sample tests for the difference makes us realize their relevance.
+
+
+# One sample parametric vs non-parametric tests
+
+- If we assume normality an appropriate test for a hypothesis about the mean is the *t-test*
+
+  - $H_0: \mu=\mu_0,\qquad H_1: \mu \neq \mu_0,\, (\mu > \mu_0,\, \mu< \mu_0)$.
+  
+- If we don't assume normality we can rely on
+  - Wilcoxon rank test, if data re symmetrical
+  - Sign test in other cases
+
+# Hands on one sample tests
+
+- Is `tad` in HTA patients above 90?
+- Notice that even if we are interested in "above 90" the null is "equality"
+
+  - $H_0: \mu=90,\qquad H_1: \mu > 90$.
+
+
+```{r onettest , mysize=TRUE, size='\\small'}
+with(hta,t.test(tad1,mu=90, alternative="greater") ) # One sample T.test
+```
+
+- In wilcoxon test the null hypothesis is about the median
+
+```{r onewilcoxtest , mysize=TRUE, size='\\small'}
+with(hta,wilcox.test(tad1,mu=90, alternative="greater") ) # One sample wilcoxon
 ```
 
 
