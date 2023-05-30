@@ -224,7 +224,7 @@ with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
   - Wilcoxon rank test, if data re symmetrical
   - Sign test in other cases
 
-# Hands on one sample tests
+# Hands on one sample tests (1): t-test
 
 - Is `tad` in HTA patients above 90?
 - Notice that even if we are interested in "above 90" the null is "equality"
@@ -236,12 +236,13 @@ with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
 with(hta,t.test(tad1,mu=90, alternative="greater") ) # One sample T.test
 ```
 
-- In wilcoxon test the null hypothesis is about the median
+# Hands on one sample tests (2): Wilcoxon test
+
+- In wilcoxon test the null hypothesis is about the median.
 
 ```{r onewilcoxtest , mysize=TRUE, size='\\small'}
 with(hta,wilcox.test(tad1,mu=90, alternative="greater") ) # One sample wilcoxon
 ```
-
 
 
 # Homogeneity variance Test
