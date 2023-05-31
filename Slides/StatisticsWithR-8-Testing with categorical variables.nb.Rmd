@@ -1,10 +1,8 @@
 ---
-title: "8- Hypothesis testing with qualitative variables"
+title: "8- Hypothesis testing with qualitative variables NB"
 author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
 output:
-  html_document:
-    df_print: paged
   html_notebook:
     code_folding: hide
 editor_options:
@@ -26,23 +24,6 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 })
 ```
 
-# Introduction
-
-- Categorical variables represent facts that can be better described with _labels_ than with numbers. 
-
-    - Example: `Sex`, better choose from {`Male` , `Female`} than from: {1,2}.
-
-- Sometimes ordering of labels makes sense, although _it is not reasonable to assign numbers to categories_:
-
-    - Example: `Tumor stage`: {1,2,3,4}, but $1+2\neq 3$!!!
-
-  - `Sex` is an example of a categorical variable in `nominal` scale
-  
-  - `Stage` is an example of a categorical variable in `ordinal` scale
-
-# Representing categorical variables in R
-
-- Categorical variables are well represented with _factors_
 
 ```{r}
 sex <- factor(c("Female", "Male"))
@@ -130,34 +111,6 @@ summary(diabetes3$MORT)
   - Turn it into one factor so that it has the same levels as when you read it using `read.csv`
   
 
-
-# The analysis of categorical variables
-
-- The analysis of categorical data proceeds as usual:
-
- - Start exploring the data with the   tables and graphics
- - Proceed to estimation and/or testing if _appropriate_
-
-- Estimation
-  - Proportions: Point estimates, confidence intervals, Sample Size
-    
-- Testing
-  - One variable (tests with proportions)
-  - With two variables (chi-square and related)
-  
-  
-# Types of test with categorical variables
-
-- One variable (tests with proportions)
-  - Does the proportion (% affected) match a given value?
-  - Is the proportion (% affected) the same in two populations?
-
-- With two variables (chi-square and related)
-
-  - Is there an association between two categorical variables?
-  - Is there a relationship between the values ​​of a categorical variable before and after treatment?
-
-
 # Example
 
 Consider the following study relating smoking and cancer.
@@ -223,6 +176,14 @@ prop.table(mytable, 1) # row percentages
 
 ```
 
+# Crosstabulation (4): In percentages
+```{r}
+require(gmodels)
+gmodels::CrossTable(dadescancer$cancer, dadescancer$fumar, expected=TRUE, prop.chisq=FALSE)
+```
+
+
+
 # Exercise 3
 
 - With the osteoporosis dataset repeat the crosstabulation done above using 
@@ -230,13 +191,7 @@ prop.table(mytable, 1) # row percentages
   - Two categorical variables
   - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
 
-# One variable: Proportion tests
 
-- According to medical literature, in the period 1950-1980, the proportion of obese individuals (defined as: BMI $\geq 30$) was 15% in the population of men over  55 years old.
-
-- A random sample obtained from the same population between 2000 and 2003 showed that, over a total of 723 men older than 55, 142 were obese.
-
-- With a significance level of 5%, can we say that the population of men older than 55 in 2000-2003 had the same proportion of obese cases than that population had in 50'-80'?
 
 # Proportion tests with R
 
@@ -297,38 +252,6 @@ knitr::include_graphics("images/propTestsAndCI.png")
 knitr::include_graphics("images/contingencytables1.png")
 ```
 
-# Chi-squared test
-
-- A _familiy_ of tests receiving its name because they all rely on the _Chi-Squared distribution_ to compute the test probabilities.
-
-**Chi squared independence test**
-
-- When the sample comes from a single population with 2 categorical variables, the aim is to determine if there is relationship between them.
-
-**Chi squared homogeneity test** 
-
-- When each row is a sample from distinct populations (groups, subgroups...), the aim is to determine if both groups have significative differences in that variable
-
-# Chi-squared tests
-
-- When we have:
-
-  - quantitative data, 
-  - one or more categories, 
-  - independent observations, 
-  - adequate sample size (>10)
-
-- and our questions are like...
-
-   - _Do the number of individuals or objects that fall in each pair of categories differ significantly from the number you would expect if there was no association?_
-
-   - _Is this difference between the expected and observed due to chance ("sampling variation"), or is it a real difference?_
-
-# Chi squared.test: Observed vs expected
-
-```{r, echo=FALSE, out.width="80%", fig.cap="", eval=FALSE}
-knitr::include_graphics("images/observedvsexpected.png")
-```
 
 # Chi squared tests with R
 
