@@ -3,13 +3,20 @@ title: "Comparison between one and two-sided tests"
 output: html_notebook
 ---
 
+# Introduction
+
 In many practical situations the aim of the study is establishing that values, such as HTA, drug level, etc in one group are bigger (or smaller) than those in another other group.
 
 In such cases, we need to do a test with one-sided alternative. While it is straightforward to do in R, it is important to understand what we are doing because R will always provide an answer if we write the test in the right or in the wrong way.
 
 For example, assume we have two groups, A and B, where we want to compare the mean value of some response variable. We believe that group B has higher values than those in group A.
 
-This can be simulated as follows
+
+## Simulated data
+
+A situation where a one-sided alternative test is reasonable is simulated below..
+
+Remember however *that we would not proceed looking at the data and then deciding that we want to do a one-sided test*. **Hypotheses need to be stated before data is collected**
 
 ```{r}
 x <- rnorm(10, mean=10, sd=3)
@@ -23,6 +30,8 @@ library(ggplot2)
 ggplot(myData, aes(x=Group, y=vals, fill=Group)) +
   geom_boxplot()
 ```
+
+# Testing to compare two means (or medians)
 
 A reasonable hypothesis test:
 
@@ -82,7 +91,8 @@ t.test(vals~Group, data=myData, alternative="greater")
 - Notice that while there is a clear difference between the two means the p-value does not alloow rejecting the null hypothesis.
 - What is worst, the confidence interval does not have an upper limit which means that we would never be able to reject the null even if the difference increased.
 
-*In summary*
+
+# In summary
 
 When one is posing one-sided alternative tests using R to compare two groups, think of it in terms of stating the hypothesis writing the lower categories first.
 
