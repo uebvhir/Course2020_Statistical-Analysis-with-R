@@ -1,0 +1,93 @@
+---
+title: "Comparison between one and two-sided tests"
+output: html_notebook
+---
+
+In many practical situations the aim of the study is establishing that values, such as HTA, drug level, etc in one group are bigger (or smaller) than those in another other group.
+
+In such cases, we need to do a test with one-sided alternative. While it is straightforward to do in R, it is important to understand what we are doing because R will always provide an answer if we write the test in the right or in the wrong way.
+
+For example, assume we have two groups, A and B, where we want to compare the mean value of some response variable. We believe that group B has higher values than those in group A.
+
+This can be simulated as follows
+
+```{r}
+x <- rnorm(10, mean=10, sd=3)
+y <- rnorm(10, mean=15, sd=3)
+
+grup <- as.factor(c(rep("A", 10), rep("B",10)))
+
+myData <- data.frame(Group=grup, vals=c(x,y))
+
+library(ggplot2)
+ggplot(myData, aes(x=Group, y=vals, fill=Group)) +
+  geom_boxplot()
+```
+
+A reasonable hypothesis test:
+
+$$ H_0: m_A=m_B,\qquad H_1: m_A < m_B$$
+
+Where "m" may represent either the mean or the median of the response variable.
+
+Assuming normality we can use a t.test. A two-sided version of this test is:
+
+```{r}
+t.test(vals~Group, data=myData)
+```
+
+Now, realizing that we have a one-sided alternative *how should we write the alternative hypothesis*?
+
+```{r eval=FALSE}
+t.test(vals~Group, data=myData,
+       alternative="less")
+```
+
+or 
+
+```{r eval=FALSE}
+t.test(vals~Group, data=myData,
+       alternative="greater")
+```
+
+Both writings might be acceptable, depending on if they mean "m1 is less than m2" or "m2 is greater than m1"
+
+Indeed only one is correct. To know which one **we just have to think in terms of the first and the second group**, that is if we write 
+
+$$
+m_1 \mbox{ is ... than } m_2
+$$
+it becomes clear that the word required to complete the sentence describing the alternative hypothesis is "less".
+
+Let's check that it is so indeed:
+
+If we do the test as described above:
+
+```{r}
+t.test(vals~Group, data=myData, alternative="less")
+```
+
+We observe:
+
+- Sample mean in group A is clearly smaller than that in group B.
+- The p-value is very small
+- The confidence interval does not cover 0, and it only has an upper limit. The null is rejected if m2 is greater enough than m1. We don't care about m1 being too small because the alternative is one-sided, so there is no lower limit.
+
+Now, imagine we do it wrong and write:
+
+```{r}
+t.test(vals~Group, data=myData, alternative="greater")
+```
+
+- Notice that while there is a clear difference between the two means the p-value does not alloow rejecting the null hypothesis.
+- What is worst, the confidence interval does not have an upper limit which means that we would never be able to reject the null even if the difference increased.
+
+*In summary*
+
+When one is posing one-sided alternative tests using R to compare two groups, think of it in terms of stating the hypothesis writing the lower categories first.
+
+For instance if the two groups are defined as "A" and "B" the hypothesis has to be stated in terms of 
+
+  - "A equals B" vs "A less than B" (or "A greater than B")
+
+  - **but not** "B greater than A" (or "B less than A")
