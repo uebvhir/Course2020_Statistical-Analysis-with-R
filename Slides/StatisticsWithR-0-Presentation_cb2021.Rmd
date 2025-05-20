@@ -1,0 +1,234 @@
+---
+title: "Basic Statistics for Biomedical Research"
+author: Santiago Perez-Hoyos, Miriam Mota, Marcos Esteve
+date: "Statistics and Bioinformatics Unit.\n Vall d'Hebron Institut de Recerca"
+output:
+  beamer_presentation:
+    theme: Copenhagen
+    colortheme: dolphin
+    fonttheme: structurebold
+  slide_level: 2
+  ioslides_presentation: default
+  slidy_presentation: default
+footer: Basic Statistics for Biomedical Research
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setLicense, child = 'license.Rmd'}
+```
+
+# Introduction
+
+## Outline
+
+-   Introduction
+
+    -   Who are we ("we"=teachers & students)
+    -   Why are we here (Why learn R?)
+
+-   How will we proceed: Methodology
+
+-   HW Data Science approach to using R
+
+-   References & Resources
+
+## Who are we: The Statistics and Bioinformatics Unit
+
+[https://uebvhir.github.io/WUEB/docs/](https://uebvhir.github.io/WUEB/docs/)
+
+```{=tex}
+\begin{figure}
+\includegraphics[width=0.95\linewidth]{images/sessio0_1.png}
+\end{figure}
+```
+## What we do: Teachers
+
+```{=tex}
+\begin{figure}
+\includegraphics[width=0.95\linewidth]{images/sessio0_2.png}
+\end{figure}
+```
+<!-- ## Who are we (3): The GRBio Research group -->
+
+<!-- \begin{figure} -->
+
+<!-- \includegraphics[width=0.85\linewidth]{images/GRBio.jpg} -->
+
+<!-- \end{figure} -->
+
+## Why this course (1)
+
+```{=tex}
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{images/drowningindata.jpg}
+\end{figure}
+```
+"We are drowning in information but starving for knowledge"
+
+## Why this course (2)
+
+-   **(Biomedical) research**, as well as many other human activities
+    (social networks, sports, COVID ...) generate **huge quantities** of
+    -often complex- **data.**
+
+    -   Although sometimes we will also have small datasets
+
+-   We believe that data leads to information that leads to knowledge,
+    but we need to be able to extract one from the other.
+
+-   This can be attempted in many ways, artificial intelligence, machine
+    learning, data science or something which is common to all of them:
+    **Plain Statistics**!!!
+
+## What are our goals (1)
+
+-   The main goal of this course is to introduce a variety of
+    statistical methods and tools, which is good enough to:
+
+    -   Help you analyze your own data when it makes sense
+    -   Suggests you when the analysis is complex enough to contact an
+        expert statistician (such us those in the UEB)
+    -   Help you to distiguish one from the other
+
+<p>
+
+</p>
+
+-   A secondary, but not least important objective: Show how to do it
+    using R
+
+
+```{r setLicense, child = 'license.Rmd'}
+```
+
+# Introduction
+
+## Outline
+
+\scriptsize
+
+| Sessió | Data     | Modalitat   | Professor | Títol                                                               |
+|--------|----------|-------------|-----------|---------------------------------------------------------------------|
+| 1      | 20/05  | En línia    | Santi     | Introducció a R i RStudio i Tidyverse                                 |
+| 2      | 21/05  | En línia    | Miriam    | Estadística descriptiva I: Resums numèrics, taules i gràfics.         |
+| 3      | 22/05  | En línia    | Miriam    | Estadística descriptiva II: Gràfics i taules bivariants. ggplot2      |
+| 4      | 27/05  | En línia    | Miriam    | Més manegament de dades amb R. Automatització amb scripts             |
+| 5      | 29/05  | Presencial  | Santi     | Introducció a la inferència estadística. Intervals de confiança       |
+| 6      | 3/06   | En línia    | Santi     | Proves d’hipòtesis I: Conceptes bàsics                                |
+| 7      | 4/06   | En línia    | Santi     | Proves d’hipòtesis II: Variables quantitatives                        |
+| 8      | 5/06   | En línia    | Miriam    | Proves d’hipòtesis III: Variables qualitatives                        |
+| 9      | 10/06  | En línia    | Miriam    | Tests diagnòstics: Sensibilitat, especificitat i corbes ROC           |
+| 10     | 12/06  | Presencial  | Santi     | Exercici resum d’anàlisis de dades reals                              |
+
+**Horari:** 13:00h a 15:00h  
+**Sessions presencials:** *Sala de Juntes*  
+**Sessions en línia:** *via plataforma virtual*
+
+\normalsize
+
+## Course contents
+
+\footnotesize
+
+-   Sessió 1. Introducció a R i RStudio i Tidyverse.
+
+-   Sessió 2. Estadística descriptiva I: Resums numèrics, taules i
+    gràfics. Reproduïbilitat amb R
+
+-   Sessió 3. Estadística descriptiva II: Gràfics i taules bivariants.
+Visualització de dades amb ggplot2.
+
+-   Sessió 4. Més manegament de dades amb R. Automatització de tasques
+    amb scripts..
+
+-   **Sessió 5. Sessió presencial de pràctiques en R i resolució de
+    dubtes**
+
+-   Sessió 6. Introducció a la inferència. Intervals de Confiança.
+
+-   Sessió 7. Proves d'hipòtesis I: Conceptes bàsics
+
+-   Sessió 8. Proves d'hipòtesis II: Variables quantitatives.
+
+-   Sessió 9. Proves d'hipòtesis III: Taules de contingència, Khi²,
+    Tests diagnòstics: Sensibilitat, especificitat i corbes ROC.
+
+-   **Sessió 10. Sessió presencial de resolució d’exercici d’anàlisis de
+    dades reals.**
+
+-   If there is anything else you would like to learn, let us know and
+    we'll try not to let it out.
+    
+\normalsize
+
+## Why doing statistics with R
+
+-   R has become a "de facto" standard for statistical analysis
+-   R is free to use!!
+-   Practically all existing statistical methods available
+-   Powerful graphics that can be used interactively to explore data
+-   Possibility of scripting analysis $\longrightarrow$
+    **Reproducibility**
+-   Enormous and collaborative Community
+
+## How we will work
+
+1.  Our session will have the following structure (all but the first)
+
+    -   1st part: We introduce a few new theoretical ideas
+
+    -   2nd part: We wil show how to do it in R
+
+        3rd part: Practice exercises and start working on the case study
+        suggested or if you want in your data.
+
+2.  Mastering R requires as many other disciplines
+
+    -   Time
+
+    -   Study, and
+
+    -   Practice.
+
+So take it easy. You can go back to R once the course finish
+
+Class atendance and participation (class atendance should be at least
+80%)
+
+## The materials
+
+You can find the presentations, scripts , exercises in the teaching
+section of our web ueb.vhir.org
+
+```{=tex}
+\begin{figure}
+\includegraphics[width=0.95\linewidth]{images/sessio0_4.png}
+\end{figure}
+```
+## - Resources and references
+
+There is a huge variety of resources to learn R, books, tutorials, free
+online courses, etc.
+
+-   This course is based on the book [Data Science for
+    R](http://r4ds.had.co.nz/).
+
+-   Other interesting books + [Using R and RStudio for Data Management,
+    Statistical Analysis, and Graphics, 2nd
+    edition](https://www.amazon.com/Management-Statistical%20-Analysis-Graphics-2015-04-27/dp/B017POAKSK/ref=sr_1_5?ie=UTF8&qid=1539194380&sr=8-5&keywords=using+r+and+rstudio+for+data+management)
+
+-   Online courses + [Coursera's Data Science
+    Specialization](https://github.com/DataScienceSpecialization/courses)
+
+-   [A list of R tutorials and
+    courses](https://hackr.io/tutorials/learn-r)
+
+## 
+
+```{=tex}
+\begin{figure}
+\includegraphics[width=1\linewidth]{images/sessio0_5.png}
+\end{figure}
+```
