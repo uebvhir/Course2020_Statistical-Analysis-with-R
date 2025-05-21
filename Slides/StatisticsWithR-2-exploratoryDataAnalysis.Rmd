@@ -1,6 +1,6 @@
 ---
 title: "Exploratory Analysis with R"
-author: "Alex Sanchez, Miriam Mota and  \n
+author: "Miriam Mota and  \n
         Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:

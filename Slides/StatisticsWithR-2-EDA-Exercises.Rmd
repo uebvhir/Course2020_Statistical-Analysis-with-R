@@ -1,17 +1,27 @@
 ---
 title: "StatisticsWithR-2-EDA-Exercises.Rmd"
-author: "Alex Sánchez (et alt.)"
-date: "4/6/2021"
+author: "UEB"
+# date: "4/6/2021"
 output: html_document
 ---
 ## Exercise I
 
 -   Load the `osteoporosis` dataset
 
+```{r}
+
+```
+
+
 -   Proceed similarly as to what we have done above and obtain information on
 
     -  How many variables and observations
     -  How are them (What are their types)
+    
+```{r}
+
+```
+    
   
 ## EXERCISE II
 
@@ -26,6 +36,12 @@ output: html_document
 -   Display the mean of *edatdiag*, grouped by *ecg*
 
 
+```{r}
+
+```
+
+
+
 ## Exercise III
 
 - Using the *osteoporosis.csv* dataset
@@ -36,10 +52,23 @@ output: html_document
  - Calculate the mean and standard deviation of imc grouped by clasific
  - Plot the distribution of edat
 
+```{r}
+
+```
 
   
 ## Exercise IV
 
 - With the variables in the osteoporosis dataset
 
+```{r}
+
+```
+
+
 - Try to represent the different variables using _the most appropriate plot_ for each of them.
+
+```{r}
+
+```
+
