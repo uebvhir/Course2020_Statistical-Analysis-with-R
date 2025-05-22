@@ -46,27 +46,6 @@ opts_chunk$set(fig.width = 7, fig.height = 3, warning = F)
 - Extra
 
 
-# Outline
-
-- **Elegant graphics for data analysis**
-
-- From univariate to bivariate analysis
-
-- Bivariate analysis
-  
-    - Qualitative vs Qualitative
-    
-    - Qualitative vs Quantitative
-    
-    - Quantitative vs Quantitative
-    
-- Correlation
-
-    - Definition
-    
-    - Types of correlation (Pearson, Spearman)
-    
-- Extra
 
 # Elegant graphics for data analysis
 
@@ -188,27 +167,7 @@ to guess if:
 - What is the direction?
 
 
-# Bivariate Analysis
 
-- Elegant graphics for data analysis
-
-- From univariate to bivariate analysis
-
-- **Bivariate analysis**
-  
-    - **Qualitative vs Qualitative**
-    
-    - **Qualitative vs Quantitative**
-    
-    - **Quantitative vs Quantitative**
-    
-- Correlation
-
-    - Definition
-    
-    - Types of correlation (Pearson, Spearman)
-    
-- Extra
 
 # Bivariate Analysis
 
@@ -387,28 +346,6 @@ Is there a relationship between the variables?
 
 # Correlation
 
-- Elegant graphics for data analysis
-
-- From univariate to bivariate analysis
-
-- Bivariate analysis
-  
-    - Qualitative vs Qualitative
-    
-    - Qualitative vs Quantitative
-    
-    - Quantitative vs Quantitative
-    
-- **Correlation**
-
-    - **Definition**
-    
-    - **Types of correlation (Pearson, Spearman)**
-    
-- Extra
-
-# Correlation
-
 
 ## Main characteristics
 
@@ -520,28 +457,6 @@ cor(diab[,num_var], use = "complete.obs")
 # ggpairs(diab)
 ```
 
-
-# Extra
-
-- Elegant graphics for data analysis
-
-- From univariate to bivariate analysis
-
-- Bivariate analysis
-  
-    - Qualitative vs Qualitative
-    
-    - Qualitative vs Quantitative
-    
-    - Quantitative vs Quantitative
-    
-- Correlation
-
-    - Definition
-    
-    - Types of correlation (Pearson, Spearman)
-    
-- **Extra**
 
 # Extra
 
