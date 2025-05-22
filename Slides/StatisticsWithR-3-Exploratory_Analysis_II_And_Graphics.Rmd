@@ -4,7 +4,6 @@ author: "Santi Perez Hoyos & Miriam Mota Foix"
 date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
-    # toc: true
     theme: "Madrid"
     colortheme: "dolphin"
     fonttheme: "structurebold"
@@ -18,7 +17,7 @@ editor_options:
 ```{r, echo = FALSE, results = 'hide', message = F}
 require(knitr)
 # include this code chunk as-is to set options
-opts_chunk$set(fig.width = 7, fig.height = 3, warning = F)
+opts_chunk$set(fig.width = 7, fig.height = 3, warning = F, message = FALSE)
 
 ```
 
@@ -43,7 +42,7 @@ opts_chunk$set(fig.width = 7, fig.height = 3, warning = F)
     
     - Types of correlation (Pearson, Spearman)
     
-- Extra
+-  Interactive and Impressive Plots
 
 
 
@@ -315,7 +314,7 @@ ggpairs(osteo, columns = c("edad", "peso", "talla", "imc", "bua", "menarqui"),
 
 Load the `diabetes` dataset
 
-```{r}
+```{r, echo = FALSE, eval = TRUE}
 p_load(janitor)
   diab <- import("datasets/diabetes_mod.xls")
 diab<- clean_names(diab)
@@ -457,8 +456,6 @@ cor(diab[,num_var], use = "complete.obs")
 # ggpairs(diab)
 ```
 
-
-# Extra
 
 # Interactive and Impressive Plots
 
