@@ -1,0 +1,160 @@
+---
+title: "Statistics Course with R - Day 3"
+author: "Ricardo Gonzalo Sanz"
+date: "6/10/2020"
+output: pdf_document
+toc: true
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Elegant Graphics for data analysis
+
+```{r}
+#install the package
+#install.packages(ggplot2)
+#load the package
+library(ggplot2)
+
+#see the data
+head(mpg)
+colnames(mpg)
+
+#do the basic plot
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+
+#change to lines
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_line()
+
+#Improving the graphic (color by manufacturer)
+ggplot(mpg, aes(x = displ, y = hwy, color = manufacturer)) + 
+  geom_point()
+
+#Improving the graphic II (add shape by drv)
+ggplot(mpg, aes(x = displ, y = hwy, color = manufacturer, shape =  drv)) + 
+  geom_point()
+```
+
+# Bivariate Analysis
+
+## Qualitative versus qualitative
+
+```{r}
+#load the data 
+osteoporosis <- read.csv2("osteoporosis.txt", sep = "\t", header = TRUE, dec = ",")
+
+#see the data is correctly loaded
+head(osteoporosis)
+
+#contingency table
+table(osteoporosis$grupedad, osteoporosis$clasific)
+
+#contingency table in %
+prop.table(table(osteoporosis$grupedad, osteoporosis$clasific))
+
+#plot the data: stacket barplot
+ggplot(data = osteoporosis, aes(x = grupedad)) +
+  geom_bar(aes(fill = clasific))
+
+
+#plot the data II: bars side by side
+ggplot(data = osteoporosis, aes(x = grupedad)) +
+  geom_bar(aes(fill = clasific), position = "dodge")
+
+#Change colors, legend position, labels and finally save it!
+p <- ggplot(data = osteoporosis, aes(x = grupedad)) +
+  geom_bar(aes(fill = clasific), position = "dodge")
+p + scale_fill_manual(values=c("#8618b1", "blanchedalmond", "red"))
+
+p + theme(legend.position = "bottom")
+
+p + labs(x = "Age group", y = "Women", title = "Osteo disease classified by age group")
+
+pdf("clasific_grupedad.pdf")
+  p + labs(x = "Age group", y = "Women", title = "Osteo disease classified by age group")
+dev.off()
+```
+
+### Another to introduce the data
+
+```{r}
+tab <- matrix(data = c(120, 60, 50, 70), nrow = 2, ncol = 2, byrow = TRUE)
+tab
+
+#change colnames and rownames
+colnames(tab) <- c("Smokers", "Nonsmokers")
+rownames(tab) <- c("Men", "Women")
+
+tab
+
+#Look in %
+prop.table(tab)
+```
+
+## Qualitative versus quantitative
+
+```{r}
+#Table of statistics
+with(osteoporosis, tapply(bua, list(grupedad), mean, na.rm=TRUE))
+
+#Plot the data
+bp <- ggplot(osteoporosis, aes(x = grupedad, y = bua)) + 
+  geom_boxplot(fill = '#A4A4A4', color = "darkred")
+bp
+
+# Box plot with points
+# 0.2 : degree of jitter in x direction
+bp + geom_jitter(shape = 16, position = position_jitter(0.2)) +
+   labs(x = "Age Group", y = "Women", title = "Osteo disease classified by age group")
+```
+
+## Quantitative versus quantitative
+
+```{r}
+# Basic scatter plot
+ggplot(osteoporosis, aes(x = peso, y = imc)) + 
+  geom_point()
+
+# Change the point size, and shape
+ggplot(osteoporosis, aes(x = peso, y = imc)) +
+  geom_point(size = 1, shape = 1)
+
+# Color the points depending of another variable
+ggplot(osteoporosis, aes(x = peso, y = imc, color = clasific, shape = clasific)) +
+  geom_point()
+
+#not always the correlation is good
+ggplot(osteoporosis, aes(x = edad, y = imc)) + 
+  geom_point()
+
+#correlation matrix
+pairs(osteoporosis[, c("edad", "peso",  "talla", "imc", "bua", "menarqui")])
+
+#with ggplots
+#install.packages(GGally)
+library(GGally)
+                 
+ggpairs(osteoporosis, columns = c("edad", "peso",  "talla", "imc", "bua", "menarqui"), ggplot2::aes(colour = clasific))
+
+```
+
+# Correlation
+
+```{r}
+#Pearson correlation
+cor(osteoporosis$bua, osteoporosis$edad, method = "pearson")
+
+#the plot
+
+ggplot(osteoporosis, aes(x = edad, y = bua)) + 
+  geom_point()
+
+#Spearman correlation
+cor(osteoporosis$bua, osteoporosis$edad, method = "spearman")
+```
+

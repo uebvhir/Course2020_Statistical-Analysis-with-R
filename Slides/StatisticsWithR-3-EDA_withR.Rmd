@@ -3,253 +3,404 @@ title: "EDA with R"
 output: html_notebook
 ---
 
-# Outline: Exploratory Analysis (II)
+## Installation
 
-- Introduction: From 1 to 2 or more diomensions
+```{r, eval=FALSE}
+# install.packages("pacman")
+library(pacman)
+p_load(ggplot2)
+```
 
-- Exploring relation between variables
-
-- Introducing Correlation
 
 
-# From one to more dimensions
+## Load diabetes database
 
-- A natural way to start looking at data is, as we have done, on a "one variable-at-a-time" approach.
+```{r, eval=TRUE}
+library(pacman)
+p_load(rio)
+osteo <- rio::import("datasets/osteoporosis.csv", dec = ",")
 
-  - Reasonable way to start understanding the data, but
-    
-  - Fails at the possibility of detecting relations between variables, which can be the basis to understand what we had seen before.
+```
 
-## Why are bi/multivariate approaches better?
+## First steps 
 
-- Exploring two ore more variables simultaneosuly can provide more information
+Three key components
 
-  - Does  there exist a relation between certain variables?
-    
-  - How important is this relation?
-    
-  - Which is the direction of the relation?
-  
+-  Data
 
-# Elegant Graphics for data analysis
+-  Aesthetic mappings between variables
+
+- A least one layer Usually created with a geom function
+![](images/basic_ggplot.png)
+
+## Basic Structure. Points
+
 
 ```{r}
-#install the package
-#install.packages(ggplot2)
-#load the package
 library(ggplot2)
-```
-
-
-```{r}
-#see the data
-head(mpg)
-colnames(mpg)
-```
-
-
-```{r}
-#do the basic plot
-ggplot(mpg, aes(x = displ, y = hwy)) + 
+ggplot(osteo, aes(x = edad , y = bua )) + 
   geom_point()
 ```
 
 
-```{r}
-#change to lines
-ggplot(mpg, aes(x = displ, y = hwy)) + 
-  geom_line()
-```
-
+## Basic Structure. Points + color
 
 ```{r}
-#Improving the graphic (color by manufacturer)
-ggplot(mpg, aes(x = displ, y = hwy, color = manufacturer)) + 
+ggplot(osteo, aes(x = edad , y = bua   , color = menop)) + 
   geom_point()
 ```
 
 
+## Basic Structure. Points + color  + shape
+
 ```{r}
-#Improving the graphic II (add shape by drv)
-ggplot(mpg, aes(x = displ, y = hwy, color = manufacturer, shape =  drv)) + 
+ggplot(osteo, aes(x = edad , y = bua   , color = menop, shape = clasific )) + 
   geom_point()
 ```
 
-# Exercise 1
+# From Univariate to Bivariate Analysis
 
-- Load the diabetes dataset
+- Univariate: analysis of one variable
+- Bivariate: check for relationships between two variables
 
-- Draw a scatterplot showing the relation between `bmi` and `sbp`
+
+## Questions to consider
+
+If there are more than one variable in the dataset it could be interesting
+to guess if:
+
+
+- Does a relation exist?
+- How important is it?
+- What is the direction?
 
 # Bivariate Analysis
 
-## Qualitative versus qualitative
+## Types 
+
+Some plots to study the relationship between two variables...
+
+![](images/types.png)
+
+## Definition
+
+- Bivariate analysis explores the relationship between two variables.
+- The approach depends on whether the variables are numerical or categorical.
+
+
+
+## Qualitative vs Qualitative
+
+- Use contingency tables
+- Chi-squared test for independence
+
+### Example data
 
 ```{r}
-#load the data 
-osteoporosis <- read.csv2("datasets/osteo100.txt", sep = "\t", header = TRUE, dec = ".", stringsAsFactors = TRUE)
+library(rio)
+library(gmodels)
 
-#see the data is correctly loaded
-head(osteoporosis)
+CrossTable(osteo$grupedad, osteo$clasific, prop.c = FALSE, prop.r = FALSE, prop.chisq = FALSE)
+```
+
+## Barplots
+
+- We can use bar plots to explore the relationship.
+- Example: **grupedad vs clasific**
+
+```{r}
+ggplot(osteo, aes(x = grupedad, fill = clasific)) + 
+  geom_bar()
+```
+
+```{r}
+ggplot(osteo, aes(x = grupedad, fill = clasific)) + 
+  geom_bar(position = "dodge")
+```
+
+## Customizing
+
+```{r}
+p <- ggplot(osteo, aes(x = grupedad, fill = clasific)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values=c("#8618b1", "blanchedalmond", "red")) +
+  theme(legend.position="bottom") +
+  labs(x = "Age group", y = "Women", title = "Osteo disease classified by age group")
+p
 ```
 
 
-```{r}
-#contingency table
-tabEdatClassific <- table(osteoporosis$grupedad, osteoporosis$clasific)
-tabEdatClassific
-```
 
 
-```{r}
-#contingency table in %
-prop.table(tabEdatClassific)
-```
+## Qualitative vs Quantitative
+
+- One qualitative and one quantitative variable
+- Use table of means or boxplots
 
 ```{r}
-barplot(tabEdatClassific, beside = TRUE)
-```
-```{r}
-barplot(t(tabEdatClassific), beside = TRUE)
-```
-
-
-
-```{r}
-#plot the data: stacket barplot
-ggplot(data = osteoporosis, aes(x = grupedad)) +
-  geom_bar(aes(fill = clasific))
-```
-
-
-```{r}
-#plot the data II: bars side by side
-ggplot(data = osteoporosis, aes(x = grupedad)) +
-  geom_bar(aes(fill = clasific), position = "dodge")
-```
-
-
-```{r}
-#Change colors, legend position, labels and finally save it!
-p <- ggplot(data = osteoporosis, aes(x = grupedad)) +
-  geom_bar(aes(fill = clasific), position = "dodge")
-
-p + scale_fill_manual(values=c("#8618b1", "blanchedalmond", "red"))
-
-p + theme(legend.position = "bottom")
-
-p + labs(x = "Age group", y = "Women", title = "Osteo disease classified by age group")
-
-pdf("clasific_grupedad.pdf")
-  p + labs(x = "Age group", y = "Women", title = "Osteo disease classified by age group")
-dev.off()
-```
-
-### Another way to introduce the data
-
-```{r}
-tab <- matrix(data = c(120, 60, 50, 70), nrow = 2, ncol = 2, byrow = TRUE)
-tab
-```
-
-
-```{r}
-#change colnames and rownames
-colnames(tab) <- c("Smokers", "Nonsmokers")
-rownames(tab) <- c("Men", "Women")
-tab
-```
-
-
-```{r}
-#Look in %
-prop.table(tab)
-```
-
-## Qualitative versus quantitative
-
-Tabulation by groups is a bit weird with Rbase
-
-```{r}
-#Table of statistics
-with(osteoporosis, tapply(bua, list(grupedad), mean, na.rm=TRUE))
-```
-
-But it is more natural using a tidyverse approach
-
-```{r size="tiny"}
 library(dplyr)
-osteoporosis %>% 
+osteo %>%
   group_by(grupedad) %>%
-  summarize(mean(edad))
+  summarize(mean_bua = mean(bua, na.rm = TRUE))
 ```
+
+## Boxplots
 
 
 ```{r}
-#Plot the data
-bp <- ggplot(osteoporosis, aes(x = grupedad, y = bua)) + 
-  geom_boxplot(fill = '#A4A4A4', color = "darkred")
+bp <- ggplot(osteo, aes(x = grupedad, y = bua)) + 
+  geom_boxplot(fill = '#A4A4A4', color = "purple")
 bp
+```
 
-# Box plot with points
-# 0.2 : degree of jitter in x direction
+## Customizing
+
+```{r}
 bp + geom_jitter(shape = 16, position = position_jitter(0.2)) +
-   labs(x = "Age Group", y = "Women", title = "Osteo disease classified by age group")
+  labs(x = "Age Group", y = "Women", title = "Osteo disease classified by age group")
 ```
 
-## Quantitative versus quantitative
+
+
+## Quantitative vs Quantitative
+
+
+- Scatter plots are useful to show correlation or pattern.
+- Example: **edad vs bua**
+
+### Example data
 
 ```{r}
-# Basic scatter plot
-ggplot(osteoporosis, aes(x = peso, y = imc)) + 
-  geom_point()
+head(osteo[, c("peso", "imc")], n = 10)
+```
 
-# Change the point size, and shape
-ggplot(osteoporosis, aes(x = peso, y = imc)) +
+
+## Scatterplot
+```{r}
+ggplot(osteo, aes(x = peso, y = imc)) + 
+  geom_point()
+```
+
+## Customizing
+
+```{r}
+ggplot(osteo, aes(x = peso, y = imc)) +
   geom_point(size = 1, shape = 1)
+```
 
-# Color the points depending of another variable
-ggplot(osteoporosis, aes(x = peso, y = imc, color = clasific, shape = clasific)) +
+
+## Add information
+
+```{r}
+ggplot(osteo, aes(x = peso, y = imc, color = clasific, shape = clasific)) +
   geom_point()
+```
 
-#not always the correlation is good
-ggplot(osteoporosis, aes(x = edad, y = imc)) + 
+## Other relation 
+
+But not always the correlation is good!
+
+```{r}
+ggplot(osteo, aes(x = edad, y = imc)) +
   geom_point()
 ```
 
 
-```{r}
-#correlation matrix
-pairs(osteoporosis[, c("edad", "peso",  "talla", "imc", "bua", "menarqui")])
-```
-
+## Multiple plots
 
 ```{r}
-#with ggplots
-#install.packages(GGally)
 library(GGally)
-                 
-ggpairs(osteoporosis, columns = c("edad", "peso",  "talla", "imc", "bua", "menarqui"), ggplot2::aes(colour = clasific))
-
+ggpairs(osteo, columns = c("edad", "peso", "talla", "imc", "bua", "menarqui"), 
+        ggplot2::aes(colour = clasific))
 ```
+
+# Exercise I 
+
+
+
+Load the `diabetes` dataset
+
+Study relation between `mort` and `tabac`
+
+  - **Build a contingency table between `mort` and `tabac`.**
+
+  - **Visualize the relationship between `mort` and `tabac`.**
+
+Study relation between `mort` and `bmi`
+
+  - **Calculate Mean, median, and standard deviation of bmi by categories of mort.**
+
+  - **Visualze the  relationship between `bmi` by `mort` status**
+
+
+Study relation between `bmi` and `edad`
+
+  - **Visualze the  relationship between age and BMI.**
+
+
+Is there a relationship between the variables?
+
 
 # Correlation
 
-```{r}
-#Pearson correlation
-cor(osteoporosis$bua, osteoporosis$edad, method = "pearson")
-```
+
+## Main characteristics
+
+Correlation analysis allows
+
+- To study the way of relation between the two variables
+
+-  To quantify the intensity of relation
+
+Correlation is not causation one thing does not causes the other
+
+In the correlation analysis, the two variables have the same weight
+
+The correlation coefficient measures the strength of a linear relation
 
 
-```{r}
-#the plot
+## Concepts
 
-ggplot(osteoporosis, aes(x = edad, y = bua)) + 
-  geom_point()
-
-#Spearman correlation
-cor(osteoporosis$bua, osteoporosis$edad, method = "spearman")
-```
-
-
+- Correlation quantifies strength and direction of relationship
+- r from -1 to 1
+  - r > 0: direct
+  - r < 0: inverse
+  - r = 0: no relation
   
+## Types correlation. Pearson
+
+![](images/types_correlation.png)
+
+## Pearson
+
+```{r}
+cor(osteo$bua, osteo$edad, method = "pearson")
+```
+
+Don’t forget to look the graphic!!
+
+```{r}
+ggplot(osteo, aes(x = edad, y = bua)) + 
+  geom_point()
+```
+
+## Spearman
+
+
+- Pearson correlation coefficient is severely affected by outliers and if the relation is not linear
+
+ -->  Better to use Spearman correlation coefficient (use the ranks between the numbers instead the values) to calculate the correlation coefficient
+
+- Evaluates the monotonic relationship between the variables (not the linear relationship as Pearson does).
+
+
+-->The variables tend to change together but not necessarily at a constant rate
+
+![](images/spearman.png)
+
+## Types of correlation
+
+![](images/comparison_correlation.png)
+
+## Example
+
+```{r}
+cor(osteo$bua, osteo$edad, method = "spearman")
+```
+
+## Correlation Matrix
+
+```{r}
+cor(osteo[, c("edad", "peso", "talla", "imc", "bua", "menarqui")], use = "complete.obs")
+```
+
+
+# Summary
+
+- Use `geom_bar` for categorical-categorical
+- Use `geom_boxplot` for categorical-numerical
+- Use `geom_point` for numerical-numerical
+- Always include clear labels and titles
+
+
+
+# Exercises
+
+- **Calculate Pearson and Spearman correlations between `edat` and `bmi`.**
+
+- **Calculate the correlation between all pairs of numerical variables.**
+
+- **Use the GGally package to visualize all pairwise relationships between variables using the ggpairs() function.**
+
+
+# Extra
+
+# Interactive and Impressive Plots
+
+## Interactive Scatter Plot with Tooltips
+
+```{r, message=FALSE, warning=FALSE}
+p_load(plotly)
+
+p1 <- ggplot(diab, aes(x = edat, y = bmi, color = tabac, label = chd)) +
+  geom_point(size = 3) +
+  labs(title = "BMI vs Age (colored by Smoking)", x = "Age", y = "BMI")
+
+# ggplotly(p1, tooltip = c("x", "y", "label", "color"))
+```
+
+## Violin Plot for BMI by Smoking Status
+
+```{r}
+ggplot(diab, aes(x = tabac, y = bmi, fill = tabac)) +
+  geom_violin(trim = FALSE, color = "black") +
+  geom_jitter(width = 0.2, alpha = 0.6) +
+  labs(title = "Violin Plot: BMI by Smoking Status", x = "Smoking", y = "BMI") +
+  theme_minimal()
+```
+
+## Density Plot by CHD Status
+
+```{r}
+ggplot(diab, aes(x = bmi, fill = chd)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "BMI Distribution by CHD", x = "BMI", y = "Density") +
+  theme_classic()
+```
+
+## Boxplot + Points + Mean Line
+
+```{r}
+ggplot(diab, aes(x = tabac, y = bmi, fill = tabac)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.15, color = "black", size = 2, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", shape = 20, size = 5, color = "red") +
+  labs(title = "BMI by Smoking Status with Mean", x = "Smoking", y = "BMI") +
+  theme_light()
+```
+
+
+# Geospatial Visualization
+
+## World Map with Countries Colored
+
+```{r, message=FALSE, warning=FALSE}
+p_load(maps)
+
+# Load world map data
+world <- map_data("world")
+
+# Plot a basic world map
+ggplot(world, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "lightblue", color = "white") +
+  labs(title = "Basic World Map") +
+  theme_minimal()
+```
+
+
+# Summary
+
+- Use `plotly` for interactive visualizations
+- `GGally::ggpairs` offers compact overviews
+- Combine multiple `ggplot2` layers for clarity and emphasis
+
