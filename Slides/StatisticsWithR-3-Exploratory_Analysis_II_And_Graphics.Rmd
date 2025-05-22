@@ -267,6 +267,8 @@ Load the `diabetes` dataset
 Study relation between `mort` and `tabac`
 
   - **Build a contingency table between `mort` and `tabac`.**
+  
+  
 
   - **Visualize the relationship between `mort` and `tabac`.**
 
@@ -380,6 +382,11 @@ cor(osteo[, c("edad", "peso", "talla", "imc", "bua", "menarqui")], use = "comple
 # Extra
 
 # Interactive and Impressive Plots
+```{r}
+p_load(janitor)
+diab <- import("datasets/diabetes.sav")
+diab<- clean_names(diab)
+```
 
 ## Interactive Scatter Plot with Tooltips
 
