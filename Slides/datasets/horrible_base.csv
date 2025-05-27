@@ -1,0 +1,7 @@
+ID.Paciente,Edad_en_años_..,Fecha_de_Ingreso__hospital.,Sexo_.M.F.,Grupo.de.Intervención___.o.no.,Variable_que_no_se_usa__x9_,Notas...adicionales__
+ID001,34,2020/01/15,Masculino,Control,,NA
+ID002,29,2023/05/02,femenino,intervencion,,Buen estado
+ID003,Na,20200115,FEM,Intervencion,, 
+ID003,29,15/01/20,femen,ctrl,,Duplicado
+TOTAL,"",N/A, ,TOTAL,,Resumen
+ID004,45,2020-01-20,Masculino,Intervención,,falta info
