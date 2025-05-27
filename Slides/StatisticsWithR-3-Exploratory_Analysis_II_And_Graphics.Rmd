@@ -87,7 +87,6 @@ p_load(ggplot2)
 library(pacman)
 p_load(rio)
 osteo <- rio::import("datasets/osteoporosis.csv", dec = ",")
-
 ```
 
 ## First steps 
@@ -104,6 +103,7 @@ Three key components
 ## Basic Structure. Points
 
 
+
 ```{r}
 library(ggplot2)
 ggplot(osteo, aes(x = edad , y = bua )) + 
@@ -114,7 +114,7 @@ ggplot(osteo, aes(x = edad , y = bua )) +
 ## Basic Structure. Points + color
 
 ```{r}
-ggplot(osteo, aes(x = edad , y = bua   , color = menop)) + 
+ggplot(osteo, aes(x = edad , y = bua , color = menop)) + 
   geom_point()
 ```
 
@@ -122,9 +122,17 @@ ggplot(osteo, aes(x = edad , y = bua   , color = menop)) +
 ## Basic Structure. Points + color  + shape
 
 ```{r}
-ggplot(osteo, aes(x = edad , y = bua   , color = menop, shape = clasific )) + 
+p <- ggplot(osteo, aes(x = edad , y = bua   , color = menop, shape = clasific )) + 
   geom_point()
+p
 ```
+
+
+```{r}
+p + 
+  theme_bw()
+```
+
 
 
 # From Univariate to Bivariate Analysis
@@ -191,8 +199,20 @@ Some plots to study the relationship between two variables...
 ### Example data
 
 ```{r}
-library(rio)
-library(gmodels)
+head(osteo[,c("grupedad", "clasific")])
+unique(osteo$grupedad)
+
+osteo$grupedad <- factor(osteo$grupedad)
+
+levels(osteo$grupedad)
+
+
+p_load(gmodels)
+
+table(osteo$grupedad, osteo$clasific)
+
+CrossTable(osteo$grupedad, osteo$clasific)
+
 
 CrossTable(osteo$grupedad, osteo$clasific, prop.c = FALSE, prop.r = FALSE, prop.chisq = FALSE)
 ```
@@ -212,6 +232,29 @@ ggplot(osteo, aes(x = grupedad, fill = clasific)) +
   geom_bar(position = "dodge")
 ```
 
+
+
+```{r}
+library(dplyr)
+
+df_percent <- osteo %>%
+  group_by(grupedad, clasific) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(grupedad) %>%
+  mutate(percent = n / sum(n))
+
+
+
+# Graficar
+ggplot(df_percent, aes(x = grupedad, y = percent, fill = clasific)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Classification by Age Group (Percentages)",
+       x = "Age Group", y = "Percentage") +
+  theme_minimal()
+```
+
+
 ## Customizing
 
 ```{r}
@@ -220,7 +263,7 @@ p <- ggplot(osteo, aes(x = grupedad, fill = clasific)) +
   scale_fill_manual(values=c("#8618b1", "blanchedalmond", "red")) +
   theme(legend.position="bottom") +
   labs(x = "Age group", y = "Women", title = "Osteo disease classified by age group")
-p
+p + theme_bw()
 ```
 
 
@@ -232,7 +275,13 @@ p
 - Use table of means or boxplots
 
 ```{r}
+head(osteo[,c("grupedad", "bua")], n = 20)
+```
+
+
+```{r}
 library(dplyr)
+
 osteo %>%
   group_by(grupedad) %>%
   summarize(mean_bua = mean(bua, na.rm = TRUE))
@@ -256,6 +305,15 @@ bp + geom_jitter(shape = 16, position = position_jitter(0.2)) +
 
 
 
+```{r}
+ggplot(osteo, aes(x = bua)) +
+  geom_histogram(binwidth = 5, fill = "#A4A4A4", color = "purple") +
+  facet_wrap(~ grupedad) +
+  theme_minimal()
+```
+
+
+
 ## Quantitative vs Quantitative
 
 
@@ -266,6 +324,9 @@ bp + geom_jitter(shape = 16, position = position_jitter(0.2)) +
 
 ```{r}
 head(osteo[, c("peso", "imc")], n = 10)
+
+class(osteo$peso)
+class(osteo$imc)
 ```
 
 
@@ -279,15 +340,15 @@ ggplot(osteo, aes(x = peso, y = imc)) +
 
 ```{r}
 ggplot(osteo, aes(x = peso, y = imc)) +
-  geom_point(size = 1, shape = 1)
+  geom_point(size = 3, shape = 8)
 ```
 
 
 ## Add information
 
 ```{r}
-ggplot(osteo, aes(x = peso, y = imc, color = clasific, shape = clasific)) +
-  geom_point()
+ggplot(osteo, aes(x = edad, y = bua, color = clasific, shape = clasific)) +
+  geom_point(size = 2, alpha = 0.7)
 ```
 
 ## Other relation 
@@ -303,7 +364,7 @@ ggplot(osteo, aes(x = edad, y = imc)) +
 ## Multiple plots
 
 ```{r}
-library(GGally)
+p_load(GGally)
 ggpairs(osteo, columns = c("edad", "peso", "talla", "imc", "bua", "menarqui"), 
         ggplot2::aes(colour = clasific))
 ```
@@ -315,30 +376,61 @@ ggpairs(osteo, columns = c("edad", "peso", "talla", "imc", "bua", "menarqui"),
 Load the `diabetes` dataset
 
 ```{r, echo = FALSE, eval = TRUE}
-p_load(janitor)
+# p_load(janitor)
   diab <- import("datasets/diabetes_mod.xls")
-diab<- clean_names(diab)
+# diab<- clean_names(diab)
 ```
 
 Study relation between `mort` and `tabac`
 
   - **Build a contingency table between `mort` and `tabac`.**
   
+```{r}
+CrossTable(diab$mort, diab$tabac, prop.chisq = F)
+```
   
 
   - **Visualize the relationship between `mort` and `tabac`.**
+```{r}
+ggplot(diab, aes(x = tabac, fill = mort)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Mortality by Smoking Status",
+       x = "Mortality",
+       y = "Count",
+       fill = "Smoking Status") +
+  theme_minimal()
+```
+  
 
 Study relation between `mort` and `bmi`
 
   - **Calculate Mean, median, and standard deviation of bmi by categories of mort.**
+```{r}
+diab %>%
+  group_by(mort) %>%
+  summarize(mean_bua = mean(bmi, na.rm = TRUE),
+            sd_bua = sd(bmi, na.rm = TRUE),
+            median = median(bmi, na.rm = TRUE))
+```
+  
 
   - **Visualze the  relationship between `bmi` by `mort` status**
+
+```{r}
+ggplot(diab, aes(x = mort, y = bmi)) + 
+  geom_boxplot(fill = 'white', color = "purple") + 
+  theme_minimal()
+```
 
 
 Study relation between `bmi` and `edad`
 
   - **Visualze the  relationship between age and BMI.**
 
+```{r}
+ggplot(diab, aes(x = edat, y = bmi)) +
+  geom_point(size = 3)
+```
 
 Is there a relationship between the variables?
 
@@ -457,6 +549,8 @@ cor(diab[,num_var], use = "complete.obs")
 ```
 
 
+
+
 # Interactive and Impressive Plots
 
 
@@ -469,7 +563,9 @@ p1 <- ggplot(diab, aes(x = edat, y = bmi, color = tabac, label = chd)) +
   geom_point(size = 3) +
   labs(title = "BMI vs Age (colored by Smoking)", x = "Age", y = "BMI")
 
-# ggplotly(p1, tooltip = c("x", "y", "label", "color"))
+p1
+
+ggplotly(p1, tooltip = c("x", "y", "label", "color"))
 ```
 
 ## Violin Plot for BMI by Smoking Status
@@ -526,4 +622,31 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
 - Use `plotly` for interactive visualizations
 - `GGally::ggpairs` offers compact overviews
 - Combine multiple `ggplot2` layers for clarity and emphasis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

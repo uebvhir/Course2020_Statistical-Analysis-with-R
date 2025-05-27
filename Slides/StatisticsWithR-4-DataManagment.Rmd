@@ -1,9 +1,8 @@
 ---
 title: |
-  | Statistical Analysis with R:
   | Data Managment and Automation
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and 
-        Santi Pérez"
+  | Statistical Analysis with R:
+author: "Miriam Mota and Santi Pérez"
 date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
@@ -54,9 +53,19 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 <!-- **Hmisc**: another large collection of tools for most aspects of data analysis, but we use it here for describe(), a dataset summary function -->
 
 ```{r, message=FALSE}
-# install.packages("tidyverse", dependencies = TRUE)
-library(tidyverse)
+require(pacman)
+p_load(tidyverse)
 ```
+
+
+## tidyr 
+
+- Combines **"tidy" + R**, reflecting the **tidy data principles**:
+  - One variable per column.
+  - One observation per row.
+  - One value per cell.
+
+ `tidyr` helps reshape and clean data structures into tidy format.
 
 
 ## Example dataset
@@ -66,7 +75,13 @@ library(tidyverse)
 
 
 # Data managements with dplyr
+## dplyr 
 
+**`dplyr`** is derived from **"data plier"**, like a tool for handling data.
+- Vowels were removed: `data plier` → `dplyr`.
+- Introduces intuitive verbs: `filter()`, `mutate()`, `select()`, `summarise()`, etc.
+
+Makes `data.frames`  manipulation readable and expressive.
 
 ## The dplyr package
 The **dplyr** package provides tools for some of the most common data management tasks. Its primary functions are "verbs" to help you think about what you need to do to your dataset:
@@ -180,6 +195,16 @@ arrange(diab, desc(tempsviu))
 
 # The pipe operator %>%
 
+
+
+## magrittr 
+
+- The package name **`magrittr`** is a tribute to the surrealist artist **René Magritte** ("This is not a pipe").
+- Just as the painting represents a pipe, the `%>%` operator represents a **flow of operations**.
+![](images/pipe.jpg){width=50%} 
+
+`"We are not seeing a pipe, but a representation of one."`
+
 ## The pipe operator %>%
 A data management task may involve many steps to reach the final desired dataset. Often, during intermediate steps, datasets are generated that we don't care about or plan on keeping. For these multi-step tasks, the pipe operator provides a useful, time-saving and code-saving shorthand.
 
@@ -218,6 +243,9 @@ head(diab40_small,n = 4)
 ```
 
 
+
+
+
 ## EXERCISE
 
 Replicate the last exercice using 'pipes'
@@ -239,6 +267,222 @@ diab %>%
   arrange(desc(tempsviu))
 
 ```
+
+
+
+#  Example. Horrible_base.csv
+
+This dataset contains patient information from a hospital survey or registry.
+
+**It was provided by a researcher and needs a lot of cleaning.**
+
+
+GOAL 
+
+- Transform this chaotic dataset into a clean, structured, and analyzable format using R:
+
+- clean_names() (from janitor)
+
+- filter(), select(), mutate(), arrange() (from dplyr)
+
+
+
+## Horrible data base
+
+
+```{r, echo =F}
+# Crear base de datos horrible
+set.seed(123)
+
+horrible_base  <- data.frame(
+  `ID Paciente` = c("ID001", "ID002", "ID003", "ID003", "TOTAL", "ID004"),
+  `Edad_en_años_!!` = c("34", "29", "Na", "29", "", "45"),  # Edad como texto, con un "Na"
+  `Fecha_de_Ingreso__hospital*` = c("2020/01/15", "na", "2015/02/28", "2018/01/20", "N/A", "2020/01/20"),  # Formatos varios
+  `Sexo_(M/F)` = c("Masculino", "femenino", "FEM", "femen", " ", "Masculino"),  # Categorías inconsistentes
+  `Grupo de Intervención___ o no?` = c("Control", "intervencion", "Intervencion", "ctrl", "TOTAL", "Intervención"),
+  `Variable_que_no_se_usa__x9_` = c(NA, NA, NA, NA, NA, NA),  # Inútil
+  `Notas///adicionales__` = c("NA", "Buen estado", " ", "Duplicado", "Resumen", "falta info")
+)
+
+# Mostrar la base
+head(horrible_base )
+
+```
+
+## Horrors in the dataset:
+
+- Long, unclear column names with strange characters.
+
+- Extra rows like repeated headers or summary lines.
+
+- Incorrectly typed variables (numbers stored as text, inconsistent date formats).
+
+- Categories with spelling mistakes, inconsistent capitalization, or extra spaces.
+
+- Missing and duplicate data.
+
+- Useless columns.
+
+
+## Load Packages
+
+```{r}
+require(pacman)
+p_load(dplyr,janitor)
+```
+
+
+## Clean names
+
+ Use clean_names() to fix the column names
+
+```{r}
+names(horrible_base)[1:3]
+horrible_base_clean <- horrible_base %>% 
+  janitor::clean_names()
+names(horrible_base_clean)[1:3]
+```
+
+
+
+
+
+## Filter rows
+
+Use filter() to remove unwanted or extra rows.  
+
+You can remove:
+
+- Rows with "TOTAL" in any column.
+
+- Full duplicate rows.
+
+```{r}
+dim(horrible_base_clean)
+horrible_base_clean <- horrible_base_clean %>%
+  filter(!grepl("TOTAL", id_paciente)) %>%   
+  filter(!duplicated(.))                                           
+dim(horrible_base_clean)
+```
+
+
+## Select columns
+
+Use select() to keep only useful columns
+
+```{r}
+dim(horrible_base_clean)
+horrible_base_clean <- horrible_base_clean %>%
+  select(id_paciente,
+         edad_en_anos,
+         fecha_de_ingreso_hospital,
+         sexo_m_f,
+         grupo_de_intervencion_o_no,
+         notas_adicionales)
+dim(horrible_base_clean)
+```
+
+## Mutate variables
+
+Use mutate() to fix data types and clean up categories
+
+- Convert age to numeric.
+
+- Parse various date formats.
+
+- Standardize text values in categorical variables.
+
+
+## Mutate variables. Numerical 
+
+Convert age to numeric.
+
+```{r}
+head(horrible_base_clean$edad_en_anos)
+horrible_base_clean <- horrible_base_clean %>%
+  mutate(
+    edad_en_anos = as.numeric(edad_en_anos) )
+
+head(horrible_base_clean$edad_en_anos)
+```
+
+
+
+## Mutate variables. Categorical
+
+ Standardize text values in categorical variables.
+
+```{r}
+head(horrible_base_clean$sexo_m_f)
+horrible_base_clean <- horrible_base_clean %>%
+  mutate(
+    sexo_m_f = case_when(
+      grepl("mascul", tolower(sexo_m_f)) ~ "Male",
+      grepl("fem", tolower(sexo_m_f)) ~ "Female",
+      TRUE ~ NA_character_
+    ),
+    grupo_de_intervencion_o_no = case_when(
+      tolower(grupo_de_intervencion_o_no) %in% c("intervencion", "intervención") ~ "Intervention",
+      tolower(grupo_de_intervencion_o_no) %in% c("control", "ctrl") ~ "Control",
+      TRUE ~ NA_character_
+    )
+  )
+
+head(horrible_base_clean$sexo_m_f)
+```
+
+
+
+## Mutate variables. Date 
+
+Parse various date formats.
+
+
+```{r}
+
+head(horrible_base_clean$fecha_de_ingreso_hospital)
+horrible_base_clean <- horrible_base_clean %>%
+  mutate(
+    fecha_de_ingreso_hospital = as.Date(fecha_de_ingreso_hospital, c("%Y/%m/%d")),
+  )
+
+head(horrible_base_clean$fecha_de_ingreso_hospital)
+```
+
+
+
+
+## Arrange data base
+
+
+Use arrange() to sort the data
+For example, by admission date and age:
+
+```{r}
+horrible_base_clean <- horrible_base_clean %>%
+  arrange(fecha_de_ingreso_hospital, edad_en_anos)
+head(horrible_base_clean %>% select(id_paciente,fecha_de_ingreso_hospital, edad_en_anos))
+```
+
+
+  
+  
+## Final result: A cleaner dataset
+
+Now you have a much cleaner dataset with:
+
+- Clear and consistent column names.
+
+- Correct data types.
+
+- Unwanted rows removed.
+
+- Clean and standardized categories.
+
+- Would you like me to wrap this all into one clean code block for easy reuse?
+
+
+
 
 # Merging datasets
 

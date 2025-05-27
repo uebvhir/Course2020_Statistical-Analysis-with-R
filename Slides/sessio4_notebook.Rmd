@@ -5,80 +5,423 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Data managements with dplyr
+```{r, message=FALSE}
+require(pacman)
+p_load(tidyverse)
+```
 
-## filter
-```{r}
+
+
+## Selecting rows with filter
+
+The dplyr function filter() provides a cleaner syntax for subsetting datasets. Conditions separated by , are joined by & (logical AND).
+
+```{r, size="footnotesize", message=FALSE}
 require(readxl)
-diab <-read_excel("diabetes.xls")
-
-require(dplyr)
-diab_filt <- filter(diab, tabac=="No fumador", edat>=50)
+diab <- read_excel("datasets/diabetes.xls")
+diab_filt <- filter(diab, tabac == "No fumador", edat >= 50)
 head(diab_filt, n = 4)
 ```
 
-## select
+
+## Selecting columns with select
+Use dplyr function select() to keep only the variables you need.
 
 ```{r}
 diab_small <- select(diab, mort, edat, tabac, sbp)
 head(diab_small, n = 4)
 ```
 
-## sort
+## Sorting rows with arrange
+
+Sort the order of rows by variable values using **arrange()** from dplyr.
+
+Be default, ascending order will be used. Surround a sorting variable with **desc()** to sort by descending order instead.
 
 ```{r}
-diab_sort <-arrange(diab,desc(mort), edat)
+# sort, with males before 'vivo', then by age, youngest first
+diab_sort <- arrange(diab, desc(mort), edat) 
 head(diab_sort, n = 4)
 ```
 
 
-## mutate
+## R Logical operators and functions
+Here are some operators and functions to help with selection:
 
-```{r}
-diab_mut <-mutate(diab,edatcat =cut(edat, breaks =c(0,40,50,60,70,120)),highbmi = bmi> mean(bmi))
+
+* **==**: equality
+* **$>, >=$**: greater than, greater than or equal to
+* **!**: not
+* **&**: AND
+* **|**: OR
+* **%in%**: matches any of (2 %in% c(1,2,3) = TRUE)
+* **is.na()**: equality to NA
+* **near()**: checking for equality for floating point (decimal) numbers, has a built-in tolerance
+
+
+
+## Transforming variables into new variables
+
+The function **mutate()** allows us to transform many variables in one step without having to respecify the data frame name over and over.
+
+Useful R functions for transforming:
+
+* **log()**: logarithm
+* **min_rank()**: rank values
+* **cut()**: cut a continuous variable into intervals with new integer value signifying into which interval original value falls
+* **scale()**: standardizes variable (substracts mean and divides by standard deviation)
+* **cumsum()**: cumulative sum
+* **rowMeans(), rowSums()**: means and sums of several columns
+
+
+## Example: mutate()
+create age category variable, and highbmi binary variable
+```{r, size="tiny"}
+diab_mut <- mutate(diab,
+            edatcat = cut(edat, breaks = c(0,40,50,60,70,120)),
+            highbmi = bmi > mean(bmi))
 tail(diab_mut, n = 4)
 ```
 
-
-# The pipe operator
-
-```{r}
-diab40 <-filter(diab, mort=="Vivo"&edat<40)
-diab40_small <-select(diab40, edat, dbp)
-head(diab40_small,n = 4)
+```{r, eval = FALSE}
+table(diab_mut$edatcat, diab_mut$highbmi)
 ```
 
 
+## EXERCISE
+1. Find all individual that: 
+
+    1.1 Had a sbp higher than 160 (**filter()**)
+    
+    1.2 Had a sbp higher than 160 or tabac was 'Fumador'
+
+2. What happens if you include the name of a variable multiple times in a **select()** call?
+
+3. Sort individual to find the most 'tempsviu'. (**arrange() **)
+
+
+# The pipe operator %>%
+
+
+## Examples of using the pipe operator
+As a first example, perhaps we want to create a dataset of just Vivo under 40, with only the age and pain variables selected. We could do this in 2 steps, like so:
+
 ```{r}
-diab40_small <- diab %>%
-  filter(mort=="Vivo"&edat<40) %>%
+diab40 <- filter(diab, mort == "Vivo" & edat < 40)
+diab40_small <- select(diab40, edat, dbp)
+head(diab40_small,n = 4)
+```
+
+## Examples of using the pipe operator
+While that works fine, the intermediate dataset f40 is not of interest and is cluttering up memory and the workspace unnecessarily.
+
+We could use %>% instead:
+
+```{r}
+diab40_small <- diab %>%   
+  filter(mort == "Vivo" & edat < 40) %>% 
   select(edat, dbp)
 head(diab40_small,n = 4)
 ```
 
 
 
+
+
+## EXERCISE
+
+Replicate the last exercice using 'pipes'
+
+```{r, eval = F}
+df <- filter(diab,sbp > 160 | tabac == "Fumador")
+
+dfs <- select(df, tempsviu ,bmi,sbp,sbp)
+
+dfsa <- arrange(dfs, desc(tempsviu))
+
+```
+
+
+
+#  Example
+
+This dataset contains patient information from a hospital survey or registry.
+
+**It was provided by a researcher and needs a lot of cleaning.**
+
+
+GOAL 
+
+- Transform this chaotic dataset into a clean, structured, and analyzable format using R:
+
+- clean_names() (from janitor)
+
+- filter(), select(), mutate(), arrange() (from dplyr)
+
+
+
+## Horrible data base
+
+
+```{r, echo =F}
+
+horrible_base <- import("../datasets/horrible_base.csv")
+```
+
+## Horrors in the dataset:
+
+- Long, unclear column names with strange characters.
+
+- Extra rows like repeated headers or summary lines.
+
+- Incorrectly typed variables (numbers stored as text, inconsistent date formats).
+
+- Categories with spelling mistakes, inconsistent capitalization, or extra spaces.
+
+- Missing and duplicate data.
+
+- Useless columns.
+
+
+## Load Packages
+
+```{r}
+require(pacman)
+p_load(dplyr,janitor)
+```
+
+
+## Clean names
+
+ Use clean_names() to fix the column names
+
+```{r}
+names(horrible_base)[1:3]
+horrible_base_clean <- horrible_base %>% 
+  janitor::clean_names()
+names(horrible_base_clean)[1:3]
+```
+
+
+
+
+
+## Filter rows
+
+Use filter() to remove unwanted or extra rows.  
+
+You can remove:
+
+- Rows with "TOTAL" in any column.
+
+- Full duplicate rows.
+
+```{r}
+dim(horrible_base_clean)
+horrible_base_clean <- horrible_base_clean %>%
+  filter(!grepl("TOTAL", id_paciente)) %>%   
+  filter(!duplicated(.))                                           
+dim(horrible_base_clean)
+```
+
+
+## Select columns
+
+Use select() to keep only useful columns
+
+```{r}
+dim(horrible_base_clean)
+horrible_base_clean <- horrible_base_clean %>%
+  select(id_paciente,
+         edad_en_anos,
+         fecha_de_ingreso_hospital,
+         sexo_m_f,
+         grupo_de_intervencion_o_no,
+         notas_adicionales)
+dim(horrible_base_clean)
+```
+
+## Mutate variables
+
+Use mutate() to fix data types and clean up categories
+
+- Convert age to numeric.
+
+- Parse various date formats.
+
+- Standardize text values in categorical variables.
+
+
+## Mutate variables. Numerical 
+
+Convert age to numeric.
+
+```{r}
+head(horrible_base_clean$edad_en_anos)
+horrible_base_clean <- horrible_base_clean %>%
+  mutate(
+    edad_en_anos = as.numeric(edad_en_anos) )
+
+head(horrible_base_clean$edad_en_anos)
+```
+
+
+
+## Mutate variables. Categorical
+
+ Standardize text values in categorical variables.
+
+```{r}
+head(horrible_base_clean$sexo_m_f)
+horrible_base_clean <- horrible_base_clean %>%
+  mutate(
+    sexo_m_f = case_when(
+      grepl("mascul", tolower(sexo_m_f)) ~ "Male",
+      grepl("fem", tolower(sexo_m_f)) ~ "Female",
+      TRUE ~ NA_character_
+    ),
+    grupo_de_intervencion_o_no = case_when(
+      tolower(grupo_de_intervencion_o_no) %in% c("intervencion", "intervención") ~ "Intervention",
+      tolower(grupo_de_intervencion_o_no) %in% c("control", "ctrl") ~ "Control",
+      TRUE ~ NA_character_
+    )
+  )
+
+head(horrible_base_clean$sexo_m_f)
+```
+
+
+
+## Mutate variables. Date 
+
+Parse various date formats.
+
+
+```{r}
+
+head(horrible_base_clean$fecha_de_ingreso_hospital)
+horrible_base_clean <- horrible_base_clean %>%
+  mutate(
+    fecha_de_ingreso_hospital = as.Date(fecha_de_ingreso_hospital, c("%Y/%m/%d")),
+  )
+
+head(horrible_base_clean$fecha_de_ingreso_hospital)
+```
+
+
+
+
+## Arrange data base
+
+
+Use arrange() to sort the data
+For example, by admission date and age:
+
+```{r}
+horrible_base_clean <- horrible_base_clean %>%
+  arrange(fecha_de_ingreso_hospital, edad_en_anos)
+head(horrible_base_clean %>% select(id_paciente,fecha_de_ingreso_hospital, edad_en_anos))
+```
+
+
+  
+  
+## Final result: A cleaner dataset
+
+Now you have a much cleaner dataset with:
+
+- Clear and consistent column names.
+
+- Correct data types.
+
+- Unwanted rows removed.
+
+- Clean and standardized categories.
+
+- Would you like me to wrap this all into one clean code block for easy reuse?
+
+
+
+
 # Merging datasets
+
+## Merging datasets 
+Appending adds more rows of observations, whereas merging adds more columns of variables. Datasets to be merged should be matched on some id variable(s).
+
+\begin{figure}
+\includegraphics[width=.83\linewidth]{images/merge.png}
+\end{figure}
+
+## Data example
 
 ```{r}
 band_members
+
 band_instruments
 ```
+
+## Append row bind_rows()
+
 ```{r}
 bind_rows(band_members, band_instruments)
 
+```
 
-## PROBLEMES!
+##  Append columns bind_cols()
+
+!!!!!!!!!!
+
+```{r}
+
 bind_cols(band_members, band_instruments)
 ```
 
-## mutating
+!!!!!!!!!!
+
+## Merging datasets with dplyr joins
+
+The **dplyr** "join" functions perform such merges and will use any same-named variables between the datasets as the id variables by default. Use the by= argument to specify specific matching id variables.
+
+These joins all return a table with all columns from x and y, but differ in how they deal with mismatched rows:
+
+- **inner_join(x, y)**: returns all rows from x where there is a matching value in y (returns only matching rows).
+
+- **left_join(x, y)**: returns all rows from x, unmatched rows in x will have NA in the columns from y. Unmatched rows in y not returned.
+
+- **full_join(x, y)**: returns all rows from x and from y; unmatched rows in either will have NA in new columns
+
+
+
+## Mutating joins
+**inner_join(x, y)**: returns all rows from x where there is a matching value in y (returns only matching rows).
 
 ```{r}
-band_members%>%inner_join(band_instruments, by = "name")
+band_members %>% 
+	inner_join(band_instruments, by = "name")
 ```
+
+
+## Mutating joins
+**Other joins **:  `left_join`, `right_join`, `full_join`
 
 ```{r}
-band_members%>%left_join(band_instruments)
+band_members %>% 
+	left_join(band_instruments)
 ```
 
+
+
+## EXERCISE
+
+What happens if you run these lines?
+
+
+```{r, eval = F}
+band_members %>% 
+	right_join(band_instruments)
+```
+
+```{r, eval = F}
+band_members %>% 
+	full_join(band_instruments)
+```
