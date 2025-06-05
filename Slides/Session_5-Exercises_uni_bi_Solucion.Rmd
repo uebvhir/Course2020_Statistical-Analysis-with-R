@@ -1,0 +1,227 @@
+---
+title: "Ejercicio"
+author: "UEB"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: 
+    number_sections: true
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# Ejercicio Práctico
+
+Este ejercicio consta de diversas partes en un intento de simular lo que se lleva a cabo en un estudio real. Se ha simplicado para hacerlo más practicable por lo que no hace falta que os agobiéis si algo no os cuadre del todo. De lo que se trata es que veamos como aplicar las distintas técnicas que hemos estudiado, de forma integral, en un problema de análisis de datos.
+
+## Los datos
+
+La demora entre el comienzo de los síntomas y el ingreso hospitalario es un factor que determina la mortalidad del infarto agudo de miocardio (IAM). Se estudian 426 sujetos que acuden al servicio de urgencias de 5 hospitales por dolor torácico , recogiendo el tiempo entre los primeros síntomas y la llegada al hospital y una serie de variables sociodemográficas. Se está interesado en estimar el retraso prehospitalario y determinar las variables asociadas.
+
+
+* DEMORA	Minutos desde el inicio de los síntomas hasta llegar al hospital	
+* HOSPITAL	
+* EDAD	
+* SEXO	0	Hombre	1	Mujer	
+* NACIONAL	0	Español	1	Extranjero	
+* MEDIO1	Lugar	inicio	síntomas	0	Domicilio	1	Fuera	del	domicilio	
+* DISTANC	Distància	en	isòcronas	(0,1,2,3,	…)	
+* REMITIDO	Enviado por	un	sanitario	0	Si	1	No	
+* NSE	Nivel	socioeconómico	0	Bajo	1	Medio	2	Alto	
+* COHABIT	Convivencia	0	Vive	en	comapñia	1	vive	solo	
+* CARDIOP	Diagnóstico	previo	de	cardiopatia	0	No	1	Si	
+* DOLOR	Nivel	de	dolor	0	intenso	1	moderado	2	ligero	
+* NOCHE	Aparición	nocturna	0	Dia	1	Noche	
+* AMBULAN	Acude	a	l’hospital	en	ambulancia	0	Ambulancia	1	Otros medios
+* imc: Index de masa corporal
+* sbp: presión sistólica
+* dbp: presión distólica
+
+
+Los datos los podéis encontrar en los ficheros de Stata demora.dta, de Excel demora.xls y de texto plano separado por comas demora.csv
+
+```{r , echo=FALSE}
+demora <- read.csv("datasets/demora.txt")
+```
+
+## Preprocesado de datos
+
+- Crea una nueva base de datos que contenga únicamente las variables con las que se va a trabajar: demora, edad, noche, ambulan y dolor
+
+```{r}
+require(tidyverse)
+dat <- demora %>% select(demora,edad,noche,ambulan,dolor)
+
+```
+
+
+- De cuantos individuos y variables dispone ahora la base de datos? 
+
+```{r}
+dat %>% dim()
+```
+
+- Verifica de que tipo es cada una de las variables. 
+
+```{r}
+lapply(dat, class)
+```
+
+- Asigna las variables: noche, ambulan y dolor a factor con los niveles y etiquetas correspondientes.
+
+```{r}
+dat <- dat %>% 
+  mutate(noche = factor(noche, 0:1, c("Dia", "Noche"))) %>% 
+  mutate(ambulan = factor(ambulan, 0:1, c("Ambulancia", "Otros medios"))) %>% 
+  mutate(dolor = factor(dolor, 0:2, c("Intenso", "Moderado", "Ligero")))
+```
+
+
+
+## Los análisis
+
+### Apartado a
+
+**Se está interesado en  verificar la calidad de los datos y describir la muestra de estudio**
+ 
+- **Realizar un resumen numérico de las variables demora y edad que incluya medidas de tendencia central y de dispersión. Interpretar los resultados**
+
+```{r}
+require(summarytools)
+dfSummary(dat %>% select(demora,edad))
+```
+
+  - **Que medida es más adecuada para describir los datos, media o mediana?** 
+  
+  - **Que nos indica el percentil 50%? i el 100%?**
+  
+  - **Que variable tiene más dispersión?**
+  
+- **Realizar un resumen gráfico de las variables demora y edad. Interpretar los resultados** 
+
+```{r}
+ggplot(dat, aes(x = demora) ) + 
+  geom_histogram()
+
+ggplot(dat, aes(y = demora) ) + 
+  geom_boxplot()
+
+ggplot(dat, aes(x = edad) ) + 
+  geom_histogram()
+
+ggplot(dat, aes(y = edad) ) + 
+  geom_boxplot()
+```
+  
+  - **Son simétricas las variables?**
+  
+  - **Existe algun outlier?**
+
+
+
+- **Realizar un resumen numérico y gráfico de las variables noche, dolor y ambulan.  Interpreta los resultados**
+
+  - (OPCIONAL): Cambiar el color de las barras. Añadir un título al gráfico y modificar las etiquetas de los ejes. 
+```{r}
+dfSummary(dat %>% select(noche,dolor, ambulan))
+
+ggplot(dat, aes(x = noche) ) + 
+  geom_bar()
+ggplot(dat, aes(x = ambulan) ) + 
+  geom_bar()
+
+ggplot(dat, aes(x = dolor) ) + 
+  geom_bar()
+
+ggplot(dat, aes(x = dolor)) + 
+  geom_bar(fill = c( "#b37bc9") ) +
+  ggtitle("Intensidad del dolor") +
+  xlab("") + 
+  ylab("Recuento")
+```
+
+
+### Apartado b
+
+**Se está interesado en conocer la relación entre distintas variables.**
+
+- **Se espera que las variables ambulan (que mide como han acudido los pacientes al hospital) y dolor esten relacionadas. Realizar un análisis numérico y gráfico e interpretar los resultados.**
+
+```{r}
+require(gmodels)
+CrossTable(dat$dolor, dat$ambulan, prop.chisq = F, prop.c = F, prop.r = F)
+ggplot(dat, aes(x = dolor, fill = ambulan) ) + 
+  geom_bar()
+```
+
+- **El equipo investigador cree que la demora en acudir al hospital y el momento en el que aparece el dolor (variable noche) están relacionadas.**
+
+
+
+
+  - **Realizar el resum numérico de la variable ‘demora’ según els grupo de la variable ‘noche’. Comentar los resultados** 
+
+```{r}
+library(dplyr)
+dat %>%
+group_by(noche) %>%
+summarize(median(demora, na.rm = T))
+
+dat %>%
+group_by(noche) %>%
+summarize(IQR(demora, na.rm = T))
+
+```
+
+
+  
+  - **Realizar el resum gráfico de la variable ‘demora’ según els grupo de la variable ‘noche’. Comentar los resultados** 
+
+```{r}
+ggplot(dat, aes(x = noche, y = demora) ) + 
+  geom_boxplot()
+
+```
+
+
+- **El equipo investigador cree que la demora en acudir al hospital y la edad están relacionadas.**
+
+  - **Realizar el resum gráfico de la variable ‘demora’  y 'edad'. Comentar los resultados** 
+
+```{r}
+
+ggplot(dat, aes(x = edad, y = demora) ) + 
+  geom_point()
+```
+  
+  - **Calcula el coeficiente de correlación de Pearson y Spearman para las variables 'demora' y ‘edad’ e interpreta el resultado.**
+
+```{r}
+cor(dat$edad,dat$demora, use = "complete.obs")
+cor(dat$edad,dat$demora, use = "complete.obs", method = "spearman")
+```
+  
+  
+
+
+### Apartado c
+
+- **Realiza el resumen gráfico para todas las parejas de variables posibles (Pista: usar funcion ggpairs)**
+
+```{r}
+require(GGally)
+ggpairs(dat)
+
+```
+
+- **¿Crees que hay algún gráfico que no sea útil? ¿Por qué?**
+
+
+
