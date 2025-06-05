@@ -1,5 +1,5 @@
 ---
-title: "Solución Ejercicio"
+title: "Ejercicio"
 author: "UEB"
 date: "`r Sys.Date()`"
 output:
@@ -9,12 +9,10 @@ output:
 editor_options:
   markdown:
     wrap: 72
-  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-require(knitr)
-opts_chunk$set(concordance=FALSE, echo=TRUE, cache=FALSE, warning=FALSE, error=FALSE, message=TRUE, fig.height=4, size = "footnotesize")
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
@@ -50,7 +48,7 @@ La demora entre el comienzo de los síntomas y el ingreso hospitalario es un fac
 Los datos los podéis encontrar en los ficheros de Stata demora.dta, de Excel demora.xls y de texto plano separado por comas demora.csv
 
 ```{r , echo=FALSE}
-demora <- read.csv("datasets/demora.csv")
+demora <- read.csv("datasets/demora.txt")
 ```
 
 ## Preprocesado de datos
@@ -60,6 +58,7 @@ demora <- read.csv("datasets/demora.csv")
 ```{r}
 require(tidyverse)
 dat <- demora %>% select(demora,edad,noche,ambulan,dolor)
+
 ```
 
 
@@ -69,13 +68,11 @@ dat <- demora %>% select(demora,edad,noche,ambulan,dolor)
 dat %>% dim()
 ```
 
-
 - Verifica de que tipo es cada una de las variables. 
 
 ```{r}
 lapply(dat, class)
 ```
-
 
 - Asigna las variables: noche, ambulan y dolor a factor con los niveles y etiquetas correspondientes.
 
@@ -113,21 +110,15 @@ dfSummary(dat %>% select(demora,edad))
 ggplot(dat, aes(x = demora) ) + 
   geom_histogram()
 
-
 ggplot(dat, aes(y = demora) ) + 
   geom_boxplot()
-
 
 ggplot(dat, aes(x = edad) ) + 
   geom_histogram()
 
-
 ggplot(dat, aes(y = edad) ) + 
   geom_boxplot()
-
-
 ```
-
   
   - **Son simétricas las variables?**
   
@@ -137,24 +128,18 @@ ggplot(dat, aes(y = edad) ) +
 
 - **Realizar un resumen numérico y gráfico de las variables noche, dolor y ambulan.  Interpreta los resultados**
 
+  - (OPCIONAL): Cambiar el color de las barras. Añadir un título al gráfico y modificar las etiquetas de los ejes. 
 ```{r}
 dfSummary(dat %>% select(noche,dolor, ambulan))
 
-
 ggplot(dat, aes(x = noche) ) + 
   geom_bar()
-
 ggplot(dat, aes(x = ambulan) ) + 
   geom_bar()
 
 ggplot(dat, aes(x = dolor) ) + 
   geom_bar()
 
-```
-
-  - (OPCIONAL): Cambiar el color de las barras. Añadir un título al gráfico y modificar las etiquetas de los ejes. 
-
-```{r}
 ggplot(dat, aes(x = dolor)) + 
   geom_bar(fill = c( "#b37bc9") ) +
   ggtitle("Intensidad del dolor") +
@@ -163,29 +148,26 @@ ggplot(dat, aes(x = dolor)) +
 ```
 
 
-
 ### Apartado b
 
 **Se está interesado en conocer la relación entre distintas variables.**
 
 - **Se espera que las variables ambulan (que mide como han acudido los pacientes al hospital) y dolor esten relacionadas. Realizar un análisis numérico y gráfico e interpretar los resultados.**
 
-
 ```{r}
 require(gmodels)
 CrossTable(dat$dolor, dat$ambulan, prop.chisq = F, prop.c = F, prop.r = F)
-
-
-
 ggplot(dat, aes(x = dolor, fill = ambulan) ) + 
   geom_bar()
 ```
 
-
 - **El equipo investigador cree que la demora en acudir al hospital y el momento en el que aparece el dolor (variable noche) están relacionadas.**
 
+
+
+
   - **Realizar el resum numérico de la variable ‘demora’ según els grupo de la variable ‘noche’. Comentar los resultados** 
-  
+
 ```{r}
 library(dplyr)
 dat %>%
@@ -198,32 +180,34 @@ summarize(IQR(demora, na.rm = T))
 
 ```
 
+
   
   - **Realizar el resum gráfico de la variable ‘demora’ según els grupo de la variable ‘noche’. Comentar los resultados** 
-  
+
 ```{r}
 ggplot(dat, aes(x = noche, y = demora) ) + 
   geom_boxplot()
+
 ```
-  
 
 
 - **El equipo investigador cree que la demora en acudir al hospital y la edad están relacionadas.**
 
   - **Realizar el resum gráfico de la variable ‘demora’  y 'edad'. Comentar los resultados** 
-  
+
 ```{r}
+
 ggplot(dat, aes(x = edad, y = demora) ) + 
   geom_point()
 ```
   
-  
   - **Calcula el coeficiente de correlación de Pearson y Spearman para las variables 'demora' y ‘edad’ e interpreta el resultado.**
-  
+
 ```{r}
 cor(dat$edad,dat$demora, use = "complete.obs")
 cor(dat$edad,dat$demora, use = "complete.obs", method = "spearman")
 ```
+  
   
 
 
@@ -234,8 +218,8 @@ cor(dat$edad,dat$demora, use = "complete.obs", method = "spearman")
 ```{r}
 require(GGally)
 ggpairs(dat)
-```
 
+```
 
 - **¿Crees que hay algún gráfico que no sea útil? ¿Por qué?**
 
