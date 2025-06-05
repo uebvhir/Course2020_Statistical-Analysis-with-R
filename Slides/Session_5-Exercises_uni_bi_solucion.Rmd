@@ -3,9 +3,9 @@ title: "Solución Ejercicio"
 author: "UEB"
 date: "`r Sys.Date()`"
 output:
+  pdf_document: default
   html_document: 
     number_sections: true
-  pdf_document: default
 editor_options:
   markdown:
     wrap: 72
