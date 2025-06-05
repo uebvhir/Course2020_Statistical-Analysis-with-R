@@ -142,8 +142,7 @@ Distinct classifications can be found in textbooks
 \scriptsize
 
 ```{r , eval=FALSE}
-library(ggplot2)
-library(patchwork)
+p_load(patchwork, ggplot2)
 
 p1 <- ggplot(hta, aes(y = tas1)) +
   geom_boxplot() 
@@ -151,7 +150,14 @@ p1 <- ggplot(hta, aes(y = tas1)) +
 p2 <- ggplot(hta, aes(x = tas1)) +
   geom_histogram() 
 
-(p1 / p2)
+
+p3 <- ggplot(hta, aes(y = tas12)) +
+  geom_boxplot() 
+
+p4 <- ggplot(hta, aes(x = tas12)) +
+  geom_histogram() 
+
+(p1 + p2) / (p3 )
 
 ```
 

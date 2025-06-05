@@ -10,84 +10,322 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning=FALSE)
+
+```{r, echo = FALSE, results = 'hide', message = F}
+require(knitr)
+# include this code chunk as-is to set options
+opts_chunk$set(fig.width = 7, fig.height = 3, warning = F, message = FALSE)
+
+
+# knitr::knit_hooks$set(output = function(x, options) {
+#   paste0('<small> \n ', x, '</small> \n ')
+# })
+
 ```
 
-```{r libraries , echo=FALSE, include=FALSE}
-library(dplyr)
-library(readxl)
-library(magrittr)
-library(ggplot2)
+# Outline
+
+- Introduction
+
+- Type of Tests
+
+- Normality Tests
+
+- One Group Comparison
+
+- Two Groups Comparison 
+
+- K Groups Comparison in Independent Samples
+
+- Multiple Comparisons and Multiple Testing
+
+
+
+
+# Introduction 
+
+- Once the concept of hypothesis testing is established, 
+- Researchers face the problem of _which test should be applied at every possible situation_.
+- For this, ideally, they should... 
+  - understand the problem and the questions addressed,
+  - know available tests for each problem,
+  - know (how to check) applicability assumptions of each test,
+  - know how robust each test is to assumptions violation.
+- Easier to say than to do. 
+  - Sometimes cheatsheets may be helpful, but be warned against a blind use, that is understand and be critic with the steps. 
+
+## Which test is appropriate for which problem
+
+```{r, echo=FALSE, out.width="80%", out.length="60%", fig.cap=""}
+knitr::include_graphics("images/testsXCadaSituacio.png")
 ```
 
-\newpage
 
-# hta dataset
+## Example situation (1): Introduction
 
-```{r hta}
+- Many experimental questions may be answered through hypothesis testing.
+- Imagine, for example, a study designed to compare two distinct hypertension control programs.
+- 60 individuals with HTA were randomly assigned to either one or the other group (30 per group) 
+- Blood pressure was measured each month during a year 
+  - For simplicity we may keep only data at months 1 and 12
+
+```{r loadlibs, echo=FALSE, include=FALSE}
+require(pacman)
+p_load(dplyr, readxl, magrittr, ggplot2)
+```
+
+
+## Example situation (2): Data collected
+
+```{r readExampleData , echo=TRUE}
 hta <- read_excel("datasets/hta.xls")
-hta[1:5,1:9]
+htaSimple <- hta %>% select(grupo, sexo, tas1, tad1, tas12, tad12)
+head(as.data.frame(htaSimple))
 ```
 
-# Checking Normality 
+<!-- - Exercise: modify the code to create two new variables "difftas=tas12-tas1" and "difftad=tad12-tad1". -->
 
-## Graphically
 
-```{r ,eval=TRUE, mysize=TRUE, size='\\tiny'}
-oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
-par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
-with(hta, boxplot(tad1, main="Box-plot") )
 
-with(hta, hist(tad1) )
+## Example situation (3): Reasonable questions
 
-with(hta, qqnorm(tad1, main="Normal QQplot") );with(hta, qqline(tas1) )
+- The goal of the study is to compare the treatment effect
+so a reasonable question is:
+  - *Is the average decrease in "tad" the same in both groups A and B?*
 
-par(oldpar) # Vuelve a los parámetros de dibujo originales
+- Or, if we are testing a new treatment "B", hat is intended to be batter than "A"
+  - *Is the average decrease in "tad" greater in group B?*
+  
+- *Although they are not planned in this study* other relevant questions may lead to questions that need a test to be answered, such as:
+  - *Is the average `tad` above 150?*
+  - *Has the average `tad` (in group A) decreased in 12 months?*
+  - *Is the average `tad` different in men and women at basal time?*
+  
+
+
+## Types of tests (1): Confirmatory vs Independence
+
+Distinct classifications can be found in textbooks
+
+- Confirmatory
+  - Is average HTA above 150?
+  - Is the the tas1 variable normally distributed
+- Independence
+  - Is sex related to HTA (or is mean(HTA) the same in men or women)
+  - Is average HTA decrease the same for both groups?
+
+- *This classification is useful but artificial, not to say that the term "independence" is slightly abused*
+
+
+
+## Types of tests (2): Parametric vs Non-parametric
+
+- Parametric tests 
+  - assume some underlying distribution for the data
+  - pose the test in terms of the distribution's parameters
+    - E.g. the t-test assumes normality and relies on the normal and t-distribution's parameters
+  
+- Non-parametric tests
+  - Do not assume an underlying distribution, but they are not assumption-free!
+  - Check: [Distribution free is not assumption free](https://www.isixsigma.com/hypothesis-testing/nonparametric-distribution-free-not-assumption-free/)
+  
+- Permutation tests
+  - If sample size is not tiny *permutation tests* are a good alternative.
+
+
+## Hands on: Always start looking at the data
+
+\scriptsize
+
+```{r , eval=FALSE}
+p_load(patchwork, ggplot2)
+
+p1 <- ggplot(hta, aes(y = tas1)) +
+  geom_boxplot() 
+
+p2 <- ggplot(hta, aes(x = tas1)) +
+  geom_histogram() 
+
+
+p3 <- ggplot(hta, aes(y = tas12)) +
+  geom_boxplot() 
+
+p4 <- ggplot(hta, aes(x = tas12)) +
+  geom_histogram() 
+
+(p1 + p2) / (p3 )
 
 ```
+
+\normalsize
+## Hands on: Always start looking at the data
+
+\scriptsize
+
+```{r , eval=FALSE}
+p_load(ggplot2, patchwork)
+
+p1 <- ggplot(hta, aes(y = tas1)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "Box-plot", y = "tas1") 
+
+p2 <- ggplot(hta, aes(x = tas1)) +
+  geom_histogram(bins = 30, fill = "salmon", color = "black") +
+  labs(title = "Histograma", x = "tas1")
+
+
+(p1 | p2) 
+
+```
+
+\normalsize
+
+
+## Data visualization
+
+```{r , echo=FALSE, fig.height=5, fig.width=9}
+p_load(ggplot2, patchwork)
+
+p1 <- ggplot(hta, aes(y = tas1)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "Box-plot", y = "tas1") 
+
+p2 <- ggplot(hta, aes(x = tas1)) +
+  geom_histogram(bins = 30, fill = "salmon", color = "black") +
+  labs(title = "Histograma", x = "tas1")
+
+
+(p1 | p2) 
+```
+
+
+
+# Normality and tests
+
+- The choice of test seems to pivot around the question of ¿is my data normally distributed?
+
+- Leaving apart a tence to repeat what we have been taught, why is this so?
+
+  - If the data is normally distributed there exist some *optimal tests* for some one or two sample problems.
+  - Data show often a bell-shaped form that can be assimilated to have a gaussian distribution (it is *normal* to observe this).
+  - Iven if data is not bell-shaped, if sample size is big enough th sample mean tends to be bell -shaped as sample size increase.
+  
+- In summary, normality is not only "practical" but common.
+
+- As a consequence checking normality has become one of the first steps of any data analysis. 
+  - It doesn't hurt, but it is clearly over-rated.
+
 
 
 ## Normality Test
 
-```{r normtest , mysize=TRUE, size='\\small'}
-with(hta,shapiro.test(tad1) ) # Shapiro Wilk test
+- Normality tests can be used to decide if the data can be considered to follow a normal distribution.
+- This is more a theoretical than practical issue because ...
+  - If the sample size is too small, the test is not powerful enough.
+  - If the sample size is too big, the test will almost always reject the normality htypothesis
+  
+- Normality can be tested 
+  - Graphically:
+    - Check if it is a symmetric distribution
+    - Probability graphs (QQ-plots)
+  - Using Hypothesis test (Normality)
+    - Kolmogorov tests
+    - Shapiro-Wilks test
+
+## Normality test: Graphically
+
+```{r}
+ ggplot(hta, aes(sample = tas1)) +
+  stat_qq() +
+  stat_qq_line(color = "blue") +
+  labs(title = "QQ plot", x = "Teórico", y = "Muestra") 
+```
+
+
+## Normality test: Shapiro-Wilks
+
+- In normality test, the null hypothesis is normality
+- That is, rejecting the null suggests departure of normality.
+  - $H_0$: The data follow a normal distribution
+  - $H_1$: The data do not follow a normal distribution
+  
+\scriptsize
+
+```{r normtest }
+shapiro.test(hta$tad1)  # Shapiro Wilk test
 
 ```
 
 
 
-# One sample Test
+# One sample tests
 
-```{r onetest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tad1,mu=90) ) # One sample T.test
+- One sample tests refer to a single characteristic of the population such as:
+  - *Is it true that the average tad in HTA population is above 150*?
+  
+- It is often said that they are less interesting because they are rarely used in most practical situations where the main goal is comparison
 
+- *However*, noticing that a paired tests is equivalent to a one sample tests for the difference makes us realize their relevance.
+
+
+## One sample parametric vs non-parametric tests
+
+- If we assume normality an appropriate test for a hypothesis about the mean is the *t-test*
+
+  - $H_0: \mu=\mu_0,\qquad H_1: \mu \neq \mu_0,\, (\mu > \mu_0,\, \mu< \mu_0)$.
+  
+- If we don't assume normality we can rely on
+  - Wilcoxon rank test, if data re symmetrical
+  - Sign test in other cases
+
+## Hands on one sample tests (1): t-test
+
+- Is `tad` in HTA patients above 90?
+- Notice that even if we are interested in "above 90" the null is "equality"
+
+  - $H_0: \mu=90,\qquad H_1: \mu > 90$.
+
+\scriptsize
+
+```{r onettest , size='\\tiny'}
+t.test(hta$tad1,mu=90, alternative="greater") # One sample T.test
 ```
 
-# Two groups comparison in independent samples
+## Hands on one sample tests (2): Wilcoxon test
+
+- In wilcoxon test the null hypothesis is about the median.
+\scriptsize
+
+
+```{r onewilcoxtest , size='\\tiny'}
+wilcox.test(hta$tad1, mu = 90, alternative = "greater")  # One sample wilcoxon
+```
+
+
+# Two sample tests
+
+\scriptsize
 
 
 ```{r}
-ggplot(hta, aes(x=grupo, y=tad1)) +
-  geom_boxplot()
+head(hta)
 ```
 
 
-## Homogeneity of variances Test
+## Homogeneity variance Test
 
-Start with a descriptive analysis
+\scriptsize
 
-```{r vartestDescript , mysize=TRUE, size='\\small'}
+
+```{r vartest }
 library(car)
-hta%>% 
-  group_by(grupo) %>% 
-  summarise(var = sd(tad1))
-```
+hta %>% 
+  group_by(sexo) %>% 
+  summarise(var = sd(tas1)) 
 
-Then do the test
 
-```{r vartest , mysize=TRUE, size='\\small'}
-with(hta,leveneTest(tad1~factor(sexo),center="median"))
+leveneTest(hta$tad1~factor(hta$sexo),center="median")
+
 ```
   - p value is over 0.05
   - We can assume homogeneity of variances
@@ -97,9 +335,11 @@ with(hta,leveneTest(tad1~factor(sexo),center="median"))
 ## T test when variances are equal
 
 
+\scriptsize
 
-```{r eqttest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tad1~factor(grupo),var.equal=TRUE ))
+
+```{r eqttest }
+t.test(hta$tas1~factor(hta$sexo), var.equal = TRUE )
 
 ```
 - Type I Error is over than 0.05
@@ -110,10 +350,12 @@ with(hta,t.test(tad1~factor(grupo),var.equal=TRUE ))
   
 ## T test when variances are unequal
 
+\scriptsize
 
 
-```{r neqttest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tad1~factor(grupo),var.equal=FALSE ))
+
+```{r neqttest }
+t.test(hta$tas1~factor(hta$sexo),var.equal=FALSE )
 
 ```
 - Same conclusions as before
@@ -124,78 +366,77 @@ with(hta,t.test(tad1~factor(grupo),var.equal=FALSE ))
   
 ## U Mann-Whitney or Sum Rank non parametric test
 
-```{r descriptiveComp , mysize=TRUE, size='\\small'}
-hta%>% 
-  group_by(sexo) %>% 
+\scriptsize
+
+
+
+```{r umtest }
+wilcox.test(hta$tad1~factor(hta$sexo) ,alternative='two.sided',exact=TRUE, correct=FALSE)
+
+hta  %>%  group_by(sexo) %>% 
   summarise(median = median(tad1)) 
-```
-
-
-```{r umtest , mysize=TRUE, size='\\small'}
-with(hta,wilcox.test(tad1~factor(grupo), 
-                     alternative='two.sided',
-                     exact=TRUE, correct=FALSE))
 ```
 
  - Null Hypothesis cannot be rejected
  
  
  
-# Two groups comparison in dependent samples
-
+   
 ## Paired T-test
 
+\scriptsize
 
 
-```{r pairttest , mysize=TRUE, size='\\small'}
-with(hta,t.test(tad1,tad12,paired=TRUE))
 
-summary(hta$tad1)
-summary(hta$tad12)
+```{r pairttest }
+t.test(hta$tas1,hta$tas12,paired=TRUE)
+
+summary(hta$tas1)
+summary(hta$tas12)
 ```
  - P value is over 0.05
  
     
 ## Paired Sign-Rank Wilcoxon Test
- 
-```{r pwilcest , mysize=TRUE, size='\\small'}
-with(hta,wilcox.test(tad1,tad12,
-     exact=TRUE, paired=TRUE))
+
+ \scriptsize
+
+```{r pwilcest }
+wilcox.test(hta$tad1,hta$tad12, exact=TRUE, paired=TRUE)
 
 ```
 
 
 
 
-# diabetes dataset
+## Read diabetes data
 
-```{r , mysize=TRUE, size='\\tiny'}
+\scriptsize
+
+
+```{r , size='\\tiny'}
+require(pacman)
+p_load(readxl, dplyr, magrittr)
 diabetes <- read_excel("datasets/diabetes.xls")
-diabetes[1:5,1:9]
 sapply(diabetes, class)
 diabetes_factor <- diabetes %>%
   mutate_if(sapply(diabetes, is.character), as.factor) %>%
   select (-numpacie)
 
-```
-
-
-# More than two groups comparison in independent samples
-
-```{r}
 diabetes%>% 
   group_by(ecg) %>% 
   summarise( n=n(),
     mean = mean(edat),
             sd=sd(edat)) 
+
 ```
 
-```{r}
-ggplot(diabetes, aes(x=ecg, y=edat)) +
-  geom_boxplot()
-```
+
+
 
 ## ANOVA
+\scriptsize
+
 
 ```{r}
 
@@ -204,10 +445,12 @@ summary(anova)
 
 ```
 
-### Tukey test for multiple comparison
+## Multicomparison
+\scriptsize
 
-```{r  , mysize=TRUE, size='\\tiny'}
-# install.packages("multcomp")
+
+```{r }
+
 library(multcomp)
 tuk <- glht(anova, linfct = mcp(ecg = "Tukey"))
 
@@ -215,300 +458,41 @@ tuk <- glht(anova, linfct = mcp(ecg = "Tukey"))
   
 ```
 
-**Confidence intervals:**
 
-```{r  , mysize=TRUE, size='\\tiny'}  
-print(confint(tuk, level=0.95)) # confidence intervals
+```{r }  
+  print(confint(tuk, level=0.95)) # confidence intervals
 
 ```
 
-**Multicomparison plot**
+## Multicomparison plot
 
-```{r  , mysize=TRUE, size='\\small', eval=TRUE}
-par(mar=c(3,10,3,3))
+\scriptsize
+
+
+```{r  , eval=TRUE}
 plot(confint(tuk))
 ```
 
-## Kruskal-Wallis Test (non-parametric)
+## Kruskal-Wallis Test
+\scriptsize
 
-```{r , mysize=TRUE, size='\\small'}
-diabetes_factor%>% 
-  group_by(ecg) %>% 
+
+
+```{r }
+diabetes_factor%>%   group_by(ecg) %>% 
   summarise(median = median(edat)) 
 
 kruskal.test(edat~ecg,data=diabetes_factor)
 ```
 
-### Dunn Test for multiple comparison
+## Dunn Test for multiple comparison
+\scriptsize
 
-```{r , mysize=TRUE, size='\\small'}
-# install.packages("dunn.test")
+
+
+```{r }
+
 library(dunn.test)
-with(diabetes_factor,dunn.test(edat,ecg,method="bonferroni"))
+dunn.test(diabetes_factor$edat, diabetes_factor$ecg, method="bonferroni")
 ```
-
-\newpage
-
-# Exercise solutions
-
-## Exercise 1
-
-a) Check the normality of tas1 variable in hta dataset
-
-```{r}
-oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
-par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
-with(hta, boxplot(tas1, main="Box-plot") )
-
-with(hta, hist(tas1) )
-
-with(hta, qqnorm(tas1, main="Normal QQplot") );with(hta, qqline(tas1) )
-
-par(oldpar) # Vuelve a los parámetros de dibujo originales
-```
-
-
-```{r}
-with(hta,shapiro.test(tas1) ) # Shapiro Wilk test
-
-```
-
-b) Can it be accepted that the initial TAS is 120 in Hipertensive patients?
-
-```{r}
-with(hta,t.test(tas1,mu=120)) # One sample T.test
-```
-
-c) Find the 95% confidence interval for the mean of tas1 variable
-
-From the test before we can find the confidence interval for the mean.
-
-d) Extra: Can it be accepted that the initial TAS is higher than 120 in Hipertensive women?
-
-```{r}
-hta_w <- subset(hta, sexo=="MUJER")
-with(hta_w,t.test(tas1,mu=120, alternative="greater")) # One sample T.test
-```
-
-## Exercise 2
-
-Is TAD comparable at baseline time between groups?
-
-We first plot the distribution of tad1 variables in each group
-
-```{r}
-ggplot(hta, aes(x=grupo, y=tad1)) +
-  geom_boxplot()
-```
-
-Test for homogeneity of variances between the two groups
-
-
-```{r}
-hta%>% 
-  group_by(grupo) %>% 
-  summarise(var = sd(tad1)) 
-
-with(hta,leveneTest(tad1~factor(grupo), center="median"))
-```
-  - p value is over 0.05
-  - We can assume homogeneity of variances
-  
-We apply the t.test for equal variances
-
-```{r}
-with(hta,t.test(tad1~factor(grupo),var.equal=TRUE ))
-```
-
-- Differences between groups are not significant.
-
-Using a non-parametric test:
-
-```{r}
-with(hta,wilcox.test(tad1~factor(grupo), alternative='two.sided', exact=TRUE, correct=FALSE))
-
-hta%>% 
-  group_by(grupo) %>% 
-  summarise(median = median(tad1)) 
-```
-
-- We obtain similar results.
-
-## Exercise 3
-
-Is sistolic blood pressure (TAS) comparable between first and 12th measures?
-
-We can use the paired t.test since sample size is big and 
-
-```{r}
-with(hta,t.test(tas1,tas12,paired=TRUE))
-
-summary(hta$tas1)
-summary(hta$tas12)
-```
- - P value is below 0.05
  
-    
-With the non-parametric test Paired Sign-Rank Wilcoxon Test
- 
-```{r}
-with(hta,wilcox.test(tas1,tas12,
-     exact=TRUE, paired=TRUE))
-
-```
- - We obtain similar results
- 
-## Exercise 4
-
-a) Se efectúa un estudio de seguimiento a 1018 sujetos atendidos en una clínica de obesidad. Se mide el Indice de Masa Corporal(IMC) y el perfil lipídico. Al cabo de 12 meses se evalúa de nuevo el IMC y el colesterol estando interesados en cuantificar la
-disminución de ambos parámetros.
-
-Disponemos de dos variables cuantitativas medidas en dos momentos distintos (muestras apareadas). Se quiere analizar si
-los valores pre y post sufren algun cambio, para ello debemos: en primer lugar evaluar la normalidad
-de las variables. En caso de que se ajusten a una distribución normal, miramos la homegeneidad de
-las variables y realizamos un test t de Student para muestras apareadas. En el caso de que no sigan
-una distribución normal, realizaremos el test no paramétrico de Wilcoxon para muestras apareadas.
-
-b) Se analizan un grupo de variables inmunológicas (leucocitos totales, linfocitos B, natural
-Killer, etc) en una muestra de 102 hombres y 147 mujeres mayores de 65 años. Se está interesado en ver la existencia de diferencias por sexo.
-
-Disponemos de distintas variables cuantitativas (leucocitos,linfocitos, etc. ) y una variable cualitativa, sexo. Queremos ver si existen diferencias de las variables cuantitativas según el sexo, para ello debemos: en primer lugar evaluar la normalidad de las variables. En caso de que se ajusten a una distribución normal, miramos la homegeneidad de las variables y realizamos un test t de
-Student. En el caso de que no sigan una distribución normal, realizaremos el test no paramétrico U de Mann-Whitnney.
-
-## Exercise 5
-
-Are there differences between systolic pressure (sbp) and ECG in diabetic patients? 
-
-Extra: And between the follow-up time (tempsviu) and the ECG? 
-
-a) For each variable, perform some descriptives and check normality assumptions
-
-* Check normality
-
-```{r}
-oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
-par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
-with(diabetes, boxplot(sbp, main="Box-plot") )
-
-with(diabetes, hist(sbp) )
-
-with(diabetes, qqnorm(sbp, main="Normal QQplot") );with(diabetes, qqline(sbp) )
-
-par(oldpar) # Vuelve a los parámetros de dibujo originales
-```
-
-
-```{r}
-with(diabetes,shapiro.test(sbp) ) # Shapiro Wilk test
-
-```
-
-* Summarise variable by ECG group
-
-```{r}
-diabetes%>% 
-  group_by(ecg) %>% 
-  summarise( n=n(),
-    mean = mean(sbp), median=median(sbp),
-            sd=sd(sbp)) 
-```
-
-```{r}
-ggplot(diabetes, aes(x=ecg, y=sbp)) +
-  geom_boxplot()
-```
-
-b) Set the hypothesis contrast and perform the test
-
-H0: The means of all the groups are equal
-H1: Not all the means are equal. At least there are two different means
-
-```{r}
-anova_sbp <-aov(sbp~ecg,data=diabetes_factor)
-summary(anova_sbp)
-
-```
-
-c) If needed, apply a post-hoc test for multiple comparisons between groups to test which groups are different.
-
-Not needed here since we cannot reject the null hypothesis.
-
-d) Extra: Analyze the relation between the follow-up time (tempsviu) and the ECG.
-
-* Check normality of tempsviu
-
-```{r}
-oldpar<-par(mfrow=c(1,1)) # Guarda los parámetros para el dibgujo
-par(mfrow=c(2,2)) # Dibuja cuatro gráficos por grafico
-with(diabetes, boxplot(tempsviu, main="Box-plot") )
-
-with(diabetes, hist(tempsviu) )
-
-with(diabetes, qqnorm(tempsviu, main="Normal QQplot") );with(diabetes, qqline(tempsviu) )
-
-par(oldpar) # Vuelve a los parámetros de dibujo originales
-```
-
-
-```{r}
-with(diabetes,shapiro.test(tempsviu) ) # Shapiro Wilk test
-
-```
-
-* Summarise variable by ECG group
-
-```{r}
-diabetes%>% 
-  group_by(ecg) %>% 
-  summarise( n=n(),
-    mean = mean(tempsviu), median=median(tempsviu),
-            sd=sd(tempsviu)) 
-```
-
-```{r}
-ggplot(diabetes, aes(x=ecg, y=tempsviu)) +
-  geom_boxplot()
-```
-
-b) Set the hypothesis contrast and perform the test
-
-H0: The means of all the groups are equal
-H1: Not all the means are equal. At least there are two different means
-
-We will perform a non-parametric test since we can't assume normality of the data
-
-```{r}
-diabetes_factor%>% 
-  group_by(ecg) %>% 
-  summarise(median = median(tempsviu)) 
-
-kruskal.test(tempsviu~ecg,data=diabetes_factor)
-```
-- We can reject the null hypothesis (p-value < 0.05)
-
-c) If needed, apply a post-hoc test for multiple comparisons between groups to test which groups are different.
-
-Non-parametric Dunn Test for multiple comparison
-
-```{r}
-# install.packages("dunn.test")
-library(dunn.test)
-with(diabetes_factor,dunn.test(tempsviu,ecg,method="bonferroni"))
-```
-- Differences between Normal-Anormal groups and between Normal-Frontera groups are significant (adjusted p-value < 0.05).
-
-## Exercise 6
-
-Se estudia un grupo de 33 pacientes afectados de Carcinoma hepatocelular, un grupo de 22
-afectados únicamente de cirrosis y un grupo control de 31 donantes de sangre. Se determina
-la actividad celular NK y el número de células CK en los tres grupos. (Nota: la media de
-actividad celular es de 39 unidades líticas /10ˆ7 de linfocitos y la mediana es de 28 y la media
-del número de células es de 178 y la mediana de 163)
-
-Solución: Se dispone de tres grupos de pacientes independientes y dos variables cuantitativas a comparar en los tres
-grupos. Aunque desconocemos el comportamiento de las variables, por las pistas vemos que las medias y
-las medianas son bastante diferentes con lo cual la distribución no debe de ser simétrica. Por otra parte el
-tamaño muestral de los grupos no es muy grande. Optaríamos por efectuar un contraste no paramétrico de
-igualdad de distribuciones en los tres grupos. Utilizaríamos la prueba de Kruskal-Wallis. Si hay diferencias,
-para identificar entre qué dos grupos están usaríamos la corrección de Bonferroni del ejercicio anterior o el
-Dunn-test que ya efectúa los contrastes con la p corregida.
