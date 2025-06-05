@@ -1,0 +1,47 @@
+---
+title: "Session 7 - Categorical data Analyisis. Exercises"
+output:
+  html_notebook:
+    code_folding: hide
+
+---
+
+# Exercise 1
+
+- Select one of the datasets that you have worked with during the course
+    - diabetes.xls
+    - osteoporosis.csv
+    - demora.xls
+    
+ - Read the dataset into R and check that the categorical variables you are interested in are converted into factors.
+ 
+ - Confirm the conversion by summarizing the variables
+ 
+ 
+# Exercise 2
+ 
+- Use the diabetes.sav file and import it into R with the "Import from SPSS" feature.
+
+  - What is the class of the "MORT" variable.
+  
+  - Turn it into one factor so that it has the same levels as when you read it using `read.csv`
+  
+  
+# Exercise 3
+
+- With the osteoporosis dataset repeat the crosstabulation done above using 
+
+  - Two categorical variables
+  - Variable "MENOP" and a newly created variable "catBUA" created by properly categorizing variable BUA.
+  
+```{r}
+osteo100 <- read.delim("datasets/osteo100.txt", stringsAsFactors=TRUE)
+osteoOrderd <- osteo100[order(osteo100$bua),]
+osteo100$buaCat <- cut (osteo100$bua, c(0,50, 75, 100)) #https://www.r-bloggers.com/2012/09/from-continuous-to-categorical/
+table(osteo100$buaCat)
+with(osteo100, table(buaCat, clasific))
+```
+
+ 
+
+  

@@ -1,16 +1,14 @@
 ---
-title: |
-  | Hypotheses tests with continuous variables
-  | Statistical Analysis with R:
-author: "Miriam Mota and Santi Pérez"
+title: "Hypotheses tests with continuous variables"
+author: "Miriam Mota and Santiago Perez-Hoyos"
 date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
-    theme: "Copenhagen"
+    theme: "Madrid"
     colortheme: "dolphin"
     fonttheme: "structurebold"
     slide_level: 2
-footer: "Statistical Analysis with R"
+footer: "Statistics with R"
 editor_options: 
   chunk_output_type: console
 ---
@@ -19,11 +17,6 @@ editor_options:
 require(knitr)
 # include this code chunk as-is to set options
 opts_chunk$set(fig.width = 7, fig.height = 3, warning = F, message = FALSE)
-
-
-# knitr::knit_hooks$set(output = function(x, options) {
-#   paste0('<small> \n ', x, '</small> \n ')
-# })
 
 ```
 
@@ -37,7 +30,9 @@ opts_chunk$set(fig.width = 7, fig.height = 3, warning = F, message = FALSE)
 
 - One Group Comparison
 
-- Two Groups Comparison 
+- Two Groups Comparison in Independent Samples
+
+- Two Groups Comparison in Dependent Samples
 
 - K Groups Comparison in Independent Samples
 
@@ -58,14 +53,14 @@ opts_chunk$set(fig.width = 7, fig.height = 3, warning = F, message = FALSE)
 - Easier to say than to do. 
   - Sometimes cheatsheets may be helpful, but be warned against a blind use, that is understand and be critic with the steps. 
 
-## Which test is appropriate for which problem
+# Which test is appropriate for which problem
 
 ```{r, echo=FALSE, out.width="80%", out.length="60%", fig.cap=""}
 knitr::include_graphics("images/testsXCadaSituacio.png")
 ```
 
 
-## Example situation (1): Introduction
+# Example situation (1): Introduction
 
 - Many experimental questions may be answered through hypothesis testing.
 - Imagine, for example, a study designed to compare two distinct hypertension control programs.
@@ -78,8 +73,9 @@ require(pacman)
 p_load(dplyr, readxl, magrittr, ggplot2)
 ```
 
+---
 
-## Example situation (2): Data collected
+# Example situation (2): Data collected
 
 ```{r readExampleData , echo=TRUE}
 hta <- read_excel("datasets/hta.xls")
@@ -89,9 +85,9 @@ head(as.data.frame(htaSimple))
 
 <!-- - Exercise: modify the code to create two new variables "difftas=tas12-tas1" and "difftad=tad12-tad1". -->
 
+---
 
-
-## Example situation (3): Reasonable questions
+# Example situation (3): Reasonable questions
 
 - The goal of the study is to compare the treatment effect
 so a reasonable question is:
@@ -105,9 +101,9 @@ so a reasonable question is:
   - *Has the average `tad` (in group A) decreased in 12 months?*
   - *Is the average `tad` different in men and women at basal time?*
   
+---
 
-
-## Types of tests (1): Confirmatory vs Independence
+# Types of tests (1): Confirmatory vs Independence
 
 Distinct classifications can be found in textbooks
 
@@ -120,9 +116,9 @@ Distinct classifications can be found in textbooks
 
 - *This classification is useful but artificial, not to say that the term "independence" is slightly abused*
 
+---
 
-
-## Types of tests (2): Parametric vs Non-parametric
+# Types of tests (2): Parametric vs Non-parametric
 
 - Parametric tests 
   - assume some underlying distribution for the data
@@ -136,10 +132,10 @@ Distinct classifications can be found in textbooks
 - Permutation tests
   - If sample size is not tiny *permutation tests* are a good alternative.
 
+---
+# Hands on: Always start looking at the data
 
-## Hands on: Always start looking at the data
-
-\scriptsize
+\tiny
 
 ```{r , eval=FALSE}
 library(ggplot2)
@@ -151,14 +147,18 @@ p1 <- ggplot(hta, aes(y = tas1)) +
 p2 <- ggplot(hta, aes(x = tas1)) +
   geom_histogram() 
 
-(p1 / p2)
+p3 <- ggplot(hta, aes(sample = tas1)) +
+  stat_qq() +
+  stat_qq_line() 
+
+(p1 | p2) / p3
 
 ```
 
 \normalsize
-## Hands on: Always start looking at the data
+# Hands on: Always start looking at the data
 
-\scriptsize
+\tiny
 
 ```{r , eval=FALSE}
 p_load(ggplot2, patchwork)
@@ -171,32 +171,36 @@ p2 <- ggplot(hta, aes(x = tas1)) +
   geom_histogram(bins = 30, fill = "salmon", color = "black") +
   labs(title = "Histograma", x = "tas1")
 
+p3 <- ggplot(hta, aes(sample = tas1)) +
+  stat_qq() +
+  stat_qq_line(color = "blue") +
+  labs(title = "QQ plot", x = "Teórico", y = "Muestra") 
 
-(p1 | p2) 
+(p1 | p2) / p3
 
 ```
 
 \normalsize
+---
 
+# Data visualization
 
-## Data visualization
-
-```{r , echo=FALSE, fig.height=5, fig.width=9}
+```{r , echo=FALSE}
 p_load(ggplot2, patchwork)
-
 p1 <- ggplot(hta, aes(y = tas1)) +
-  geom_boxplot(fill = "skyblue") +
-  labs(title = "Box-plot", y = "tas1") 
+  geom_boxplot() 
 
 p2 <- ggplot(hta, aes(x = tas1)) +
-  geom_histogram(bins = 30, fill = "salmon", color = "black") +
-  labs(title = "Histograma", x = "tas1")
+  geom_histogram() 
 
+p3 <- ggplot(hta, aes(sample = tas1)) +
+  stat_qq() +
+  stat_qq_line() 
 
-(p1 | p2) 
+(p1 | p2) / (p3 | plot_spacer())
 ```
 
-
+---
 
 # Normality and tests
 
@@ -213,9 +217,9 @@ p2 <- ggplot(hta, aes(x = tas1)) +
 - As a consequence checking normality has become one of the first steps of any data analysis. 
   - It doesn't hurt, but it is clearly over-rated.
 
+---
 
-
-## Normality Test
+# Normality Test
 
 - Normality tests can be used to decide if the data can be considered to follow a normal distribution.
 - This is more a theoretical than practical issue because ...
@@ -230,30 +234,17 @@ p2 <- ggplot(hta, aes(x = tas1)) +
     - Kolmogorov tests
     - Shapiro-Wilks test
 
-## Normality test: Graphically
-
-```{r}
- ggplot(hta, aes(sample = tas1)) +
-  stat_qq() +
-  stat_qq_line(color = "blue") +
-  labs(title = "QQ plot", x = "Teórico", y = "Muestra") 
-```
-
-
-## Normality test: Shapiro-Wilks
+# Normality test: Shapiro-Wilks
 
 - In normality test, the null hypothesis is normality
 - That is, rejecting the null suggests departure of normality.
   - $H_0$: The data follow a normal distribution
   - $H_1$: The data do not follow a normal distribution
-  
-\scriptsize
 
-```{r normtest }
+```{r normtest , mysize=TRUE, size='\\small'}
 shapiro.test(hta$tad1)  # Shapiro Wilk test
 
 ```
-
 
 
 # One sample tests
@@ -266,7 +257,7 @@ shapiro.test(hta$tad1)  # Shapiro Wilk test
 - *However*, noticing that a paired tests is equivalent to a one sample tests for the difference makes us realize their relevance.
 
 
-## One sample parametric vs non-parametric tests
+# One sample parametric vs non-parametric tests
 
 - If we assume normality an appropriate test for a hypothesis about the mean is the *t-test*
 
@@ -276,46 +267,31 @@ shapiro.test(hta$tad1)  # Shapiro Wilk test
   - Wilcoxon rank test, if data re symmetrical
   - Sign test in other cases
 
-## Hands on one sample tests (1): t-test
+# Hands on one sample tests (1): t-test
 
 - Is `tad` in HTA patients above 90?
 - Notice that even if we are interested in "above 90" the null is "equality"
 
   - $H_0: \mu=90,\qquad H_1: \mu > 90$.
 
-\scriptsize
 
-```{r onettest , size='\\tiny'}
+```{r onettest , mysize=TRUE, size='\\small'}
 t.test(hta$tad1,mu=90, alternative="greater") # One sample T.test
 ```
 
-## Hands on one sample tests (2): Wilcoxon test
+# Hands on one sample tests (2): Wilcoxon test
 
 - In wilcoxon test the null hypothesis is about the median.
-\scriptsize
 
-
-```{r onewilcoxtest , size='\\tiny'}
-wilcox.test(hta$tad1, mu = 90, alternative = "greater")  # One sample wilcoxon
+```{r onewilcoxtest , mysize=TRUE, size='\\small'}
+wilcox.test(hta$tad1,mu=90, alternative="greater")  # One sample wilcoxon
 ```
 
 
-# Two sample tests
-
-\scriptsize
+# Homogeneity variance Test
 
 
-```{r}
-head(hta)
-```
-
-
-## Homogeneity variance Test
-
-\scriptsize
-
-
-```{r vartest }
+```{r vartest , mysize=TRUE, size='\\small'}
 library(car)
 hta %>% 
   group_by(sexo) %>% 
@@ -330,13 +306,11 @@ leveneTest(hta$tad1~factor(hta$sexo),center="median")
   
   
   
-## T test when variances are equal
+# T test when variances are equal
 
 
-\scriptsize
 
-
-```{r eqttest }
+```{r eqttest , mysize=TRUE, size='\\small'}
 t.test(hta$tas1~factor(hta$sexo), var.equal = TRUE )
 
 ```
@@ -346,13 +320,11 @@ t.test(hta$tas1~factor(hta$sexo), var.equal = TRUE )
 
 
   
-## T test when variances are unequal
-
-\scriptsize
+# T test when variances are unequal
 
 
 
-```{r neqttest }
+```{r neqttest , mysize=TRUE, size='\\small'}
 t.test(hta$tas1~factor(hta$sexo),var.equal=FALSE )
 
 ```
@@ -362,16 +334,16 @@ t.test(hta$tas1~factor(hta$sexo),var.equal=FALSE )
 
 
   
-## U Mann-Whitney or Sum Rank non parametric test
-
-\scriptsize
+# U Mann-Whitney or Sum Rank non parametric test
 
 
 
-```{r umtest }
-wilcox.test(hta$tad1~factor(hta$sexo) ,alternative='two.sided',exact=TRUE, correct=FALSE)
+```{r umtest , mysize=TRUE, size='\\small'}
+wilcox.test(hta$tad1~factor(hta$sexo)
+    ,alternative='two.sided',exact=TRUE, correct=FALSE)
 
-hta  %>%  group_by(sexo) %>% 
+hta%>% 
+  group_by(sexo) %>% 
   summarise(median = median(tad1)) 
 ```
 
@@ -380,13 +352,11 @@ hta  %>%  group_by(sexo) %>%
  
  
    
-## Paired T-test
-
-\scriptsize
+# Paired T-test
 
 
 
-```{r pairttest }
+```{r pairttest , mysize=TRUE, size='\\small'}
 t.test(hta$tas1,hta$tas12,paired=TRUE)
 
 summary(hta$tas1)
@@ -395,11 +365,9 @@ summary(hta$tas12)
  - P value is over 0.05
  
     
-## Paired Sign-Rank Wilcoxon Test
-
- \scriptsize
-
-```{r pwilcest }
+# Paired Sign-Rank Wilcoxon Test
+ 
+```{r pwilcest , mysize=TRUE, size='\\small'}
 wilcox.test(hta$tad1,hta$tad12, exact=TRUE, paired=TRUE)
 
 ```
@@ -407,12 +375,9 @@ wilcox.test(hta$tad1,hta$tad12, exact=TRUE, paired=TRUE)
 
 
 
-## Read diabetes data
+# Read diabetes data
 
-\scriptsize
-
-
-```{r , size='\\tiny'}
+```{r , mysize=TRUE, size='\\tiny'}
 require(pacman)
 p_load(readxl, dplyr, magrittr)
 diabetes <- read_excel("datasets/diabetes.xls")
@@ -432,9 +397,7 @@ diabetes%>%
 
 
 
-## ANOVA
-\scriptsize
-
+# ANOVA
 
 ```{r}
 
@@ -443,11 +406,9 @@ summary(anova)
 
 ```
 
-## Multicomparison
-\scriptsize
+# Multicomparison
 
-
-```{r }
+```{r  , mysize=TRUE, size='\\tiny'}
 
 library(multcomp)
 tuk <- glht(anova, linfct = mcp(ecg = "Tukey"))
@@ -455,42 +416,34 @@ tuk <- glht(anova, linfct = mcp(ecg = "Tukey"))
   print(summary(tuk)) # pairwise tests
   
 ```
+---
 
-
-```{r }  
+```{r  , mysize=TRUE, size='\\tiny'}  
   print(confint(tuk, level=0.95)) # confidence intervals
 
 ```
 
-## Multicomparison plot
+# Multicomparison plot
+```{r  , mysize=TRUE, size='\\small', eval=FALSE}
 
-\scriptsize
-
-
-```{r  , eval=TRUE}
-plot(confint(tuk))
+  plot(confint(tuk))
 ```
 
-## Kruskal-Wallis Test
-\scriptsize
+# Kruskal-Wallis Test
 
-
-
-```{r }
-diabetes_factor%>%   group_by(ecg) %>% 
+```{r , mysize=TRUE, size='\\small'}
+diabetes_factor%>% 
+  group_by(ecg) %>% 
   summarise(median = median(edat)) 
 
 kruskal.test(edat~ecg,data=diabetes_factor)
 ```
 
-## Dunn Test for multiple comparison
-\scriptsize
+# Dunn Test for multiple comparison
 
-
-
-```{r }
+```{r , mysize=TRUE, size='\\small'}
 
 library(dunn.test)
-dunn.test(diabetes_factor$edat, diabetes_factor$ecg, method="bonferroni")
+with(diabetes_factor,dunn.test(edat,ecg,method="bonferroni"))
 ```
  

@@ -1,0 +1,152 @@
+---
+title: "Ejercicios Sesión 7"
+output:
+  pdf_document: default
+  html_document: default
+date: "2025-06-05"
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Se cuenta con un conjunto de datos que representa información clínica de 300 pacientes, con variables demográficas, de tratamiento y de laboratorio. 
+
+Las variables incluidas son:
+
+- paciente_id: identificador del paciente
+
+- edad: edad en años
+
+- sexo: "Hombre" o "Mujer"
+
+- grupo_tratamiento: grupo asignado ("A", "B" o "C")
+
+- presion_sistolica: presión arterial sistólica (mmHg)
+
+- presion_diastolica: presión arterial diastólica (mmHg)
+
+- colesterol: nivel de colesterol total (mg/dL)
+
+- glucosa_baseline: glucosa basal (mg/dL)
+
+- glucosa_6meses: glucosa a los 6 meses de seguimiento (mg/dL)
+
+
+Pregunta inicial:
+¿Qué tipo de variables hay? ¿Cuáles son categóricas y cuáles cuantitativas? ¿Qué tipo de análisis podrías hacer?
+
+```{r, echo = FALSE, eval = FALSE}
+set.seed(123)
+
+n <- 500
+
+library(tibble)
+set.seed(123)  # Para reproducibilidad
+n <- 300
+
+# Generación de variables base
+paciente_id <- 1:n
+edad <- round(rnorm(n, mean = 65, sd = 15))
+sexo <- sample(c("Hombre", "Mujer"), n, replace = TRUE)
+grupo_tratamiento <- sample(c("A", "B", "C"), n, replace = TRUE)
+
+# Presión sistólica depende del grupo de tratamiento
+presion_sistolica <- round(rnorm(n, mean = 130 +
+                                    ifelse(grupo_tratamiento == "A", 0,
+                                    ifelse(grupo_tratamiento == "B", 5, 10)),
+                                  sd = 10))
+
+# Colesterol depende del sexo
+colesterol <- round(rnorm(n, mean = 200 +
+                             ifelse(sexo == "Hombre", 4, -4),
+                           sd = 20))
+
+# Resto de variables sin modificar
+presion_diastolica <- round(rnorm(n, mean = 80, sd = 10))
+glucosa_baseline <- round(rnorm(n, mean = 100, sd = 15))
+glucosa_6meses <- round(rnorm(n, mean = 97, sd = 15))
+
+# Crear el tibble
+data <- tibble(
+  paciente_id,
+  edad,
+  sexo,
+  grupo_tratamiento,
+  presion_sistolica,
+  presion_diastolica,
+  colesterol,
+  glucosa_baseline,
+  glucosa_6meses
+)
+
+
+head(data)
+
+save(data, file = "datasets/data.Rda" )
+
+```
+
+#  1. Análisis Exploratorio
+
+Antes de realizar pruebas estadísticas, es esencial explorar los datos.
+
+*Reflexiona:  ¿Hay diferencias visibles en las distribuciones por sexo o tratamiento? ¿Existen posibles valores atípicos o distribuciones sesgadas?*
+
+
+# 2. Análisis Estadístico. Comparación del colesterol según el sexo. 
+
+
+Los investigadores creen que podría haber una diferencia en los niveles de colesterol entre hombres y mujeres.
+
+Plantea:
+
+- ¿Cuál es la hipótesis nula y alternativa?
+
+- ¿La variable es continua y la agrupación es binaria? ¿Qué prueba usarías?
+
+- ¿Debes usar un test paramétrico (t-test) o no paramétrico (Wilcoxon)? Porque? 
+
+
+
+
+# 3. Comparación pareada de glucosa antes y después
+
+Los clínicos creen que tras 6 meses de tratamiento, los niveles de glucosa han disminuido significativamente.
+
+Plantea:
+
+- ¿Qué tipo de prueba corresponde si los datos son pareados?
+
+- ¿Los datos parecen normales? ¿Debes usar un t-test pareado o Wilcoxon pareado?
+
+*Reflexiona: ¿Se cumple la hipótesis del equipo clínico? ¿Hay evidencia estadística de cambio?*
+
+
+
+# 4. Comparación entre 3 grupos de tratamiento: presión sistólica
+
+El equipo de investigación sospecha que los distintos grupos de tratamiento podrían estar asociados con diferencias en la presión sistólica.
+
+Plantea:
+
+- ¿Cuántos grupos tienes? ¿Qué tipo de análisis utilizarías (ANOVA o Kruskal-Wallis)?
+
+
+*Reflexiona: ¿Se observan diferencias significativas? ¿La prueba elegida fue la adecuada?*
+
+
+# 5. Comparaciones múltiples: ¿Qué grupo es diferente?
+
+Si se detectan diferencias globales en el análisis anterior, el equipo desea saber entre qué grupos hay diferencias.
+
+Plantea:
+
+- ¿Qué prueba post-hoc sería adecuada si el test fue no paramétrico?
+
+*Reflexiona: ¿Cuál(es) grupo(s) difieren? ¿Qué implicaciones clínicas podría tener?*
+
+
+
