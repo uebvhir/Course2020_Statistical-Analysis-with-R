@@ -260,7 +260,7 @@ ggplot(datos_porcentaje_total, aes(x = fumar, y = porcentaje, fill = cancer)) +
 
 Showing plot as percentages is useful for comparisons
 
-```{r, echo = FALSE, fig.width=6, fig.height=5 }
+```{r, echo = FALSE, fig.width=6, fig.height=3 }
 p_load(dplyr, ggplot2)
 
 # Calcular frecuencias y porcentajes
@@ -470,10 +470,16 @@ datos <- data.frame(
   Tratamiento_C = c(0, 0, 0, 1, 1, 1, 1, 1, 1, 0)
 )
 
+
+```
+## Cochran Test
+
+```{r}
+
+
 # Test de Cochran Q
 CochranQTest(as.matrix(datos))
 ```
-
 
 
 # Some about diagnosis
