@@ -1,13 +1,13 @@
 ---
 title: "8- Hypothesis testing with qualitative variables"
-author: "Alex Sanchez, Miriam Mota, Ricardo Gonzalo and  \n Santiago Perez-Hoyos"
-date: "Statistics and Bioinformatics Unit. \n Vall d'Hebron Institut de Recerca"
+author: "Miriam Mota and Santi Pérez"
+date: "Statistics and Bioinformatics Unit. Vall d'Hebron Institut de Recerca"
 output:
   beamer_presentation:
     theme: "Copenhagen"
     colortheme: "dolphin"
     fonttheme: "structurebold"
-  slide_level: 2
+    slide_level: 2
 footer: "Statistical Analysis with R"
 editor_options: 
   chunk_output_type: console
@@ -28,7 +28,7 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 })
 ```
 
-# Categorical Variables
+# Introduction. Categorical Variables
 
 - Categorical variables represent facts that can be better described with _labels_ than with numbers. 
 
@@ -42,7 +42,7 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
   
   - `Stage` is an example of a categorical variable in `ordinal` scale
 
-# Representing categorical variables in R
+## Representing categorical variables in R
 
 - Categorical variables are well represented with _factors_
 
@@ -70,7 +70,7 @@ class(sex)
 ```
 
 
-# Creating factors
+## Creating factors
 
 - Factors can be created ... 
 
@@ -83,7 +83,7 @@ class(sex)
     
     - more flexible
     
-# Create factors automatically
+## Create factors automatically
 
 - This is achieved by
 
@@ -102,7 +102,7 @@ class(sex)
   - What is the class of the variable `menop`
   
 
-# Create factors automatically
+## Create factors automatically
   
 ```{r, size=5, results='hide'}
 
@@ -112,7 +112,8 @@ class(osteo1$menop)
 summary(osteo1$menop)
 str(osteo1)
 
-library(readr)
+library(pacman)
+p_load(readr)
 osteo2 <- read_delim("datasets/osteoporosis.csv", "\t", 
                      escape_double = FALSE)
 class(osteo2$menop)
@@ -122,7 +123,7 @@ summary(osteo2$menop)
 str(osteo2)
 ```
 
-# Exercise 1
+## Exercise 1
 
 - Select `diabetes.xls` datasets 
     
@@ -141,7 +142,7 @@ str(osteo2)
   
 
 
-# The analysis of categorical variables
+## The analysis of categorical variables
 
 - The analysis of categorical data proceeds as usual:
 
@@ -156,7 +157,7 @@ str(osteo2)
     - With two variables (chi-square and related)
   
   
-# Types of test with categorical variables
+## Types of test with categorical variables
 
 - One variable (tests with proportions)
   - Does the proportion (% affected) match a given value?
@@ -173,7 +174,7 @@ str(osteo2)
 
 
 
-# Example
+## Example
 
 Consider the following study relating smoking and cancer.
 
@@ -183,7 +184,9 @@ knitr::include_graphics("images/cancerAndSmoking1png.png")
 
 Our goal here would be to determine if there is an association between smoking and cancer.
 
-# Crosstabulating a dataset
+## Crosstabulating a dataset
+
+\scriptsize
 
 - Data may come from a table (aggregated) or disagregated in a data file.
 
@@ -200,7 +203,7 @@ mytable <-table(dadescancer$cancer, dadescancer$fumar)
 mytable
 ```
 
-# Crosstabulation (2): Marginal tables
+## Crosstabulation (2): Marginal tables
 
 Marginal values are important to understand the structure of the data:
 
@@ -211,7 +214,8 @@ mytable
 ```
 
 
-# Crosstabulation (3): In percentages
+## Crosstabulation (3): In percentages
+\scriptsize
 
 Showing tables as percentages is useful for comparisons
 
@@ -222,7 +226,63 @@ prop.table(mytable, 1) # row percentages
 
 ```
 
-# Exercise 2
+
+
+## Plot 
+\scriptsize
+
+Showing plot as percentages is useful for comparisons
+
+```{r}
+p_load(dplyr, ggplot2)
+
+# Calcular frecuencias y porcentajes
+datos_porcentaje_total <- dadescancer  %>% 
+  group_by(fumar, cancer) %>%
+  summarise(n = n()) %>%
+  group_by(fumar) %>%
+  mutate(porcentaje = n / sum(n) * 100)
+
+
+ggplot(datos_porcentaje_total, aes(x = fumar, y = porcentaje, fill = cancer)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Proporción de fumadores por condición de cáncer",
+    x = "Fuma",
+    y = "Porcentaje",
+    fill = "Cancer"
+  )
+```
+
+## Plot 
+\scriptsize
+
+Showing plot as percentages is useful for comparisons
+
+```{r, echo = FALSE, fig.width=6, fig.height=5 }
+p_load(dplyr, ggplot2)
+
+# Calcular frecuencias y porcentajes
+datos_porcentaje_total <- dadescancer  %>% 
+  group_by(fumar, cancer) %>%
+  summarise(n = n()) %>%
+  group_by(fumar) %>%
+  mutate(porcentaje = n / sum(n) * 100)
+
+
+ggplot(datos_porcentaje_total, aes(x = fumar, y = porcentaje, fill = cancer)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Proporción de fumadores por condición de cáncer",
+    x = "Fuma",
+    y = "Porcentaje",
+    fill = "Cancer"
+  )
+```
+
+## Exercise 2
 
 - With the diabetes dataset repeat the crosstabulation done above using 
   - Two categorical variables
@@ -239,7 +299,8 @@ prop.table(mytable, 1) # row percentages
 
 - With a significance level of 5%, can we say that the population of men older than 55 in 2000-2003 had the same proportion of obese cases than that population had in 50'-80'?
 
-# Proportion tests with R
+## Proportion tests with R
+\scriptsize
 
 
 Alternative "NOT EQUAL". This is set by default.
@@ -268,7 +329,7 @@ prop.test(x=142, n=723, p=0.15, alternative="l")
 Notice that _choosing the wrong alternative may yield unreasonable conclusions_.
 
 
-# Estimation comes with proportion test
+## Estimation comes with proportion test
 
 - `prop.test` does __three__ distinct calculations
 
@@ -280,7 +341,7 @@ Notice that _choosing the wrong alternative may yield unreasonable conclusions_.
 knitr::include_graphics("images/propTestsAndCI.png")
 ```
 
-# Exercise 3
+## Exercise 3
 
 - In the diabetes dataset.
   
@@ -293,7 +354,7 @@ knitr::include_graphics("images/propTestsAndCI.png")
   <!-- - What sample size should we have taken so that th precision of the confidence intervals would have been at most 3% with a probability of 95%? -->
     
     
-# Contingency tables
+## Contingency tables
 
 - A contingency table (a.k.a cross tabulation or cross tab) is a matrix-like table that displays the (multivariate) frequency distribution of the variables.
 
@@ -304,7 +365,7 @@ knitr::include_graphics("images/propTestsAndCI.png")
 knitr::include_graphics("images/contingencytables1.png")
 ```
 
-# Chi-squared test
+# Two variables. Chi-squared test
 
 - A _familiy_ of tests receiving its name because they all rely on the _Chi-Squared distribution_ to compute the test probabilities.
 
@@ -316,7 +377,7 @@ knitr::include_graphics("images/contingencytables1.png")
 
 - When each row is a sample from distinct populations (groups, subgroups...), the aim is to determine if both groups have significative differences in that variable
 
-# Chi-squared tests
+## Chi-squared tests
 
 - When we have:
 
@@ -331,13 +392,13 @@ knitr::include_graphics("images/contingencytables1.png")
 
    - _Is this difference between the expected and observed due to chance ("sampling variation"), or is it a real difference?_
 
-# Chi squared.test: Observed vs expected
+## Chi squared.test: Observed vs expected
 
 ```{r, echo=FALSE, out.width="80%", fig.cap=""}
 knitr::include_graphics("images/observedvsexpected.png")
 ```
 
-# Chi squared tests: Observed vs expected with R
+## Chi squared tests: Observed vs expected with R
 
 ```{r, results='hide'}
 require(gmodels)
@@ -346,7 +407,7 @@ CrossTable(mytable,expected = T,prop.chisq = F,prop.c = F,prop.r = F)
 ```
 ![](images/chi.PNG)
 
-# Chi squared tests with R
+## Chi squared tests with R
 
 ```{r}
 chisq.test (mytable)
@@ -354,7 +415,7 @@ chisq.test (mytable)
 
 
 
-# Fisher test. an assumptions-free alternative
+## Fisher test. an assumptions-free alternative
 
 Chi-squared test require that sample sizes are "big" and expected frequencies are, at least greater than 5.
 
@@ -366,13 +427,13 @@ fisher.test(mytable)
 
 
 
-# Exercise 4
+## Exercise 4
 
 - Use the diabetes dataset to study if it can be detected an association between the variables `mort` and `tabac` in the diabetes dataset.
 
 - Do not start with a test but with an appropriate summarization and visualization!
 
-# Mcnemar test
+## Mcnemar test
 
 Mcnemar test is used to compare the frequencies of paired samples of dichotomous data
 
@@ -381,7 +442,7 @@ Mcnemar test is used to compare the frequencies of paired samples of dichotomous
 - H1: There is a significant change in individuals after the treatment
 
 
-# Mcnemar test. Example 
+## Mcnemar test. Example 
 
 ![](images/mcnemar.PNG)
 
@@ -389,6 +450,73 @@ Mcnemar test is used to compare the frequencies of paired samples of dichotomous
 ```{r}
 .Table <- matrix(c(69,28,5,63), 2, 2, byrow=TRUE)
 mcnemar.test(.Table)
+```
+
+
+## Cochran Test
+
+Un investigador quiere evaluar si hay diferencia en la proporción de éxitos en 3 tratamientos diferentes aplicados a los mismos 10 pacientes 
+
+- 1 = éxito, 
+
+- 0 = falla
+```{r}
+
+p_load(DescTools)
+
+datos <- data.frame(
+  Tratamiento_A = c(1, 1, 0, 1, 0, 1, 0, 1, 1, 0),
+  Tratamiento_B = c(1, 0, 0, 1, 0, 1, 1, 1, 0, 0),
+  Tratamiento_C = c(0, 0, 0, 1, 1, 1, 1, 1, 1, 0)
+)
+
+# Test de Cochran Q
+CochranQTest(as.matrix(datos))
+```
+
+
+
+# Some about diagnosis
+
+![](images/diagnosis.png)
+
+## Diagnostic test 
+
+Most importan result of medical practice
+
+- Classification of individuals in healthy or sick
+
+- Need of reference method or “TRUE”
+
+- Positive results of test in patients and negative in healthy
+
+## Sensitivity
+
+![](images/sensitivity.png)
+
+## Specificty
+
+![](images/specificity.png)
+
+## Diagnostic Measures
+
+![](images/diag_measures.png)
+
+## Positive Predictive Value
+
+![](images/ppv.png)
+## Negative Predictive Value
+
+![](images/npv.png)
+
+## Diagnostic measures in R 
+
+\scriptsize
+
+```{r}
+pacman::p_load(epiR)
+table1 <- as.table(matrix(c(634,269,487,1251),nrow=2, byrow=TRUE))
+epi.tests(table1)
 ```
 
 

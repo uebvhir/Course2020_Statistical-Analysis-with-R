@@ -96,7 +96,17 @@ Antes de realizar pruebas estadísticas, es esencial explorar los datos.
 *Reflexiona:  ¿Hay diferencias visibles en las distribuciones por sexo o tratamiento? ¿Existen posibles valores atípicos o distribuciones sesgadas?*
 
 ```{r}
-summary(data)
+load("datasets/data.Rda")
+
+
+p_load(summarytools, GGally)
+
+dfSummary(data)
+
+
+
+shapiro.test(data$presion_sistolica)
+shapiro.test(data$colesterol)
 ```
 
 
