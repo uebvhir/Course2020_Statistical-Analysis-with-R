@@ -49,6 +49,9 @@ knitr::knit_hooks$set(mysize = function(before, options, envir) {
 ```{r}
 sex <- factor(c("Female", "Male"))
 blood_group <- factor(c("A", "B", "AB", "O"))
+
+tabaco <- factor(c(" Si", "No"))
+levels(tabaco)
 ```
 
 <!-- - Besides, factors can be forced to be "ordereded" -->
@@ -66,7 +69,7 @@ levels(blood_group)
 - To verify class of a variable
 
 ```{r}
-class(sex)
+class(blood_group)
 ```
 
 
@@ -106,16 +109,14 @@ class(sex)
   
 ```{r, size=5, results='hide'}
 
-osteo1 <- read.csv("datasets/osteoporosis.csv",sep = "\t",
-                   stringsAsFactors=TRUE)
+osteo1 <- read.csv("datasets/osteoporosis.csv",sep = "\t", stringsAsFactors = TRUE)
 class(osteo1$menop)
 summary(osteo1$menop)
 str(osteo1)
 
 library(pacman)
 p_load(readr)
-osteo2 <- read_delim("datasets/osteoporosis.csv", "\t", 
-                     escape_double = FALSE)
+osteo2 <- read_delim("datasets/osteoporosis.csv", "\t", escape_double = FALSE)
 class(osteo2$menop)
 osteo2$menop <- as.factor(osteo2$menop)
 class(osteo2$menop)
@@ -193,13 +194,13 @@ Our goal here would be to determine if there is an association between smoking a
 - In this case we need to build the table applying "cross-tabulation"
 
 ```{r}
-dadescancer <- read.csv("datasets/dadescancer.csv", 
-                        stringsAsFactors = TRUE)
+dadescancer <- read.csv("datasets/dadescancer.csv", stringsAsFactors = TRUE, sep = ",")
+head(dadescancer)
 ```
 
 ```{r}
 #attach(dadescancer)
-mytable <-table(dadescancer$cancer, dadescancer$fumar)
+mytable <- table(dadescancer$cancer, dadescancer$fumar)
 mytable
 ```
 
@@ -209,8 +210,8 @@ Marginal values are important to understand the structure of the data:
 
 
 ```{r}
-mytable<- addmargins(mytable)
-mytable
+mytable_margin <- addmargins(mytable)
+mytable_margin
 ```
 
 
@@ -220,13 +221,19 @@ mytable
 Showing tables as percentages is useful for comparisons
 
 ```{r}
-prop.table(mytable) # cell percentages
-prop.table(mytable, 1) # row percentages
-# prop.table(mytable, 2) # column percentages
+mytable_prop <- prop.table(mytable)
+mytable_prop
 
 ```
 
+## Crosstabulation (3): In percentages
+\scriptsize
 
+Showing tables as percentages is useful for comparisons
+
+```{r}
+gmodels::CrossTable(dadescancer$cancer, dadescancer$fumar, prop.chisq = F)
+```
 
 ## Plot 
 \scriptsize
@@ -306,7 +313,8 @@ ggplot(datos_porcentaje_total, aes(x = fumar, y = porcentaje, fill = cancer)) +
 Alternative "NOT EQUAL". This is set by default.
 
 ```{r}
-prop.test(x=142, n=723, p=0.15)
+prop.test(x = 142, n = 723, p = 0.15)
+prop.test(x = 142, n = 723)
 ```
 
 ---
@@ -314,7 +322,7 @@ prop.test(x=142, n=723, p=0.15)
 Alternative "GREATER"
 
 ```{r}
-prop.test(x=142, n=723, p=0.15, alternative="g")
+prop.test(x = 142, n = 723, p = 0.15, alternative = "g")
 ```
 
 ---
@@ -348,6 +356,9 @@ knitr::include_graphics("images/propTestsAndCI.png")
   - Test the hypothesis that the proportion of patients with `bmi30` is higher than 40%
       - In the global population of the study
       - Only in patients with 'mort' equal "Muerto"
+      
+      
+
       
   <!-- - Select a sample of size 100 and repeat the test. How do the results change? -->
 
@@ -484,6 +495,8 @@ CochranQTest(as.matrix(datos))
 
 # Some about diagnosis
 
+[diagnosis](https://github.com/uebvhir/Course_Basic_Statistics-VHIO-2019/blob/master/Sessio_9/EBB_2019_Session_9_Diagnostic.pdf)
+
 ![](images/diagnosis.png)
 
 ## Diagnostic test 
@@ -495,6 +508,11 @@ Most importan result of medical practice
 - Need of reference method or “TRUE”
 
 - Positive results of test in patients and negative in healthy
+
+
+## Diagnostic test 
+
+![](images/tab_diag.png)
 
 ## Sensitivity
 
